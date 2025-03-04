@@ -2,7 +2,7 @@
   <div>
     <Head :title="`${form.first_name} ${form.last_name}`" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/contacts">Contacts</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/contacts">Студенти</Link>
       <span class="text-indigo-400 font-medium">/</span>
       {{ form.first_name }} {{ form.last_name }}
     </h1>
@@ -11,6 +11,7 @@
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="First name" />
+          <text-input v-model="form.middle_name" :error="form.errors.middle_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Middle name" />
           <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Last name" />
           <select-input v-model="form.organization_id" :error="form.errors.organization_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Organization">
             <option :value="null" />
@@ -64,6 +65,7 @@ export default {
     return {
       form: this.$inertia.form({
         first_name: this.contact.first_name,
+        middle_name: this.contact.middle_name,
         last_name: this.contact.last_name,
         organization_id: this.contact.organization_id,
         email: this.contact.email,

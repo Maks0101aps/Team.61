@@ -51,6 +51,7 @@ class ContactsController extends Controller
         Auth::user()->account->contacts()->create(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
+                'middle_name' => ['required', 'max:50'],
                 'last_name' => ['required', 'max:50'],
                 'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
                     $query->where('account_id', Auth::user()->account_id);
@@ -74,6 +75,7 @@ class ContactsController extends Controller
             'contact' => [
                 'id' => $contact->id,
                 'first_name' => $contact->first_name,
+                'middle_name' => $contact->middle_name,
                 'last_name' => $contact->last_name,
                 'organization_id' => $contact->organization_id,
                 'email' => $contact->email,
@@ -98,6 +100,7 @@ class ContactsController extends Controller
         $contact->update(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
+                'middle_name' => ['required', 'max:50'],
                 'last_name' => ['required', 'max:50'],
                 'organization_id' => [
                     'nullable',
