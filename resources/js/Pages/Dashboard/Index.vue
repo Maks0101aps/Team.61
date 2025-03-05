@@ -1,8 +1,18 @@
 <template>
-  <div>
-    <Head title="Dashboard" />
-    <h1 class="mb-8 text-3xl font-bold">Dashboard</h1>
-    <p class="mb-8 leading-normal">Hey there! Welcome to Ping CRM, a demo app designed to help illustrate how <a class="text-indigo-500 hover:text-orange-600 underline" href="https://inertiajs.com">Inertia.js</a> works.</p>
+  <div class="flex items-center justify-center min-h-screen bg-gray-100">
+    <div class="text-center">
+      <Head title="Dashboard" />
+      <h1 class="mb-8 text-5xl font-extrabold text-gray-800">Календар подій</h1>
+      <p class="mb-8 text-lg text-gray-600">
+        Стеж за всіма важливими подіями у школі та не пропусти жодної дати!
+      </p>
+      <a
+      href="#"
+        class="px-6 py-3 text-lg font-medium text-white bg-indigo-600 rounded-lg hover:bg-orange-500 transition-all"
+      >
+        Детальніше
+      </a>
+    </div>
   </div>
 </template>
 
