@@ -20,9 +20,9 @@
       <table class="w-full whitespace-nowrap">
         <thead>
           <tr class="text-left font-bold">
-            <th class="pb-4 pt-6 px-6">Name</th>
-            <th class="pb-4 pt-6 px-6">City</th>
-            <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
+            <th class="pb-4 pt-6 px-6">Повне ім'я</th>
+            <th class="pb-4 pt-6 px-6">Місто</th>
+            <th class="pb-4 pt-6 px-6" colspan="2">Номер телефону</th>
           </tr>
         </thead>
         <tbody>
