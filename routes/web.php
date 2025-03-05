@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ContactsController;
+use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\OrganizationsController;
@@ -140,3 +141,40 @@ Route::get('reports', [ReportsController::class, 'index'])
 Route::get('/img/{path}', [ImagesController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
+
+
+// Parents
+
+Route::get('parents', [ParentsController::class, 'index'])
+    ->name('parents')
+    ->middleware('auth');
+
+Route::get('parents/create', [ParentsController::class, 'create'])
+    ->name('parents.create')
+    ->middleware('auth');
+
+Route::post('parents', [ParentsController::class, 'store'])
+    ->name('parents.store')
+    ->middleware('auth');
+
+Route::get('parents/{parent}', [ParentsController::class, 'edit'])
+    ->where('parent', '[0-9]+')
+    ->name('parents.edit')
+    ->middleware('auth');
+
+Route::put('parents/{parent}', [ParentsController::class, 'update'])
+    ->where('parent', '[0-9]+')
+    ->name('parents.update')
+    ->middleware('auth');
+
+Route::delete('parents/{parent}', [ParentsController::class, 'destroy'])
+    ->where('parent', '[0-9]+')
+    ->name('parents.destroy')
+    ->middleware('auth');
+
+Route::put('parents/{parent}/restore', [ParentsController::class, 'restore'])
+    ->where('parent', '[0-9]+')
+    ->name('parents.restore')
+    ->middleware('auth');;    
+
+

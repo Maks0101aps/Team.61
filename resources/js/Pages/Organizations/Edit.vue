@@ -33,9 +33,9 @@
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">Name</th>
+          <th class="pb-4 pt-6 px-6">Повне Ім'я</th>
           <th class="pb-4 pt-6 px-6">City</th>
-          <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
+          <th class="pb-4 pt-6 px-6" colspan="2">Номер Телефону</th>
         </tr>
         <tr v-for="contact in organization.contacts" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
@@ -61,7 +61,7 @@
           </td>
         </tr>
         <tr v-if="organization.contacts.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">No contacts found.</td>
+          <td class="px-6 py-4 border-t" colspan="4">Контактів не знайдено.</td>
         </tr>
       </table>
     </div>
