@@ -31,7 +31,7 @@ npm run build
 Setup configuration:
 
 ```sh
-cp .env.example .env
+copy .env.example .env
 ```
 
 Generate application key:
