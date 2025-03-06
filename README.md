@@ -25,7 +25,7 @@ npm ci
 Build assets:
 
 ```sh
-npm run dev
+npm run build
 ```
 
 Setup configuration:
@@ -56,6 +56,10 @@ Run database seeder:
 
 ```sh
 php artisan db:seed
+```
+Build assets:
+```sh
+npm run dev
 ```
 
 Run the dev server (the output will give the address):
