@@ -6,7 +6,7 @@ PROJECT school61project
 Clone the repo locally:
 
 ```sh
-git clone [https://github.com/inertiajs/pingcrm.git](https://github.com/Maks0101aps/school61project.git) 
+git clone (https://github.com/Maks0101aps/school61project.git) 
 cd school61project
 ```
 
