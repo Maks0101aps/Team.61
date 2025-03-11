@@ -39,8 +39,8 @@
               <template #dropdown>
                 <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
                   <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-500" :href="`/users/${auth.user.id}/edit`">Мій профіль</Link>
-                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-500" href="/users">Мої Профілі</Link>
-                  <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-indigo-500" href="/logout" method="delete" as="button">Вийти з профілю</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-indigo-500" href="/users">Користувачі</Link>
+                  <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-indigo-500" href="/logout" method="delete" as="button">Вийти</Link>
                 </div>
               </template>
             </dropdown>
