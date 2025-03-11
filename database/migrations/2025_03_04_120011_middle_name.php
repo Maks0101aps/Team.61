@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Изменяем таблицу contacts
         Schema::table('contacts', function (Blueprint $table) {
-    
             $table->string('middle_name', 25)->default('')->nullable(true);
-            
+        });
+
+        // Изменяем таблицу users
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('middle_name', 25)->nullable()->change();
         });
     }
 
@@ -23,6 +27,14 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        // Отменяем изменения в таблице users
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('middle_name', 25)->nullable(false)->change();
+        });
+
+        // Отменяем изменения в таблице contacts
+        Schema::table('contacts', function (Blueprint $table) {
+            $table->string('middle_name', 25)->nullable(false)->default('')->change();
+        });
     }
 };

@@ -21,4 +21,9 @@ class Account extends Model
     {
         return $this->hasMany(Contact::class);
     }
+
+    public function teachers(): HasMany
+    {
+        return $this->hasMany(Teacher::class);
+    }
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\OrganizationsController;
 use App\Http\Controllers\ReportsController;
+use App\Http\Controllers\TeachersController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
 
@@ -129,6 +130,36 @@ Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
     ->name('contacts.restore')
     ->middleware('auth');
 
+// Teachers
+
+Route::get('teachers', [TeachersController::class, 'index'])
+    ->name('teachers')
+    ->middleware('auth');
+
+Route::get('teachers/create', [TeachersController::class, 'create'])
+    ->name('teachers.create')
+    ->middleware('auth');
+
+Route::post('teachers', [TeachersController::class, 'store'])
+    ->name('teachers.store')
+    ->middleware('auth');
+
+Route::get('teachers/{teacher}/edit', [TeachersController::class, 'edit'])
+    ->name('teachers.edit')
+    ->middleware('auth');
+
+Route::put('teachers/{teacher}', [TeachersController::class, 'update'])
+    ->name('teachers.update')
+    ->middleware('auth');
+
+Route::delete('teachers/{teacher}', [TeachersController::class, 'destroy'])
+    ->name('teachers.destroy')
+    ->middleware('auth');
+
+Route::put('teachers/{teacher}/restore', [TeachersController::class, 'restore'])
+    ->name('teachers.restore')
+    ->middleware('auth');
+
 // Reports
 
 Route::get('reports', [ReportsController::class, 'index'])
@@ -140,3 +171,5 @@ Route::get('reports', [ReportsController::class, 'index'])
 Route::get('/img/{path}', [ImagesController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
+
+

@@ -1,7 +1,9 @@
 <template>
   <div>
-    <Head title="Педагогічний колектив" />
+    <Head title="Створити Педагогічний Колектив" />
     <h1 class="mb-8 text-3xl font-bold">
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Organizations</Link>
+      <span class="text-indigo-400 font-medium">/</span> Create
       <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Педагогічний колектив</Link>
       <span class="text-indigo-400 font-medium">/</span> Створення
     </h1>

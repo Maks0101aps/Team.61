@@ -61,7 +61,7 @@
           </td>
         </tr>
         <tr v-if="organization.contacts.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">No contacts found.</td>
+          <td class="px-6 py-4 border-t" colspan="4">Контактів не знайдено.</td>
         </tr>
       </table>
     </div>
