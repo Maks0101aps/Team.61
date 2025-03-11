@@ -1,8 +1,8 @@
 <template>
-  <Head title="Створити вчителя" />
+  <Head title="Створити батька" />
 
   <h1 class="mb-8 text-3xl font-bold">
-    <Link class="text-indigo-400 hover:text-indigo-600" href="/teachers">Вчителі</Link>
+    <Link class="text-indigo-400 hover:text-indigo-600" href="/parents">Батьки</Link>
     <span class="text-indigo-400 font-medium">/</span>
     Створити
   </h1>
@@ -25,7 +25,7 @@
       </div>
       <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
         <loading-button :loading="form.processing" class="btn-indigo" type="submit">
-          Створити вчителя
+          Створити батька
         </loading-button>
       </div>
     </form>
@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     store() {
-      this.form.post('/teachers')
+      this.form.post('/parents')
     },
   },
 }

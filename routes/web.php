@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\TeachersController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ParentsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -96,6 +97,35 @@ Route::delete('contacts/{contact}', [ContactsController::class, 'destroy'])
 
 Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
     ->name('contacts.restore')
+    ->middleware('auth');
+
+// Parents
+Route::get('parents', [ParentsController::class, 'index'])
+    ->name('parents')
+    ->middleware('auth');
+
+Route::get('parents/create', [ParentsController::class, 'create'])
+    ->name('parents.create')
+    ->middleware('auth');
+
+Route::post('parents', [ParentsController::class, 'store'])
+    ->name('parents.store')
+    ->middleware('auth');
+
+Route::get('parents/{parent}/edit', [ParentsController::class, 'edit'])
+    ->name('parents.edit')
+    ->middleware('auth');
+
+Route::put('parents/{parent}', [ParentsController::class, 'update'])
+    ->name('parents.update')
+    ->middleware('auth');
+
+Route::delete('parents/{parent}', [ParentsController::class, 'destroy'])
+    ->name('parents.destroy')
+    ->middleware('auth');
+
+Route::get('parents/{parent}/restore', [ParentsController::class, 'restore'])
+    ->name('parents.restore')
     ->middleware('auth');
 
 // Teachers

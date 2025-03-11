@@ -4,16 +4,16 @@
     <h1 class="mb-8 text-3xl font-bold">Вчителі</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-gray-700">Trashed:</label>
+        <label class="block text-gray-700">Видалені:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">With Trashed</option>
-          <option value="only">Only Trashed</option>
+          <option value="with">З видаленими</option>
+          <option value="only">Тільки видалені</option>
         </select>
       </search-filter>
       <Link class="btn-indigo" href="/teachers/create">
-        <span>Create</span>
-        <span class="hidden md:inline">&nbsp;Teacher</span>
+        <span>Створити</span>
+        <span class="hidden md:inline">&nbsp;вчителя</span>
       </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
@@ -54,14 +54,19 @@
               {{ teacher.phone }}
             </Link>
           </td>
-          <td class="w-px border-t">
+          <td class="border-t w-px">
             <Link class="flex items-center px-4" :href="`/teachers/${teacher.id}/edit`" tabindex="-1">
-              <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+              <icon name="edit" class="block w-6 h-6 fill-gray-400" />
             </Link>
+          </td>
+          <td class="border-t w-px">
+            <button class="flex items-center px-4" @click="destroy(teacher)" tabindex="-1">
+              <icon name="trash" class="block w-6 h-6 fill-gray-400" />
+            </button>
           </td>
         </tr>
         <tr v-if="teachers.data.length === 0">
-          <td class="px-6 py-4 border-t" colspan="5">No teachers found.</td>
+          <td class="px-6 py-4 border-t" colspan="5">Вчителів не знайдено.</td>
         </tr>
       </table>
     </div>
@@ -110,7 +115,15 @@ export default {
   },
   methods: {
     reset() {
-      this.form = mapValues(this.form, () => null)
+      this.form = {
+        search: null,
+        trashed: null,
+      }
+    },
+    destroy(teacher) {
+      if (confirm('Ви впевнені, що хочете видалити цього вчителя?')) {
+        this.$inertia.delete(`/teachers/${teacher.id}`)
+      }
     },
   },
 }

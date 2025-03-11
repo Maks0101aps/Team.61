@@ -13,20 +13,11 @@
           <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Ім'я" />
           <text-input v-model="form.middle_name" :error="form.errors.middle_name" class="pb-8 pr-6 w-full lg:w-1/2" label="По батькові" />
           <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Прізвище" />
-          <select-input v-model="form.organization_id" :error="form.errors.organization_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Організація">
-            <option :value="null" />
-            <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
-          </select-input>
           <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Електронна пошта" />
           <text-input v-model="form.phone" :error="form.errors.phone" class="pb-8 pr-6 w-full lg:w-1/2" label="Телефон" />
           <text-input v-model="form.address" :error="form.errors.address" class="pb-8 pr-6 w-full lg:w-1/2" label="Адреса" />
           <text-input v-model="form.city" :error="form.errors.city" class="pb-8 pr-6 w-full lg:w-1/2" label="Місто" />
           <text-input v-model="form.region" :error="form.errors.region" class="pb-8 pr-6 w-full lg:w-1/2" label="Область" />
-          <select-input v-model="form.country" :error="form.errors.country" class="pb-8 pr-6 w-full lg:w-1/2" label="Країна">
-            <option :value="null" />
-            <option value="CA">Канада</option>
-            <option value="US">Сполучені Штати</option>
-          </select-input>
           <text-input v-model="form.postal_code" :error="form.errors.postal_code" class="pb-8 pr-6 w-full lg:w-1/2" label="Поштовий індекс" />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
@@ -58,7 +49,6 @@ export default {
   layout: Layout,
   props: {
     contact: Object,
-    organizations: Array,
   },
   remember: 'form',
   data() {
@@ -67,13 +57,11 @@ export default {
         first_name: this.contact.first_name,
         middle_name: this.contact.middle_name,
         last_name: this.contact.last_name,
-        organization_id: this.contact.organization_id,
         email: this.contact.email,
         phone: this.contact.phone,
         address: this.contact.address,
         city: this.contact.city,
         region: this.contact.region,
-        country: this.contact.country,
         postal_code: this.contact.postal_code,
       }),
     }

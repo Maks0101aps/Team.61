@@ -48,10 +48,15 @@
               {{ contact.phone }}
             </Link>
           </td>
-          <td class="w-px border-t">
+          <td class="border-t w-px">
             <Link class="flex items-center px-4" :href="`/contacts/${contact.id}/edit`" tabindex="-1">
-              <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+              <icon name="edit" class="block w-6 h-6 fill-gray-400" />
             </Link>
+          </td>
+          <td class="border-t w-px">
+            <button class="flex items-center px-4" @click="destroy(contact)" tabindex="-1">
+              <icon name="trash" class="block w-6 h-6 fill-gray-400" />
+            </button>
           </td>
         </tr>
         <tr v-if="contacts.data.length === 0">
@@ -104,7 +109,15 @@ export default {
   },
   methods: {
     reset() {
-      this.form = mapValues(this.form, () => null)
+      this.form = {
+        search: null,
+        trashed: null,
+      }
+    },
+    destroy(contact) {
+      if (confirm('Ви впевнені, що хочете видалити цього студента?')) {
+        this.$inertia.delete(`/contacts/${contact.id}`)
+      }
     },
   },
 }

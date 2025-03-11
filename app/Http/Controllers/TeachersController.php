@@ -37,14 +37,7 @@ class TeachersController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Teachers/Create', [
-            'organizations' => Auth::user()->account
-                ->organizations()
-                ->orderBy('name')
-                ->get()
-                ->map
-                ->only('id', 'name'),
-        ]);
+        return Inertia::render('Teachers/Create');
     }
 
     public function store(): RedirectResponse

@@ -2,44 +2,43 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contact;
+use App\Models\ParentModel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ContactsController extends Controller
+class ParentsController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Contacts/Index', [
+        return Inertia::render('Parents/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'contacts' => Auth::user()->account->contacts()
+            'parents' => Auth::user()->account->parents()
                 ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($contact) => [
-                    'id' => $contact->id,
-                    'name' => $contact->name,
-                    'phone' => $contact->phone,
-                    'city' => $contact->city,
-                    'deleted_at' => $contact->deleted_at,
+                ->through(fn ($parent) => [
+                    'id' => $parent->id,
+                    'name' => $parent->name,
+                    'phone' => $parent->phone,
+                    'city' => $parent->city,
+                    'deleted_at' => $parent->deleted_at,
                 ]),
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('Contacts/Create');
+        return Inertia::render('Parents/Create');
     }
 
     public function store(): RedirectResponse
     {
-        Auth::user()->account->contacts()->create(
+        Auth::user()->account->parents()->create(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'middle_name' => ['required', 'max:50'],
@@ -54,31 +53,32 @@ class ContactsController extends Controller
             ])
         );
 
-        return Redirect::route('contacts')->with('success', 'Contact created.');
+        return Redirect::route('parents')->with('success', 'Батька створено.');
     }
 
-    public function edit(Contact $contact): Response
+    public function edit(ParentModel $parent): Response
     {
-        return Inertia::render('Contacts/Edit', [
-            'contact' => [
-                'id' => $contact->id,
-                'first_name' => $contact->first_name,
-                'middle_name' => $contact->middle_name,
-                'last_name' => $contact->last_name,
-                'email' => $contact->email,
-                'phone' => $contact->phone,
-                'address' => $contact->address,
-                'city' => $contact->city,
-                'region' => $contact->region,
-                'postal_code' => $contact->postal_code,
-                'deleted_at' => $contact->deleted_at,
+        return Inertia::render('Parents/Edit', [
+            'parent' => [
+                'id' => $parent->id,
+                'first_name' => $parent->first_name,
+                'middle_name' => $parent->middle_name,
+                'last_name' => $parent->last_name,
+                'email' => $parent->email,
+                'phone' => $parent->phone,
+                'address' => $parent->address,
+                'city' => $parent->city,
+                'region' => $parent->region,
+                'country' => $parent->country,
+                'postal_code' => $parent->postal_code,
+                'deleted_at' => $parent->deleted_at,
             ],
         ]);
     }
 
-    public function update(Contact $contact): RedirectResponse
+    public function update(ParentModel $parent): RedirectResponse
     {
-        $contact->update(
+        $parent->update(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'middle_name' => ['required', 'max:50'],
@@ -93,20 +93,20 @@ class ContactsController extends Controller
             ])
         );
 
-        return Redirect::back()->with('success', 'Contact updated.');
+        return Redirect::back()->with('success', 'Батька оновлено.');
     }
 
-    public function destroy(Contact $contact): RedirectResponse
+    public function destroy(ParentModel $parent): RedirectResponse
     {
-        $contact->delete();
+        $parent->delete();
 
-        return Redirect::back()->with('success', 'Contact deleted.');
+        return Redirect::back()->with('success', 'Батька видалено.');
     }
 
-    public function restore(Contact $contact): RedirectResponse
+    public function restore(ParentModel $parent): RedirectResponse
     {
-        $contact->restore();
+        $parent->restore();
 
-        return Redirect::back()->with('success', 'Contact restored.');
+        return Redirect::back()->with('success', 'Батька відновлено.');
     }
 }
