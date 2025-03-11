@@ -4,7 +4,6 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
-use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\TeachersController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -127,12 +126,6 @@ Route::delete('teachers/{teacher}', [TeachersController::class, 'destroy'])
 
 Route::put('teachers/{teacher}/restore', [TeachersController::class, 'restore'])
     ->name('teachers.restore')
-    ->middleware('auth');
-
-// Reports
-
-Route::get('reports', [ReportsController::class, 'index'])
-    ->name('reports')
     ->middleware('auth');
 
 // Images
