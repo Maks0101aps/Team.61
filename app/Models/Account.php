@@ -22,8 +22,8 @@ class Account extends Model
         return $this->hasMany(Contact::class);
     }
 
-    public function parents(): HasMany
+    public function teachers(): HasMany
     {
-        return $this->hasMany(ParentModel::class);
+        return $this->hasMany(Teacher::class);
     }
 }

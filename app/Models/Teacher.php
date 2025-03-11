@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ParentModel extends Model
+class Teacher extends Model
 {
     use HasFactory;
     use SoftDeletes;
@@ -39,6 +39,7 @@ class ParentModel extends Model
                 $query->where('first_name', 'like', '%'.$search.'%')
                     ->orWhere('last_name', 'like', '%'.$search.'%')
                     ->orWhere('email', 'like', '%'.$search.'%')
+                    ->orWhere('subject', 'like', '%'.$search.'%')
                     ->orWhereHas('organization', function ($query) use ($search) {
                         $query->where('name', 'like', '%'.$search.'%');
                     });
@@ -51,4 +52,4 @@ class ParentModel extends Model
             }
         });
     }
-}
+} 
