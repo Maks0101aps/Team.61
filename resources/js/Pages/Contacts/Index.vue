@@ -1,19 +1,19 @@
 <template>
   <div>
-    <Head title="Contacts" />
+    <Head title="Студенти" />
     <h1 class="mb-8 text-3xl font-bold">Студенти</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-gray-700">Trashed:</label>
+        <label class="block text-gray-700">Видалені:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">With Trashed</option>
-          <option value="only">Only Trashed</option>
+          <option value="with"> видаленими</option>
+          <option value="only">Тільки видалені</option>
         </select>
       </search-filter>
       <Link class="btn-indigo" href="/contacts/create">
-        <span>Create</span>
-        <span class="hidden md:inline">&nbsp;Contact</span>
+        <span>Створити</span>
+        <span class="hidden md:inline">&nbsp;студента</span>
       </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
@@ -55,7 +55,7 @@
           </td>
         </tr>
         <tr v-if="contacts.data.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">No contacts found.</td>
+          <td class="px-6 py-4 border-t" colspan="4">Студентів не знайдено.</td>
         </tr>
       </table>
     </div>

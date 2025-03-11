@@ -2,7 +2,7 @@
   <div>
     <Head :title="form.name" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Organizations</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Педагогічний колектив</Link>
       <span class="text-indigo-400 font-medium">/</span>
       {{ form.name }}
     </h1>
@@ -33,9 +33,9 @@
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">Name</th>
-          <th class="pb-4 pt-6 px-6">City</th>
-          <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
+          <th class="pb-4 pt-6 px-6">Повне ім'я</th>
+          <th class="pb-4 pt-6 px-6">Місто</th>
+          <th class="pb-4 pt-6 px-6" colspan="2">Номер телефону</th>
         </tr>
         <tr v-for="contact in organization.contacts" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
