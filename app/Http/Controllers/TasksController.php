@@ -40,6 +40,21 @@ class TasksController extends Controller
                 ->get()
                 ->map
                 ->only('id', 'title'),
+            'students' => Auth::user()->account->contacts()
+                ->orderBy('last_name')
+                ->get()
+                ->map
+                ->only('id', 'name'),
+            'parents' => Auth::user()->account->parents()
+                ->orderBy('last_name')
+                ->get()
+                ->map
+                ->only('id', 'name'),
+            'teachers' => Auth::user()->account->teachers()
+                ->orderBy('last_name')
+                ->get()
+                ->map
+                ->only('id', 'name'),
         ]);
     }
 
@@ -50,15 +65,33 @@ class TasksController extends Controller
             'title' => ['required', 'max:100'],
             'content' => ['nullable', 'string'],
             'due_date' => ['required', 'date'],
+            'students' => ['array'],
+            'students.*' => ['exists:contacts,id'],
+            'teachers' => ['array'],
+            'teachers.*' => ['exists:teachers,id'],
+            'parents' => ['array'],
+            'parents.*' => ['exists:parent_models,id'],
         ]);
 
-        Auth::user()->account->tasks()->create([
+        $task = Auth::user()->account->tasks()->create([
             'event_id' => $validated['event_id'],
             'title' => $validated['title'],
             'content' => $validated['content'],
             'due_date' => $validated['due_date'],
             'created_by' => Auth::id(),
         ]);
+
+        if (!empty($validated['students'])) {
+            $task->students()->attach($validated['students']);
+        }
+
+        if (!empty($validated['teachers'])) {
+            $task->teachers()->attach($validated['teachers']);
+        }
+
+        if (!empty($validated['parents'])) {
+            $task->parents()->attach($validated['parents']);
+        }
 
         return Redirect::route('tasks.index')->with('success', 'Task created.');
     }

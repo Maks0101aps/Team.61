@@ -40,6 +40,21 @@ class Task extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function students()
+    {
+        return $this->morphedByMany(Contact::class, 'participant', 'task_participants');
+    }
+
+    public function teachers()
+    {
+        return $this->morphedByMany(Teacher::class, 'participant', 'task_participants');
+    }
+
+    public function parents()
+    {
+        return $this->morphedByMany(ParentModel::class, 'participant', 'task_participants');
+    }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

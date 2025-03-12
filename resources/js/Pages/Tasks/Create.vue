@@ -36,6 +36,54 @@
             class="pb-8 pr-6 w-full lg:w-full"
             label="Контент"
           />
+          <multi-select
+            v-model="form.students"
+            :options="students"
+            :error="form.errors.students"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Студенти"
+            placeholder="Оберіть студентів"
+            track-by="id"
+            label-prop="name"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
+          <multi-select
+            v-model="form.teachers"
+            :options="teachers"
+            :error="form.errors.teachers"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Вчителі"
+            placeholder="Оберіть вчителів"
+            track-by="id"
+            label-prop="name"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
+          <multi-select
+            v-model="form.parents"
+            :options="parents"
+            :error="form.errors.parents"
+            class="pb-8 pr-6 w-full lg:w-full"
+            label="Батьки"
+            placeholder="Оберіть батьків"
+            track-by="id"
+            label-prop="name"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">
@@ -54,6 +102,7 @@ import TextInput from '@/Shared/TextInput.vue'
 import TextArea from '@/Shared/TextArea.vue'
 import SelectInput from '@/Shared/SelectInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
+import MultiSelect from '@/Shared/MultiSelect.vue'
 
 export default {
   components: {
@@ -63,10 +112,23 @@ export default {
     SelectInput,
     TextInput,
     TextArea,
+    MultiSelect,
   },
   layout: Layout,
   props: {
     events: {
+      type: Array,
+      required: true
+    },
+    students: {
+      type: Array,
+      required: true
+    },
+    teachers: {
+      type: Array,
+      required: true
+    },
+    parents: {
       type: Array,
       required: true
     }
@@ -79,6 +141,9 @@ export default {
         title: null,
         content: null,
         due_date: null,
+        students: [],
+        parents: [],
+        teachers: [],
       }),
     }
   },
