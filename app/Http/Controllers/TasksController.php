@@ -66,11 +66,11 @@ class TasksController extends Controller
             'content' => ['nullable', 'string'],
             'due_date' => ['required', 'date'],
             'students' => ['array'],
-            'students.*' => ['exists:contacts,id'],
+            'students.*.id' => ['exists:contacts,id'],
             'teachers' => ['array'],
-            'teachers.*' => ['exists:teachers,id'],
+            'teachers.*.id' => ['exists:teachers,id'],
             'parents' => ['array'],
-            'parents.*' => ['exists:parent_models,id'],
+            'parents.*.id' => ['exists:parent_models,id'],
         ]);
 
         $task = Auth::user()->account->tasks()->create([
@@ -82,15 +82,15 @@ class TasksController extends Controller
         ]);
 
         if (!empty($validated['students'])) {
-            $task->students()->attach($validated['students']);
+            $task->students()->attach(collect($validated['students'])->pluck('id'));
         }
 
         if (!empty($validated['teachers'])) {
-            $task->teachers()->attach($validated['teachers']);
+            $task->teachers()->attach(collect($validated['teachers'])->pluck('id'));
         }
 
         if (!empty($validated['parents'])) {
-            $task->parents()->attach($validated['parents']);
+            $task->parents()->attach(collect($validated['parents'])->pluck('id'));
         }
 
         return Redirect::route('tasks.index')->with('success', 'Task created.');
@@ -107,12 +107,30 @@ class TasksController extends Controller
                 'due_date' => $task->due_date->format('Y-m-d\TH:i'),
                 'completed' => $task->completed,
                 'deleted_at' => $task->deleted_at,
+                'students' => $task->students->map(fn($student) => ['id' => $student->id, 'name' => $student->name]),
+                'teachers' => $task->teachers->map(fn($teacher) => ['id' => $teacher->id, 'name' => $teacher->name]),
+                'parents' => $task->parents->map(fn($parent) => ['id' => $parent->id, 'name' => $parent->name]),
             ],
             'events' => Auth::user()->account->events()
                 ->orderBy('title')
                 ->get()
                 ->map
                 ->only('id', 'title'),
+            'students' => Auth::user()->account->contacts()
+                ->orderBy('last_name')
+                ->get()
+                ->map
+                ->only('id', 'name'),
+            'teachers' => Auth::user()->account->teachers()
+                ->orderBy('last_name')
+                ->get()
+                ->map
+                ->only('id', 'name'),
+            'parents' => Auth::user()->account->parents()
+                ->orderBy('last_name')
+                ->get()
+                ->map
+                ->only('id', 'name'),
         ]);
     }
 
@@ -124,9 +142,25 @@ class TasksController extends Controller
             'content' => ['nullable', 'string'],
             'due_date' => ['required', 'date'],
             'completed' => ['boolean'],
+            'students' => ['array'],
+            'students.*.id' => ['exists:contacts,id'],
+            'teachers' => ['array'],
+            'teachers.*.id' => ['exists:teachers,id'],
+            'parents' => ['array'],
+            'parents.*.id' => ['exists:parent_models,id'],
         ]);
 
-        $task->update($validated);
+        $task->update([
+            'event_id' => $validated['event_id'],
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'due_date' => $validated['due_date'],
+            'completed' => $validated['completed'],
+        ]);
+
+        $task->students()->sync(collect($validated['students'] ?? [])->pluck('id'));
+        $task->teachers()->sync(collect($validated['teachers'] ?? [])->pluck('id'));
+        $task->parents()->sync(collect($validated['parents'] ?? [])->pluck('id'));
 
         return Redirect::back()->with('success', 'Task updated.');
     }

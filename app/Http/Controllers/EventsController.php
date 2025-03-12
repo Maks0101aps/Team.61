@@ -71,11 +71,11 @@ class EventsController extends Controller
             'online_link' => ['nullable', 'url', 'max:200'],
             'tasks' => ['nullable', 'string'],
             'student_ids' => ['array'],
-            'student_ids.*' => ['exists:contacts,id'],
+            'student_ids.*.id' => ['exists:contacts,id'],
             'teacher_ids' => ['array'],
-            'teacher_ids.*' => ['exists:teachers,id'],
+            'teacher_ids.*.id' => ['exists:teachers,id'],
             'parent_ids' => ['array'],
-            'parent_ids.*' => ['exists:parent_models,id'],
+            'parent_ids.*.id' => ['exists:parent_models,id'],
         ]);
 
         $event = Auth::user()->account->events()->create([
@@ -92,15 +92,15 @@ class EventsController extends Controller
         ]);
 
         if (!empty($validated['student_ids'])) {
-            $event->students()->attach($validated['student_ids']);
+            $event->students()->attach(collect($validated['student_ids'])->pluck('id'));
         }
 
         if (!empty($validated['teacher_ids'])) {
-            $event->teachers()->attach($validated['teacher_ids']);
+            $event->teachers()->attach(collect($validated['teacher_ids'])->pluck('id'));
         }
 
         if (!empty($validated['parent_ids'])) {
-            $event->parents()->attach($validated['parent_ids']);
+            $event->parents()->attach(collect($validated['parent_ids'])->pluck('id'));
         }
 
         return Redirect::route('events.index')->with('success', 'Event created.');
@@ -121,9 +121,9 @@ class EventsController extends Controller
                 'online_link' => $event->online_link,
                 'tasks' => $event->tasks,
                 'deleted_at' => $event->deleted_at,
-                'student_ids' => $event->students->pluck('id'),
-                'teacher_ids' => $event->teachers->pluck('id'),
-                'parent_ids' => $event->parents->pluck('id'),
+                'student_ids' => $event->students->map(fn($student) => ['id' => $student->id, 'name' => $student->name]),
+                'teacher_ids' => $event->teachers->map(fn($teacher) => ['id' => $teacher->id, 'name' => $teacher->name]),
+                'parent_ids' => $event->parents->map(fn($parent) => ['id' => $parent->id, 'name' => $parent->name]),
             ],
             'types' => Event::getTypes(),
             'students' => Auth::user()->account->contacts()
@@ -157,11 +157,11 @@ class EventsController extends Controller
             'online_link' => ['nullable', 'url', 'max:200'],
             'tasks' => ['nullable', 'string'],
             'student_ids' => ['array'],
-            'student_ids.*' => ['exists:contacts,id'],
+            'student_ids.*.id' => ['exists:contacts,id'],
             'teacher_ids' => ['array'],
-            'teacher_ids.*' => ['exists:teachers,id'],
+            'teacher_ids.*.id' => ['exists:teachers,id'],
             'parent_ids' => ['array'],
-            'parent_ids.*' => ['exists:parent_models,id'],
+            'parent_ids.*.id' => ['exists:parent_models,id'],
         ]);
 
         $event->update([
@@ -176,9 +176,9 @@ class EventsController extends Controller
             'tasks' => $validated['tasks'],
         ]);
 
-        $event->students()->sync($validated['student_ids'] ?? []);
-        $event->teachers()->sync($validated['teacher_ids'] ?? []);
-        $event->parents()->sync($validated['parent_ids'] ?? []);
+        $event->students()->sync(collect($validated['student_ids'] ?? [])->pluck('id'));
+        $event->teachers()->sync(collect($validated['teacher_ids'] ?? [])->pluck('id'));
+        $event->parents()->sync(collect($validated['parent_ids'] ?? [])->pluck('id'));
 
         return Redirect::back()->with('success', 'Event updated.');
     }

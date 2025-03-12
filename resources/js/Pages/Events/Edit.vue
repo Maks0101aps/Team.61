@@ -61,33 +61,54 @@
             class="pb-8 pr-6 w-full lg:w-full"
             label="Завдання"
           />
-          <select-input
+          <multi-select
             v-model="form.student_ids"
+            :options="students"
             :error="form.errors.student_ids"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Студенти"
-            multiple
+            placeholder="Оберіть студентів"
+            track-by="id"
+            label-prop="name"
           >
-            <option v-for="student in students" :key="student.id" :value="student.id">{{ student.name }}</option>
-          </select-input>
-          <select-input
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
+          <multi-select
             v-model="form.teacher_ids"
+            :options="teachers"
             :error="form.errors.teacher_ids"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Вчителі"
-            multiple
+            placeholder="Оберіть вчителів"
+            track-by="id"
+            label-prop="name"
           >
-            <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">{{ teacher.name }}</option>
-          </select-input>
-          <select-input
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
+          <multi-select
             v-model="form.parent_ids"
+            :options="parents"
             :error="form.errors.parent_ids"
             class="pb-8 pr-6 w-full lg:w-full"
             label="Батьки"
-            multiple
+            placeholder="Оберіть батьків"
+            track-by="id"
+            label-prop="name"
           >
-            <option v-for="parent in parents" :key="parent.id" :value="parent.id">{{ parent.name }}</option>
-          </select-input>
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">
@@ -108,6 +129,7 @@ import SelectInput from '@/Shared/SelectInput.vue'
 import CheckboxInput from '@/Shared/CheckboxInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
+import MultiSelect from '@/Shared/MultiSelect.vue'
 
 export default {
   components: {
@@ -119,6 +141,7 @@ export default {
     TextArea,
     CheckboxInput,
     TrashedMessage,
+    MultiSelect,
   },
   layout: Layout,
   props: {
@@ -141,9 +164,9 @@ export default {
         location: this.event.location,
         online_link: this.event.online_link,
         tasks: this.event.tasks,
-        student_ids: this.event.student_ids,
-        teacher_ids: this.event.teacher_ids,
-        parent_ids: this.event.parent_ids,
+        student_ids: this.event.student_ids || [],
+        teacher_ids: this.event.teacher_ids || [],
+        parent_ids: this.event.parent_ids || [],
       }),
     }
   },

@@ -46,6 +46,54 @@
             class="pb-8 pr-6 w-full lg:w-full"
             label="Завдання виконано"
           />
+          <multi-select
+            v-model="form.students"
+            :options="students"
+            :error="form.errors.students"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Студенти"
+            placeholder="Оберіть студентів"
+            track-by="id"
+            label-prop="name"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
+          <multi-select
+            v-model="form.teachers"
+            :options="teachers"
+            :error="form.errors.teachers"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Вчителі"
+            placeholder="Оберіть вчителів"
+            track-by="id"
+            label-prop="name"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
+          <multi-select
+            v-model="form.parents"
+            :options="parents"
+            :error="form.errors.parents"
+            class="pb-8 pr-6 w-full lg:w-full"
+            label="Батьки"
+            placeholder="Оберіть батьків"
+            track-by="id"
+            label-prop="name"
+          >
+            <template #option="{ option }">
+              <div class="flex items-center">
+                <div class="text-sm">{{ option.name }}</div>
+              </div>
+            </template>
+          </multi-select>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">
@@ -66,6 +114,7 @@ import SelectInput from '@/Shared/SelectInput.vue'
 import CheckboxInput from '@/Shared/CheckboxInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
+import MultiSelect from '@/Shared/MultiSelect.vue'
 
 export default {
   components: {
@@ -77,6 +126,7 @@ export default {
     TextArea,
     CheckboxInput,
     TrashedMessage,
+    MultiSelect,
   },
   layout: Layout,
   props: {
@@ -85,6 +135,18 @@ export default {
       required: true,
     },
     events: {
+      type: Array,
+      required: true,
+    },
+    students: {
+      type: Array,
+      required: true,
+    },
+    teachers: {
+      type: Array,
+      required: true,
+    },
+    parents: {
       type: Array,
       required: true,
     },
@@ -98,6 +160,9 @@ export default {
         content: this.task.content,
         due_date: this.task.due_date,
         completed: this.task.completed,
+        students: this.task.students || [],
+        teachers: this.task.teachers || [],
+        parents: this.task.parents || [],
       }),
     }
   },
