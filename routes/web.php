@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
@@ -35,6 +36,15 @@ Route::post('login', [AuthenticatedSessionController::class, 'store'])
 Route::delete('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
+// Registration
+Route::get('register', [RegisterController::class, 'create'])
+    ->name('register')
+    ->middleware('guest');
+
+Route::post('register', [RegisterController::class, 'store'])
+    ->name('register.store')
+    ->middleware('guest');
+
 // Dashboard
 
 Route::get('/', [DashboardController::class, 'index'])
@@ -47,13 +57,13 @@ Route::get('users', [UsersController::class, 'index'])
     ->name('users')
     ->middleware('auth');
 
-Route::get('users/create', [UsersController::class, 'create'])
-    ->name('users.create')
-    ->middleware('auth');
+Route::middleware(['auth', 'App\Http\Middleware\CheckRole:teacher'])->group(function () {
+    Route::get('users/create', [UsersController::class, 'create'])
+        ->name('users.create');
 
-Route::post('users', [UsersController::class, 'store'])
-    ->name('users.store')
-    ->middleware('auth');
+    Route::post('users', [UsersController::class, 'store'])
+        ->name('users.store');
+});
 
 Route::get('users/{user}/edit', [UsersController::class, 'edit'])
     ->name('users.edit')

@@ -14,6 +14,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    // User roles
+    const ROLE_TEACHER = 'teacher';
+    const ROLE_STUDENT = 'student';
+    const ROLE_PARENT = 'parent';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,6 +28,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'first_name',
+        'last_name',
+        'middle_name',
     ];
 
     /**
@@ -73,6 +82,21 @@ class User extends Authenticatable
         return $this->email === 'johndoe@example.com';
     }
 
+    public function isTeacher()
+    {
+        return $this->role === self::ROLE_TEACHER;
+    }
+
+    public function isStudent()
+    {
+        return $this->role === self::ROLE_STUDENT;
+    }
+
+    public function isParent()
+    {
+        return $this->role === self::ROLE_PARENT;
+    }
+
     public function scopeOrderByName($query)
     {
         $query->orderBy('last_name')->orderBy('first_name');
@@ -83,6 +107,9 @@ class User extends Authenticatable
         switch ($role) {
             case 'user': return $query->where('owner', false);
             case 'owner': return $query->where('owner', true);
+            case self::ROLE_TEACHER: return $query->where('role', self::ROLE_TEACHER);
+            case self::ROLE_STUDENT: return $query->where('role', self::ROLE_STUDENT);
+            case self::ROLE_PARENT: return $query->where('role', self::ROLE_PARENT);
         }
     }
 
