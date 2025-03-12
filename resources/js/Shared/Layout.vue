@@ -6,10 +6,10 @@
         <div class="md:flex md:shrink-0">
           <div class="flex items-center justify-between px-6 py-4 bg-indigo-900 md:shrink-0 md:justify-center md:w-56">
             <div class="flex items-center space-x-4">
-            <Link href="/" class="flex items-center">
-            <img src="/images/school-calendar-logo.jpg" alt="Логотип" class="h-10 w-10" />
-            <span class="text-white text-xl font-bold ml-2">Шкільний календар</span>
-            </Link>
+              <Link href="/" class="flex items-center">
+                <img src="/images/school-calendar-logo.jpg" alt="Логотип" class="h-10 w-10" />
+                <span class="text-white text-xl font-bold ml-2">Шкільний календар</span>
+              </Link>
             </div>
 
 
@@ -50,7 +50,9 @@
           <main-menu class="hidden shrink-0 p-12 w-56 bg-indigo-800 overflow-y-auto md:block" />
           <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>
             <flash-messages />
-            <slot />
+            <template v-if="$slots.default">
+              <slot />
+            </template>
           </div>
         </div>
       </div>

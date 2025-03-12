@@ -18,9 +18,7 @@
         <text-input v-model="form.address" :error="form.errors.address" class="pb-8 pr-6 w-full lg:w-full" label="Адреса" />
         <text-input v-model="form.city" :error="form.errors.city" class="pb-8 pr-6 w-full lg:w-1/2" label="Місто" />
         <text-input v-model="form.region" :error="form.errors.region" class="pb-8 pr-6 w-full lg:w-1/2" label="Область" />
-        <select-input v-model="form.country" :error="form.errors.country" class="pb-8 pr-6 w-full lg:w-1/2" label="Країна">
-          <option value="UA">Україна</option>
-        </select-input>
+        <text-input v-model="form.subject" :error="form.errors.subject" class="pb-8 pr-6 w-full lg:w-1/2" label="Предмет" />
         <text-input v-model="form.postal_code" :error="form.errors.postal_code" class="pb-8 pr-6 w-full lg:w-1/2" label="Поштовий індекс" />
       </div>
       <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
@@ -60,7 +58,7 @@ export default {
         address: null,
         city: null,
         region: null,
-        country: 'UA',
+        subject: null,
         postal_code: null,
       }),
     }

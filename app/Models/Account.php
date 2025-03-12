@@ -12,6 +12,11 @@ class Account extends Model
         return $this->hasMany(User::class);
     }
 
+    public function organizations(): HasMany
+    {
+        return $this->hasMany(Organization::class);
+    }
+
     public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);
@@ -25,5 +30,15 @@ class Account extends Model
     public function parents(): HasMany
     {
         return $this->hasMany(ParentModel::class);
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
     }
 }

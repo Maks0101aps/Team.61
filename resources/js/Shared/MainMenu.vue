@@ -9,7 +9,7 @@
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/contacts">
         <icon name="users" class="mr-2 w-4 h-4" :class="isUrl('contacts') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
-        <div :class="isUrl('contacts') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Контакти</div>
+        <div :class="isUrl('contacts') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Студенти</div>
       </Link>
     </div>
     <div class="mb-4">
@@ -22,6 +22,18 @@
       <Link class="group flex items-center py-3" href="/teachers">
         <icon name="users" class="mr-2 w-4 h-4" :class="isUrl('teachers') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
         <div :class="isUrl('teachers') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Вчителі</div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" href="/events">
+        <icon name="calendar" class="mr-2 w-4 h-4" :class="isUrl('events') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('events') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Події</div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="flex items-center group py-3" href="/tasks">
+        <icon name="list" class="w-4 h-4 mr-2" :class="isUrl('tasks') ? 'fill-white' : 'fill-indigo-400 group-hover:fill-white'" />
+        <div :class="isUrl('tasks') ? 'text-white' : 'text-indigo-300 group-hover:text-white'">Завдання</div>
       </Link>
     </div>
   </div>

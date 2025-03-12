@@ -7,6 +7,8 @@ use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\TeachersController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ParentsController;
+use App\Http\Controllers\EventsController;
+use App\Http\Controllers\TasksController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -163,5 +165,19 @@ Route::put('teachers/{teacher}/restore', [TeachersController::class, 'restore'])
 Route::get('/img/{path}', [ImagesController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
+
+// Events
+Route::middleware('auth')->group(function () {
+    Route::resource('events', EventsController::class);
+    Route::put('events/{event}/restore', [EventsController::class, 'restore'])
+        ->name('events.restore');
+});
+
+// Tasks
+Route::middleware('auth')->group(function () {
+    Route::resource('tasks', TasksController::class);
+    Route::put('tasks/{task}/restore', [TasksController::class, 'restore'])
+        ->name('tasks.restore');
+});
 
 
