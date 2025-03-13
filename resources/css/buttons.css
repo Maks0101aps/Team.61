@@ -1,5 +1,23 @@
 .btn-indigo {
-  @apply px-6 py-3 rounded bg-indigo-600 text-white text-sm leading-4 font-bold whitespace-nowrap hover:bg-orange-400 focus:bg-orange-400;
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  --tw-gradient-from: #f59e0b;
+  --tw-gradient-to: #d97706;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  color: white;
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.btn-indigo:hover,
+.btn-indigo:focus {
+  --tw-gradient-from: #d97706;
+  --tw-gradient-to: #b45309;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
 .btn-spinner,

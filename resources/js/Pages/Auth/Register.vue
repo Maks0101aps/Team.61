@@ -1,38 +1,49 @@
 <template>
   <Head title="Register" />
-  <div class="flex items-center justify-center p-6 min-h-screen bg-indigo-800">
-    <div class="w-full max-w-md">
-      <logo class="block mx-auto w-full max-w-xs fill-white" height="50" />
-      <form class="mt-8 bg-white rounded-lg shadow-xl overflow-hidden" @submit.prevent="register">
-        <div class="px-10 py-12">
-          <h1 class="text-center text-3xl font-bold">Register</h1>
-          <div class="mt-6 mx-auto w-24 border-b-2" />
+  <div class="flex items-center justify-center p-6 min-h-screen bg-gradient-to-br from-amber-50 to-gray-100">
+    <div class="w-full max-w-xl">
+      <div class="flex justify-end mb-4">
+        <div class="inline-flex rounded-md shadow-sm" role="group">
+          <button @click="setLanguage('uk')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-amber-700 focus:z-10 focus:ring-2 focus:ring-amber-500" :class="{ 'bg-amber-100 text-amber-700': language === 'uk' }">
+            Українська
+          </button>
+          <button @click="setLanguage('en')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 hover:text-amber-700 focus:z-10 focus:ring-2 focus:ring-amber-500" :class="{ 'bg-amber-100 text-amber-700': language === 'en' }">
+            English
+          </button>
+        </div>
+      </div>
+      
+      <logo class="block mx-auto w-full max-w-md" height="100" />
+      <form class="mt-6 bg-white rounded-lg shadow-xl overflow-hidden transform scale-110" @submit.prevent="register">
+        <div class="px-12 py-14">
+          <h1 class="text-center text-4xl font-bold text-gray-800">{{ language === 'uk' ? 'Реєстрація' : 'Register' }}</h1>
+          <div class="mt-6 mx-auto w-32 border-b-2 border-amber-300" />
           
-          <div class="mt-10 grid grid-cols-2 gap-6">
-            <text-input v-model="form.first_name" :error="form.errors.first_name" class="col-span-1" label="First Name" />
-            <text-input v-model="form.last_name" :error="form.errors.last_name" class="col-span-1" label="Last Name" />
+          <div class="mt-12 grid grid-cols-2 gap-6">
+            <text-input v-model="form.first_name" :error="form.errors.first_name" class="col-span-1 text-lg" :label="language === 'uk' ? 'Ім\'я' : 'First Name'" />
+            <text-input v-model="form.last_name" :error="form.errors.last_name" class="col-span-1 text-lg" :label="language === 'uk' ? 'Прізвище' : 'Last Name'" />
           </div>
           
-          <text-input v-model="form.middle_name" :error="form.errors.middle_name" class="mt-6" label="Middle Name (Optional)" />
-          <text-input v-model="form.email" :error="form.errors.email" class="mt-6" label="Email" type="email" autocapitalize="off" />
-          <text-input v-model="form.password" :error="form.errors.password" class="mt-6" label="Password" type="password" />
-          <text-input v-model="form.password_confirmation" :error="form.errors.password_confirmation" class="mt-6" label="Confirm Password" type="password" />
+          <text-input v-model="form.middle_name" :error="form.errors.middle_name" class="mt-8 text-lg" :label="language === 'uk' ? 'По батькові (необов\'язково)' : 'Middle Name (Optional)'" />
+          <text-input v-model="form.email" :error="form.errors.email" class="mt-8 text-lg" :label="language === 'uk' ? 'Електронна пошта' : 'Email'" type="email" autocapitalize="off" />
+          <text-input v-model="form.password" :error="form.errors.password" class="mt-8 text-lg" :label="language === 'uk' ? 'Пароль' : 'Password'" type="password" />
+          <text-input v-model="form.password_confirmation" :error="form.errors.password_confirmation" class="mt-8 text-lg" :label="language === 'uk' ? 'Підтвердження паролю' : 'Confirm Password'" type="password" />
           
-          <select-input v-model="form.role" :error="form.errors.role" class="mt-6" label="Role">
-            <option value="" disabled>Select a role</option>
-            <option v-for="(label, value) in roles" :key="value" :value="value">{{ label }}</option>
+          <select-input v-model="form.role" :error="form.errors.role" class="mt-8 text-lg" :label="language === 'uk' ? 'Роль' : 'Role'">
+            <option value="" disabled>{{ language === 'uk' ? 'Оберіть роль' : 'Select a role' }}</option>
+            <option v-for="(label, value) in getLocalizedRoles" :key="value" :value="value">{{ label }}</option>
           </select-input>
           
-          <div class="mt-6 flex items-center justify-between">
+          <div class="mt-8 flex items-center justify-between">
             <div class="flex items-center">
-              <Link href="/login" class="text-indigo-600 hover:text-indigo-800">
-                Already have an account? Login
+              <Link href="/login" class="text-amber-700 hover:text-amber-900 text-base">
+                {{ language === 'uk' ? 'Вже маєте обліковий запис? Увійти' : 'Already have an account? Login' }}
               </Link>
             </div>
           </div>
         </div>
-        <div class="flex px-10 py-4 bg-gray-100 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Register</loading-button>
+        <div class="flex px-12 py-5 bg-gradient-to-r from-amber-50 to-gray-50 border-t border-gray-100">
+          <loading-button :loading="form.processing" class="btn-amber ml-auto" type="submit">{{ language === 'uk' ? 'Зареєструватися' : 'Register' }}</loading-button>
         </div>
       </form>
     </div>
@@ -60,6 +71,7 @@ export default {
   },
   data() {
     return {
+      language: localStorage.getItem('language') || 'uk', // Default to Ukrainian, but check localStorage first
       form: this.$inertia.form({
         first_name: '',
         last_name: '',
@@ -69,12 +81,70 @@ export default {
         password_confirmation: '',
         role: '',
       }),
+      ukRoles: {
+        teacher: 'Вчитель',
+        student: 'Учень',
+        parent: 'Батько/Мати',
+        admin: 'Адміністратор',
+      }
+    }
+  },
+  computed: {
+    getLocalizedRoles() {
+      if (this.language === 'uk') {
+        // Create a new object with Ukrainian role names
+        const localizedRoles = {};
+        for (const [key, value] of Object.entries(this.roles)) {
+          localizedRoles[key] = this.ukRoles[key] || value;
+        }
+        return localizedRoles;
+      }
+      return this.roles;
     }
   },
   methods: {
     register() {
       this.form.post('/register')
     },
+    setLanguage(lang) {
+      this.language = lang
+      localStorage.setItem('language', lang)
+    }
   },
+  mounted() {
+    // Ensure we have a language set in localStorage
+    if (!localStorage.getItem('language')) {
+      localStorage.setItem('language', 'uk')
+    }
+  }
 }
-</script> 
+</script>
+
+<style>
+.btn-amber {
+  padding: 0.75rem 2rem;
+  border-radius: 0.375rem;
+  background-image: linear-gradient(to right, var(--tw-gradient-stops));
+  --tw-gradient-from: #f59e0b;
+  --tw-gradient-to: #d97706;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  color: white;
+  font-size: 1rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.btn-amber:hover {
+  --tw-gradient-from: #d97706;
+  --tw-gradient-to: #b45309;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.btn-amber:focus {
+  --tw-gradient-from: #d97706;
+  --tw-gradient-to: #b45309;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+</style> 
