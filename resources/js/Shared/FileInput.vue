@@ -46,6 +46,7 @@ export default {
     },
     change(e) {
       this.$emit('update:modelValue', e.target.files[0])
+
     },
     remove() {
       this.$emit('update:modelValue', null)
@@ -53,3 +54,4 @@ export default {
   },
 }
 </script>
+

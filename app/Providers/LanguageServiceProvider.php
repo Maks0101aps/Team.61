@@ -2,50 +2,30 @@
 
 namespace App\Providers;
 
-use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
 
-class AppServiceProvider extends ServiceProvider
+class LanguageServiceProvider extends ServiceProvider
 {
     /**
-     * The path to the "home" route for your application.
+     * Register services.
      *
-     * This is used by Laravel authentication to redirect users after login.
-     *
-     * @var string
+     * @return void
      */
-    public const HOME = '/';
-
-    /**
-     * Register any application services.
-     */
-    public function register(): void
+    public function register()
     {
-        Model::unguard();
+        //
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
+     *
+     * @return void
      */
-    public function boot(): void
+    public function boot()
     {
-        // Share translations with all Inertia responses
         Inertia::share('translations', function () {
             return $this->getTranslations();
-        });
-
-        $this->bootRoute();
-    }
-
-    public function bootRoute(): void
-    {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
     }
     
@@ -84,9 +64,6 @@ class AppServiceProvider extends ServiceProvider
                 'first_name' => 'Ім\'я',
                 'last_name' => 'Прізвище',
                 'middle_name' => 'По батькові',
-                'school_calendar' => 'Шкільний календар',
-                'one_error' => 'Є одна помилка у формі.',
-                'multiple_errors' => 'Є :count помилок у формі.',
             ],
             'en' => [
                 'students' => 'Students',
@@ -115,10 +92,7 @@ class AppServiceProvider extends ServiceProvider
                 'first_name' => 'First Name',
                 'last_name' => 'Last Name',
                 'middle_name' => 'Middle Name',
-                'school_calendar' => 'School Calendar',
-                'one_error' => 'There is one error in the form.',
-                'multiple_errors' => 'There are :count errors in the form.',
             ],
         ];
     }
-}
+} 
