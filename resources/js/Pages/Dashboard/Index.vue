@@ -30,83 +30,92 @@
       </div>
     </div>
     
-    <!-- Features Section -->
-    <div class="py-12 bg-white">
-      <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center">
-          <h2 class="text-base font-semibold text-amber-600 tracking-wide uppercase">
-            {{ language === 'uk' ? 'Можливості' : 'Features' }}
-          </h2>
-          <p class="mt-2 text-3xl font-extrabold text-gray-900 sm:text-4xl">
-            {{ language === 'uk' ? 'Все, що потрібно для організації навчального процесу' : 'Everything you need to organize the educational process' }}
-          </p>
-          <p class="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
-            {{ language === 'uk' ? 'Наша платформа допомагає ефективно керувати шкільними подіями та завданнями.' : 'Our platform helps to effectively manage school events and tasks.' }}
-          </p>
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Calendar Section -->
+        <div class="lg:col-span-2">
+          <Calendar :events="events" :language="language" />
         </div>
 
-        <div class="mt-12">
-          <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            <!-- Feature 1 -->
-            <div class="pt-6">
-              <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
-                <div class="-mt-6">
-                  <div>
-                    <span class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-amber-500 to-amber-600 rounded-md shadow-lg">
-                      <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </span>
-                  </div>
-                  <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">
-                    {{ language === 'uk' ? 'Календар подій' : 'Event Calendar' }}
-                  </h3>
-                  <p class="mt-5 text-base text-gray-500">
-                    {{ language === 'uk' ? 'Зручний календар для відстеження всіх шкільних заходів та важливих дат.' : 'Convenient calendar for tracking all school events and important dates.' }}
-                  </p>
-                </div>
+        <!-- Today's Tasks Section -->
+        <div class="lg:col-span-1">
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">
+                {{ language === 'uk' ? 'Завдання на сьогодні' : 'Today\'s Tasks' }}
+              </h3>
+              <div class="flex space-x-2">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  {{ completedTasksCount }} {{ language === 'uk' ? 'Виконано' : 'Completed' }}
+                </span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                  {{ uncompletedTasksCount }} {{ language === 'uk' ? 'Не виконано' : 'Not Completed' }}
+                </span>
               </div>
             </div>
 
-            <!-- Feature 2 -->
-            <div class="pt-6">
-              <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
-                <div class="-mt-6">
-                  <div>
-                    <span class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-amber-500 to-amber-600 rounded-md shadow-lg">
-                      <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+            <div class="space-y-4">
+              <!-- Completed Tasks -->
+              <div v-if="completedTasks.length > 0" class="mb-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">{{ language === 'uk' ? 'Виконані завдання' : 'Completed Tasks' }}</h4>
+                <div class="space-y-2">
+                  <div v-for="task in completedTasks" :key="task.id" 
+                       class="flex items-start space-x-3 p-3 rounded-lg bg-green-50">
+                    <div class="flex-shrink-0">
+                      <div class="h-6 w-6 rounded-full flex items-center justify-center bg-green-100">
+                        <svg class="h-4 w-4 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">{{ task.title }}</p>
+                      <p class="text-sm text-gray-500">{{ task.event }}</p>
+                      <p class="text-xs text-gray-400 mt-1">{{ formatTime(task.due_date) }}</p>
+                    </div>
+                    <Link :href="`/tasks/${task.id}/edit`" 
+                          class="text-green-600 hover:text-green-900">
+                      <span class="sr-only">{{ language === 'uk' ? 'Редагувати' : 'Edit' }}</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                       </svg>
-                    </span>
+                    </Link>
                   </div>
-                  <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">
-                    {{ language === 'uk' ? 'Управління завданнями' : 'Task Management' }}
-                  </h3>
-                  <p class="mt-5 text-base text-gray-500">
-                    {{ language === 'uk' ? 'Створюйте та відстежуйте завдання для учнів, вчителів та батьків.' : 'Create and track tasks for students, teachers, and parents.' }}
-                  </p>
                 </div>
               </div>
-            </div>
 
-            <!-- Feature 3 -->
-            <div class="pt-6">
-              <div class="flow-root bg-gray-50 rounded-lg px-6 pb-8">
-                <div class="-mt-6">
-                  <div>
-                    <span class="inline-flex items-center justify-center p-3 bg-gradient-to-r from-amber-500 to-amber-600 rounded-md shadow-lg">
-                      <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              <!-- Uncompleted Tasks -->
+              <div v-if="uncompletedTasks.length > 0">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">{{ language === 'uk' ? 'Невиконані завдання' : 'Uncompleted Tasks' }}</h4>
+                <div class="space-y-2">
+                  <div v-for="task in uncompletedTasks" :key="task.id" 
+                       class="flex items-start space-x-3 p-3 rounded-lg bg-red-50">
+                    <div class="flex-shrink-0">
+                      <div class="h-6 w-6 rounded-full flex items-center justify-center bg-red-100">
+                        <svg class="h-4 w-4 text-red-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">{{ task.title }}</p>
+                      <p class="text-sm text-gray-500">{{ task.event }}</p>
+                      <p class="text-xs text-gray-400 mt-1">{{ formatTime(task.due_date) }}</p>
+                    </div>
+                    <Link :href="`/tasks/${task.id}/edit`" 
+                          class="text-red-600 hover:text-red-900">
+                      <span class="sr-only">{{ language === 'uk' ? 'Редагувати' : 'Edit' }}</span>
+                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                       </svg>
-                    </span>
+                    </Link>
                   </div>
-                  <h3 class="mt-8 text-lg font-medium text-gray-900 tracking-tight">
-                    {{ language === 'uk' ? 'Управління контактами' : 'Contact Management' }}
-                  </h3>
-                  <p class="mt-5 text-base text-gray-500">
-                    {{ language === 'uk' ? 'Зберігайте та керуйте контактами учнів, вчителів та батьків.' : 'Store and manage contacts of students, teachers, and parents.' }}
-                  </p>
                 </div>
+              </div>
+
+              <div v-if="todayTasks.length === 0" class="text-center text-gray-500 py-4">
+                {{ language === 'uk' ? 'Немає завдань на сьогодні' : 'No tasks for today' }}
               </div>
             </div>
           </div>
@@ -117,26 +126,59 @@
 </template>
 
 <script>
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import Layout from '@/Shared/Layout.vue'
+import Calendar from '@/Shared/Calendar.vue'
+import dayjs from 'dayjs'
 
 export default {
   components: {
     Head,
+    Link,
+    Calendar,
   },
   layout: Layout,
-  data() {
-    return {
-      language: localStorage.getItem('language') || 'uk',
+  props: {
+    events: {
+      type: Array,
+      required: true
+    },
+    tasks: {
+      type: Array,
+      required: true
+    },
+    language: {
+      type: String,
+      required: true
     }
   },
-  mounted() {
-    // Listen for language changes
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'language') {
-        this.language = event.newValue
-      }
-    })
+  computed: {
+    todayTasks() {
+      const today = dayjs().startOf('day')
+      return this.tasks.filter(task => {
+        const taskDate = dayjs(task.due_date).startOf('day')
+        return taskDate.isSame(today)
+      }).sort((a, b) => {
+        return dayjs(a.due_date).diff(dayjs(b.due_date))
+      })
+    },
+    completedTasks() {
+      return this.todayTasks.filter(task => task.completed)
+    },
+    uncompletedTasks() {
+      return this.todayTasks.filter(task => !task.completed)
+    },
+    completedTasksCount() {
+      return this.completedTasks.length
+    },
+    uncompletedTasksCount() {
+      return this.uncompletedTasks.length
+    }
+  },
+  methods: {
+    formatTime(date) {
+      return dayjs(date).format('HH:mm')
+    }
   }
 }
 </script>
