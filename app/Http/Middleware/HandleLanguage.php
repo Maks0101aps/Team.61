@@ -17,9 +17,15 @@ class HandleLanguage
      */
     public function handle(Request $request, Closure $next)
     {
+        // Get language from cookie or default to Ukrainian
+        $language = $request->cookie('language') ?? 'uk';
+        
+        // Store language in session for controllers to use
+        session(['language' => $language]);
+        
         // Share language data with all Inertia responses
         Inertia::share('language', [
-            'current' => $request->cookie('language') ?? 'uk',
+            'current' => $language,
             'translations' => $this->getTranslations(),
         ]);
         

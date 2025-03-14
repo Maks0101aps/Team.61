@@ -1,15 +1,15 @@
 <template>
   <div>
-    <Head :title="language === 'uk' ? 'Календар' : 'Calendar'" />
+    <Head :title="localLanguage === 'uk' ? 'Календар' : 'Calendar'" />
     
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-900">
-          {{ language === 'uk' ? 'Календар подій' : 'Event Calendar' }}
+          {{ localLanguage === 'uk' ? 'Календар подій' : 'Event Calendar' }}
         </h1>
       </div>
 
-      <Calendar :events="events" :language="language" />
+      <Calendar :events="events" :language="localLanguage" />
     </div>
   </div>
 </template>
@@ -32,8 +32,28 @@ export default {
     },
     language: {
       type: String,
-      required: true
+      default: () => localStorage.getItem('language') || 'uk'
     }
+  },
+  data() {
+    return {
+      localLanguage: this.language
+    }
+  },
+  mounted() {
+    // Listen for language changes using the event bus
+    if (this.$languageEventBus) {
+      this.$languageEventBus.on('language-changed', (lang) => {
+        this.localLanguage = lang
+      })
+    }
+    
+    // Also listen for storage events for backward compatibility
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'language') {
+        this.localLanguage = event.newValue
+      }
+    })
   }
 }
 </script> 

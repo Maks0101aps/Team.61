@@ -1,33 +1,33 @@
 <template>
   <div>
-    <Head title="Users" />
-    <h1 class="mb-8 text-3xl font-bold">Користувач></h1>
+    <Head :title="localLanguage === 'uk' ? 'Користувачі' : 'Users'" />
+    <h1 class="mb-8 text-3xl font-bold">{{ localLanguage === 'uk' ? 'Користувачі' : 'Users' }}</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
-        <label class="block text-gray-700">Role:</label>
+        <label class="block text-gray-700">{{ localLanguage === 'uk' ? 'Роль:' : 'Role:' }}</label>
         <select v-model="form.role" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="user">User</option>
-          <option value="owner">Owner</option>
+          <option value="user">{{ localLanguage === 'uk' ? 'Користувач' : 'User' }}</option>
+          <option value="owner">{{ localLanguage === 'uk' ? 'Власник' : 'Owner' }}</option>
         </select>
-        <label class="block mt-4 text-gray-700">Trashed:</label>
+        <label class="block mt-4 text-gray-700">{{ localLanguage === 'uk' ? 'Видалені:' : 'Trashed:' }}</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
-          <option value="with">With Trashed</option>
-          <option value="only">Only Trashed</option>
+          <option value="with">{{ localLanguage === 'uk' ? 'З видаленими' : 'With Trashed' }}</option>
+          <option value="only">{{ localLanguage === 'uk' ? 'Тільки видалені' : 'Only Trashed' }}</option>
         </select>
       </search-filter>
       <Link class="btn-indigo" href="/users/create">
-        <span>Create</span>
-        <span class="hidden md:inline">&nbsp;User</span>
+        <span>{{ localLanguage === 'uk' ? 'Створити' : 'Create' }}</span>
+        <span class="hidden md:inline">&nbsp;{{ localLanguage === 'uk' ? 'користувача' : 'User' }}</span>
       </Link>
     </div>
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">Name</th>
-          <th class="pb-4 pt-6 px-6">Email</th>
-          <th class="pb-4 pt-6 px-6" colspan="2">Role</th>
+          <th class="pb-4 pt-6 px-6">{{ localLanguage === 'uk' ? 'Ім\'я' : 'Name' }}</th>
+          <th class="pb-4 pt-6 px-6">{{ localLanguage === 'uk' ? 'Email' : 'Email' }}</th>
+          <th class="pb-4 pt-6 px-6" colspan="2">{{ localLanguage === 'uk' ? 'Роль' : 'Role' }}</th>
         </tr>
         <tr v-for="user in users" :key="user.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
@@ -44,7 +44,7 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/users/${user.id}/edit`" tabindex="-1">
-              {{ user.owner ? 'Owner' : 'User' }}
+              {{ user.owner ? (localLanguage === 'uk' ? 'Власник' : 'Owner') : (localLanguage === 'uk' ? 'Користувач' : 'User') }}
             </Link>
           </td>
           <td class="w-px border-t">
@@ -54,7 +54,7 @@
           </td>
         </tr>
         <tr v-if="users.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">No users found.</td>
+          <td class="px-6 py-4 border-t" colspan="4">{{ localLanguage === 'uk' ? 'Користувачів не знайдено.' : 'No users found.' }}</td>
         </tr>
       </table>
     </div>
@@ -81,9 +81,14 @@ export default {
   props: {
     filters: Object,
     users: Array,
+    language: {
+      type: String,
+      default: () => localStorage.getItem('language') || 'uk'
+    }
   },
   data() {
     return {
+      localLanguage: this.language,
       form: {
         search: this.filters.search,
         role: this.filters.role,
@@ -104,5 +109,20 @@ export default {
       this.form = mapValues(this.form, () => null)
     },
   },
+  mounted() {
+    // Listen for language changes using the event bus
+    if (this.$languageEventBus) {
+      this.$languageEventBus.on('language-changed', (lang) => {
+        this.localLanguage = lang
+      })
+    }
+    
+    // Also listen for storage events for backward compatibility
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'language') {
+        this.localLanguage = event.newValue
+      }
+    })
+  }
 }
 </script>
