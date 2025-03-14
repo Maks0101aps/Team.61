@@ -1,9 +1,9 @@
 <template>
   <div>
-    <Head title="Створення завдання" />
+    <Head :title="language === 'uk' ? 'Створення завдання' : 'Create Task'" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/tasks">Завдання</Link>
-      <span class="text-indigo-400 font-medium">/</span> Створення
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/tasks">{{ language === 'uk' ? 'Завдання' : 'Tasks' }}</Link>
+      <span class="text-indigo-400 font-medium">/</span> {{ language === 'uk' ? 'Створення' : 'Create' }}
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
@@ -12,37 +12,37 @@
             v-model="form.event_id"
             :error="form.errors.event_id"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Подія"
+            :label="language === 'uk' ? 'Подія' : 'Event'"
           >
-            <option :value="null">Оберіть подію</option>
+            <option :value="null">{{ language === 'uk' ? 'Оберіть подію' : 'Select an event' }}</option>
             <option v-for="event in events" :key="event.id" :value="event.id">{{ event.title }}</option>
           </select-input>
           <text-input
             v-model="form.title"
             :error="form.errors.title"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Назва"
+            :label="language === 'uk' ? 'Назва' : 'Title'"
           />
           <text-input
             v-model="form.due_date"
             :error="form.errors.due_date"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Дата виконання"
+            :label="language === 'uk' ? 'Дата виконання' : 'Due Date'"
             type="datetime-local"
           />
           <text-area
             v-model="form.content"
             :error="form.errors.content"
             class="pb-8 pr-6 w-full lg:w-full"
-            label="Контент"
+            :label="language === 'uk' ? 'Контент' : 'Content'"
           />
           <multi-select
             v-model="form.students"
             :options="students"
             :error="form.errors.students"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Студенти"
-            placeholder="Оберіть студентів"
+            :label="language === 'uk' ? 'Студенти' : 'Students'"
+            :placeholder="language === 'uk' ? 'Оберіть студентів' : 'Select students'"
             track-by="id"
             label-prop="name"
           >
@@ -57,8 +57,8 @@
             :options="teachers"
             :error="form.errors.teachers"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Вчителі"
-            placeholder="Оберіть вчителів"
+            :label="language === 'uk' ? 'Вчителі' : 'Teachers'"
+            :placeholder="language === 'uk' ? 'Оберіть вчителів' : 'Select teachers'"
             track-by="id"
             label-prop="name"
           >
@@ -73,8 +73,8 @@
             :options="parents"
             :error="form.errors.parents"
             class="pb-8 pr-6 w-full lg:w-full"
-            label="Батьки"
-            placeholder="Оберіть батьків"
+            :label="language === 'uk' ? 'Батьки' : 'Parents'"
+            :placeholder="language === 'uk' ? 'Оберіть батьків' : 'Select parents'"
             track-by="id"
             label-prop="name"
           >
@@ -87,7 +87,7 @@
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
           <loading-button :loading="form.processing" class="btn-indigo" type="submit">
-            Створити завдання
+            {{ language === 'uk' ? 'Створити завдання' : 'Create Task' }}
           </loading-button>
         </div>
       </form>
@@ -145,11 +145,21 @@ export default {
         parents: [],
         teachers: [],
       }),
+      language: localStorage.getItem('language') || 'uk',
     }
+  },
+  mounted() {
+    window.addEventListener('language-changed', this.updateLanguage);
+  },
+  beforeUnmount() {
+    window.removeEventListener('language-changed', this.updateLanguage);
   },
   methods: {
     store() {
       this.form.post('/tasks')
+    },
+    updateLanguage(event) {
+      this.language = event.detail.language;
     },
   },
 }

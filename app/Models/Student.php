@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Contact extends Model
+class Student extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
+    protected $table = 'contacts'; // Используем ту же таблицу, что и для контактов
 
     public function resolveRouteBinding($value, $field = null)
     {
@@ -24,7 +26,7 @@ class Contact extends Model
 
     public function getNameAttribute()
     {
-        return $this->first_name.' '.$this->last_name;
+        return $this->first_name.' '.$this->middle_name.' '.$this->last_name;
     }
 
     public function scopeOrderByName($query)
@@ -38,10 +40,7 @@ class Contact extends Model
             $query->where(function ($query) use ($search) {
                 $query->where('first_name', 'like', '%'.$search.'%')
                     ->orWhere('last_name', 'like', '%'.$search.'%')
-                    ->orWhere('email', 'like', '%'.$search.'%')
-                    ->orWhereHas('organization', function ($query) use ($search) {
-                        $query->where('name', 'like', '%'.$search.'%');
-                    });
+                    ->orWhere('email', 'like', '%'.$search.'%');
             });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {

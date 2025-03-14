@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contact;
+use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -11,35 +11,35 @@ use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ContactsController extends Controller
+class StudentsController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Contacts/Index', [
+        return Inertia::render('Students/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'contacts' => Auth::user()->account->contacts()
+            'students' => Auth::user()->account->students()
                 ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn ($contact) => [
-                    'id' => $contact->id,
-                    'name' => $contact->name,
-                    'phone' => $contact->phone,
-                    'city' => $contact->city,
-                    'deleted_at' => $contact->deleted_at,
+                ->through(fn ($student) => [
+                    'id' => $student->id,
+                    'name' => $student->name,
+                    'phone' => $student->phone,
+                    'city' => $student->city,
+                    'deleted_at' => $student->deleted_at,
                 ]),
         ]);
     }
 
     public function create(): Response
     {
-        return Inertia::render('Contacts/Create');
+        return Inertia::render('Students/Create');
     }
 
     public function store(): RedirectResponse
     {
-        Auth::user()->account->contacts()->create(
+        Auth::user()->account->students()->create(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'middle_name' => ['required', 'max:50'],
@@ -54,31 +54,31 @@ class ContactsController extends Controller
             ])
         );
 
-        return Redirect::route('contacts')->with('success', 'Contact created.');
+        return Redirect::route('students')->with('success', 'Student created.');
     }
 
-    public function edit(Contact $contact): Response
+    public function edit(Student $student): Response
     {
-        return Inertia::render('Contacts/Edit', [
-            'contact' => [
-                'id' => $contact->id,
-                'first_name' => $contact->first_name,
-                'middle_name' => $contact->middle_name,
-                'last_name' => $contact->last_name,
-                'email' => $contact->email,
-                'phone' => $contact->phone,
-                'address' => $contact->address,
-                'city' => $contact->city,
-                'region' => $contact->region,
-                'postal_code' => $contact->postal_code,
-                'deleted_at' => $contact->deleted_at,
+        return Inertia::render('Students/Edit', [
+            'student' => [
+                'id' => $student->id,
+                'first_name' => $student->first_name,
+                'middle_name' => $student->middle_name,
+                'last_name' => $student->last_name,
+                'email' => $student->email,
+                'phone' => $student->phone,
+                'address' => $student->address,
+                'city' => $student->city,
+                'region' => $student->region,
+                'postal_code' => $student->postal_code,
+                'deleted_at' => $student->deleted_at,
             ],
         ]);
     }
 
-    public function update(Contact $contact): RedirectResponse
+    public function update(Student $student): RedirectResponse
     {
-        $contact->update(
+        $student->update(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'middle_name' => ['required', 'max:50'],
@@ -93,20 +93,20 @@ class ContactsController extends Controller
             ])
         );
 
-        return Redirect::back()->with('success', 'Contact updated.');
+        return Redirect::back()->with('success', 'Student updated.');
     }
 
-    public function destroy(Contact $contact): RedirectResponse
+    public function destroy(Student $student): RedirectResponse
     {
-        $contact->delete();
+        $student->delete();
 
-        return Redirect::back()->with('success', 'Contact deleted.');
+        return Redirect::back()->with('success', 'Student deleted.');
     }
 
-    public function restore(Contact $contact): RedirectResponse
+    public function restore(Student $student): RedirectResponse
     {
-        $contact->restore();
+        $student->restore();
 
-        return Redirect::back()->with('success', 'Contact restored.');
+        return Redirect::back()->with('success', 'Student restored.');
     }
-}
+} 

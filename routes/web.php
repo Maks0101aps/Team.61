@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\ContactsController;
+use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\TeachersController;
@@ -79,36 +79,6 @@ Route::delete('users/{user}', [UsersController::class, 'destroy'])
 
 Route::put('users/{user}/restore', [UsersController::class, 'restore'])
     ->name('users.restore')
-    ->middleware('auth');
-
-// Contacts
-
-Route::get('contacts', [ContactsController::class, 'index'])
-    ->name('contacts')
-    ->middleware('auth');
-
-Route::get('contacts/create', [ContactsController::class, 'create'])
-    ->name('contacts.create')
-    ->middleware('auth');
-
-Route::post('contacts', [ContactsController::class, 'store'])
-    ->name('contacts.store')
-    ->middleware('auth');
-
-Route::get('contacts/{contact}/edit', [ContactsController::class, 'edit'])
-    ->name('contacts.edit')
-    ->middleware('auth');
-
-Route::put('contacts/{contact}', [ContactsController::class, 'update'])
-    ->name('contacts.update')
-    ->middleware('auth');
-
-Route::delete('contacts/{contact}', [ContactsController::class, 'destroy'])
-    ->name('contacts.destroy')
-    ->middleware('auth');
-
-Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
-    ->name('contacts.restore')
     ->middleware('auth');
 
 // Parents
@@ -189,5 +159,35 @@ Route::middleware('auth')->group(function () {
     Route::put('tasks/{task}/restore', [TasksController::class, 'restore'])
         ->name('tasks.restore');
 });
+
+// Students
+
+Route::get('students', [StudentsController::class, 'index'])
+    ->name('students')
+    ->middleware('auth');
+
+Route::get('students/create', [StudentsController::class, 'create'])
+    ->name('students.create')
+    ->middleware('auth');
+
+Route::post('students', [StudentsController::class, 'store'])
+    ->name('students.store')
+    ->middleware('auth');
+
+Route::get('students/{student}/edit', [StudentsController::class, 'edit'])
+    ->name('students.edit')
+    ->middleware('auth');
+
+Route::put('students/{student}', [StudentsController::class, 'update'])
+    ->name('students.update')
+    ->middleware('auth');
+
+Route::delete('students/{student}', [StudentsController::class, 'destroy'])
+    ->name('students.destroy')
+    ->middleware('auth');
+
+Route::put('students/{student}/restore', [StudentsController::class, 'restore'])
+    ->name('students.restore')
+    ->middleware('auth');
 
 

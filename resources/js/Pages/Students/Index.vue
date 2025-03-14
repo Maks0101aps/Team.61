@@ -9,7 +9,7 @@
       <div class="mt-4 md:mt-0 flex items-center">
         <Link 
           class="flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
-          href="/contacts/create"
+          href="/students/create"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
@@ -52,43 +52,43 @@
     <!-- Мобильный вид (карточки) -->
     <div class="md:hidden space-y-4">
       <div 
-        v-for="contact in contacts.data" 
-        :key="contact.id" 
+        v-for="student in students.data" 
+        :key="student.id" 
         class="bg-white rounded-xl shadow-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]"
-        :class="{ 'border-l-4 border-red-400': contact.deleted_at }"
+        :class="{ 'border-l-4 border-red-400': student.deleted_at }"
       >
         <div class="flex justify-between items-start">
           <div>
             <Link 
               class="text-lg font-bold text-amber-800 hover:text-amber-600 transition-colors duration-200" 
-              :href="`/contacts/${contact.id}/edit`"
+              :href="`/students/${student.id}/edit`"
             >
-              {{ contact.name }}
+              {{ student.name }}
             </Link>
             <div class="mt-2 space-y-1">
-              <div v-if="contact.organization" class="flex items-center text-sm text-gray-600">
+              <div v-if="student.organization" class="flex items-center text-sm text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" />
                 </svg>
-                {{ contact.organization.name }}
+                {{ student.organization.name }}
               </div>
               <div class="flex items-center text-sm text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                 </svg>
-                {{ contact.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+                {{ student.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
               </div>
               <div class="flex items-center text-sm text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                {{ contact.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+                {{ student.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
               </div>
             </div>
           </div>
           <div class="flex space-x-2">
             <Link 
-              :href="`/contacts/${contact.id}/edit`" 
+              :href="`/students/${student.id}/edit`" 
               class="p-2 text-amber-600 hover:text-amber-800 transition-colors duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -96,7 +96,7 @@
               </svg>
             </Link>
             <button 
-              @click="destroy(contact)" 
+              @click="destroy(student)" 
               class="p-2 text-red-600 hover:text-red-800 transition-colors duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -106,7 +106,7 @@
           </div>
         </div>
       </div>
-      <div v-if="contacts.data.length === 0" class="bg-white rounded-xl shadow-md p-6 text-center text-gray-500">
+      <div v-if="students.data.length === 0" class="bg-white rounded-xl shadow-md p-6 text-center text-gray-500">
         {{ language === 'uk' ? 'Студентів не знайдено.' : 'No students found.' }}
       </div>
     </div>
@@ -125,40 +125,40 @@
         </thead>
         <tbody>
           <tr 
-            v-for="contact in contacts.data" 
-            :key="contact.id" 
+            v-for="student in students.data" 
+            :key="student.id" 
             class="border-t border-gray-100 transition-colors duration-200 hover:bg-amber-50"
-            :class="{ 'bg-red-50 hover:bg-red-100': contact.deleted_at }"
+            :class="{ 'bg-red-50 hover:bg-red-100': student.deleted_at }"
           >
             <td class="py-4 px-6">
               <Link 
                 class="font-medium text-amber-800 hover:text-amber-600 transition-colors duration-200 flex items-center" 
-                :href="`/contacts/${contact.id}/edit`"
+                :href="`/students/${student.id}/edit`"
               >
-                {{ contact.name }}
-                <svg v-if="contact.deleted_at" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                {{ student.name }}
+                <svg v-if="student.deleted_at" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                 </svg>
               </Link>
             </td>
             <td class="py-4 px-6 text-gray-600">
-              <div v-if="contact.organization">
-                {{ contact.organization.name }}
+              <div v-if="student.organization">
+                {{ student.organization.name }}
               </div>
               <div v-else class="text-gray-400">
                 {{ language === 'uk' ? 'Не вказано' : 'Not specified' }}
               </div>
             </td>
             <td class="py-4 px-6 text-gray-600">
-              {{ contact.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+              {{ student.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
             </td>
             <td class="py-4 px-6 text-gray-600">
-              {{ contact.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+              {{ student.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
             </td>
             <td class="py-4 px-6">
               <div class="flex justify-center space-x-3">
                 <Link 
-                  :href="`/contacts/${contact.id}/edit`" 
+                  :href="`/students/${student.id}/edit`" 
                   class="p-2 text-amber-600 hover:text-amber-800 transition-colors duration-200 rounded-full hover:bg-amber-100"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -166,7 +166,7 @@
                   </svg>
                 </Link>
                 <button 
-                  @click="destroy(contact)" 
+                  @click="destroy(student)" 
                   class="p-2 text-red-600 hover:text-red-800 transition-colors duration-200 rounded-full hover:bg-red-100"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -176,7 +176,7 @@
               </div>
             </td>
           </tr>
-          <tr v-if="contacts.data.length === 0">
+          <tr v-if="students.data.length === 0">
             <td class="py-6 px-6 text-center text-gray-500" colspan="5">
               {{ language === 'uk' ? 'Студентів не знайдено.' : 'No students found.' }}
             </td>
@@ -186,7 +186,7 @@
     </div>
 
     <div class="mt-8">
-      <pagination :links="contacts.links" />
+      <pagination :links="students.links" />
     </div>
   </div>
 </template>
@@ -210,7 +210,7 @@ export default {
   layout: Layout,
   props: {
     filters: Object,
-    contacts: Object,
+    students: Object,
   },
   data() {
     return {
@@ -225,7 +225,7 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get('/contacts', pickBy(this.form), { preserveState: true })
+        this.$inertia.get('/students', pickBy(this.form), { preserveState: true })
       }, 150),
     },
   },
@@ -236,9 +236,9 @@ export default {
         trashed: null,
       }
     },
-    destroy(contact) {
+    destroy(student) {
       if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити цього студента?' : 'Are you sure you want to delete this student?')) {
-        this.$inertia.delete(`/contacts/${contact.id}`)
+        this.$inertia.delete(`/students/${student.id}`)
       }
     },
   },

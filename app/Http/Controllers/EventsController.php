@@ -40,8 +40,8 @@ class EventsController extends Controller
     {
         return Inertia::render('Events/Create', [
             'types' => Event::getTypes(),
-            'students' => Auth::user()->account->contacts()
-                ->orderBy('last_name')
+            'students' => Auth::user()->account->students()
+                ->orderByName()
                 ->get()
                 ->map
                 ->only('id', 'name'),
@@ -113,7 +113,7 @@ class EventsController extends Controller
                 'id' => $event->id,
                 'title' => $event->title,
                 'type' => $event->type,
-                'start_date' => $event->start_date->format('Y-m-d\TH:i'),
+                'start_date' => $event->start_date,
                 'duration' => $event->duration,
                 'content' => $event->content,
                 'is_content_hidden' => $event->is_content_hidden,
@@ -121,13 +121,13 @@ class EventsController extends Controller
                 'online_link' => $event->online_link,
                 'tasks' => $event->tasks,
                 'deleted_at' => $event->deleted_at,
-                'student_ids' => $event->students->map(fn($student) => ['id' => $student->id, 'name' => $student->name]),
-                'teacher_ids' => $event->teachers->map(fn($teacher) => ['id' => $teacher->id, 'name' => $teacher->name]),
-                'parent_ids' => $event->parents->map(fn($parent) => ['id' => $parent->id, 'name' => $parent->name]),
+                'student_ids' => $event->students->map->only('id'),
+                'teacher_ids' => $event->teachers->map->only('id'),
+                'parent_ids' => $event->parents->map->only('id'),
             ],
             'types' => Event::getTypes(),
-            'students' => Auth::user()->account->contacts()
-                ->orderBy('last_name')
+            'students' => Auth::user()->account->students()
+                ->orderByName()
                 ->get()
                 ->map
                 ->only('id', 'name'),

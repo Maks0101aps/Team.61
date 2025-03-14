@@ -40,8 +40,8 @@ class TasksController extends Controller
                 ->get()
                 ->map
                 ->only('id', 'title'),
-            'students' => Auth::user()->account->contacts()
-                ->orderBy('last_name')
+            'students' => Auth::user()->account->students()
+                ->orderByName()
                 ->get()
                 ->map
                 ->only('id', 'name'),
@@ -101,32 +101,32 @@ class TasksController extends Controller
         return Inertia::render('Tasks/Edit', [
             'task' => [
                 'id' => $task->id,
-                'event_id' => $task->event_id,
                 'title' => $task->title,
                 'content' => $task->content,
-                'due_date' => $task->due_date->format('Y-m-d\TH:i'),
+                'due_date' => $task->due_date,
                 'completed' => $task->completed,
+                'event_id' => $task->event_id,
+                'students' => $task->students->map->only('id', 'name'),
+                'teachers' => $task->teachers->map->only('id', 'name'),
+                'parents' => $task->parents->map->only('id', 'name'),
                 'deleted_at' => $task->deleted_at,
-                'students' => $task->students->map(fn($student) => ['id' => $student->id, 'name' => $student->name]),
-                'teachers' => $task->teachers->map(fn($teacher) => ['id' => $teacher->id, 'name' => $teacher->name]),
-                'parents' => $task->parents->map(fn($parent) => ['id' => $parent->id, 'name' => $parent->name]),
             ],
             'events' => Auth::user()->account->events()
                 ->orderBy('title')
                 ->get()
                 ->map
                 ->only('id', 'title'),
-            'students' => Auth::user()->account->contacts()
+            'students' => Auth::user()->account->students()
+                ->orderByName()
+                ->get()
+                ->map
+                ->only('id', 'name'),
+            'parents' => Auth::user()->account->parents()
                 ->orderBy('last_name')
                 ->get()
                 ->map
                 ->only('id', 'name'),
             'teachers' => Auth::user()->account->teachers()
-                ->orderBy('last_name')
-                ->get()
-                ->map
-                ->only('id', 'name'),
-            'parents' => Auth::user()->account->parents()
                 ->orderBy('last_name')
                 ->get()
                 ->map

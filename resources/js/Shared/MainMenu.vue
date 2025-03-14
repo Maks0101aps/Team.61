@@ -13,11 +13,11 @@
 
     <div class="mb-6">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('contacts') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
-            href="/contacts">
+            :class="isUrl('students') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
+            href="/students">
         <icon name="user-group" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-              :class="isUrl('contacts') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
+              :class="isUrl('students') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('students', language === 'uk' ? 'Студенти' : 'Students') }}</div>
       </Link>
     </div>
