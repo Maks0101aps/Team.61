@@ -15,7 +15,7 @@
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('contacts') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
             href="/contacts">
-        <icon name="users" 
+        <icon name="user-group" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
               :class="isUrl('contacts') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('students', language === 'uk' ? 'Студенти' : 'Students') }}</div>
@@ -26,7 +26,7 @@
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('parents') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
             href="/parents">
-        <icon name="users" 
+        <icon name="home" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
               :class="isUrl('parents') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('parents', language === 'uk' ? 'Батьки' : 'Parents') }}</div>
@@ -37,7 +37,7 @@
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('teachers') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
             href="/teachers">
-        <icon name="users" 
+        <icon name="book-open" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
               :class="isUrl('teachers') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('teachers', language === 'uk' ? 'Вчителі' : 'Teachers') }}</div>
