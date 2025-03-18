@@ -158,11 +158,15 @@ export default {
   },
   remember: 'form',
   data() {
+    // Get date from URL query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const dateFromUrl = urlParams.get('date');
+    
     return {
       form: this.$inertia.form({
         title: null,
         type: null,
-        start_date: null,
+        start_date: dateFromUrl ? `${dateFromUrl}T09:00` : null,
         duration: 60,
         content: null,
         is_content_hidden: false,

@@ -26,6 +26,10 @@
                 class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-amber-50 hover:border-amber-300 transition-all duration-200 transform hover:scale-105 shadow-sm">
           {{ language === 'uk' ? 'Наступний' : 'Next' }}
         </button>
+       <Link href="/events/create"
+              class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
+          {{ language === 'uk' ? 'Створити подію' : 'Create Event' }}
+        </Link>
       </div>
     </div>
 
@@ -40,14 +44,24 @@
 
         <!-- Calendar days -->
         <div v-for="day in calendarDays" :key="day.date" 
-             class="bg-white min-h-[120px] p-3 relative transition-all duration-200 hover:bg-amber-50"
+             class="bg-white min-h-[120px] p-3 relative transition-all duration-200 hover:bg-amber-50 group"
              :class="{
                'bg-gray-50': !day.isCurrentMonth,
                'bg-red-50': hasConflicts(day.date)
              }">
-          <div class="text-sm font-bold mb-2" 
-               :class="{ 'text-gray-400': !day.isCurrentMonth, 'text-amber-900': day.isCurrentMonth }">
-            {{ day.dayNumber }}
+          <div class="flex justify-between items-start">
+            <div class="text-sm font-bold mb-2" 
+                 :class="{ 'text-gray-400': !day.isCurrentMonth, 'text-amber-900': day.isCurrentMonth }">
+              {{ day.dayNumber }}
+            </div>
+            <!-- Add Event Button -->
+            <button @click.stop="createEventOnDate(day.date)"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white"
+                    :title="language === 'uk' ? 'Створити подію' : 'Create Event'">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+              </svg>
+            </button>
           </div>
           
           <!-- Events for the day -->
@@ -55,7 +69,7 @@
             <div v-for="event in getEventsForDay(day.date)" :key="event.id"
                  class="text-xs p-2 rounded-lg cursor-pointer transition-all duration-200 transform hover:scale-105 shadow-sm"
                  :class="getEventClasses(event)"
-                 @click="showEventDetails(event)">
+                 @click.stop="showEventDetails(event)">
               {{ event.title }}
             </div>
           </div>
@@ -188,10 +202,16 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import dayjs from 'dayjs'
+import { Link } from '@inertiajs/vue3'
+import 'dayjs/locale/uk'
+import 'dayjs/locale/en'
 
 export default {
+  components: {
+    Link
+  },
   props: {
     events: {
       type: Array,
@@ -203,6 +223,16 @@ export default {
     }
   },
   setup(props) {
+    const updateLocale = () => {
+      if (props.language === 'uk') {
+        dayjs.locale('uk')
+      } else {
+        dayjs.locale('en')
+      }
+    }
+    
+    watch(() => props.language, updateLocale, { immediate: true })
+
     const currentDate = ref(dayjs())
     const selectedEvent = ref(null)
     const currentView = ref('month')
@@ -215,7 +245,13 @@ export default {
     ])
 
     const currentMonthName = computed(() => {
-      return currentDate.value.format(props.language === 'uk' ? 'MMMM YYYY' : 'MMMM YYYY')
+      updateLocale()
+      const month = currentDate.value.format('MMMM')
+      const year = currentDate.value.format('YYYY')
+      if (props.language === 'uk') {
+        return `${month.charAt(0).toUpperCase()}${month.slice(1)} ${year}`
+      }
+      return `${month} ${year}`
     })
 
     const weekDays = computed(() => {
@@ -256,13 +292,24 @@ export default {
     }
 
     const getWeekDayDate = (weekDay) => {
+      updateLocale()
       const dayIndex = weekDays.value.indexOf(weekDay)
       const date = currentDate.value.startOf('week').add(dayIndex, 'day')
-      return date.format('DD MMMM')
+      const formatted = date.format('DD MMMM')
+      if (props.language === 'uk') {
+        const [day, month] = formatted.split(' ')
+        return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`
+      }
+      return formatted
     }
 
     const getMonthName = (monthIndex) => {
-      return dayjs().month(monthIndex).format(props.language === 'uk' ? 'MMMM' : 'MMMM')
+      updateLocale()
+      const month = dayjs().month(monthIndex).format('MMMM')
+      if (props.language === 'uk') {
+        return `${month.charAt(0).toUpperCase()}${month.slice(1)}`
+      }
+      return month
     }
 
     const getMonthDays = (monthIndex) => {
@@ -322,6 +369,7 @@ export default {
     }
 
     const formatDateTime = (date) => {
+      updateLocale()
       return dayjs(date).format('DD.MM.YYYY HH:mm')
     }
 
@@ -359,6 +407,10 @@ export default {
       }
     }
 
+    const createEventOnDate = (date) => {
+      window.location.href = `/events/create?date=${date}`
+    }
+
     return {
       currentDate,
       selectedEvent,
@@ -377,7 +429,8 @@ export default {
       showEventDetails,
       formatDateTime,
       previousPeriod,
-      nextPeriod
+      nextPeriod,
+      createEventOnDate
     }
   }
 }
