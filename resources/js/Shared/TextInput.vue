@@ -8,7 +8,7 @@
       :type="type"
       :value="value"
       @input="$emit('update:modelValue', $event.target.value)"
-      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 sm:text-sm"
+      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
       :placeholder="placeholder"
     >
     <div v-if="error" class="text-red-500 text-xs mt-1">{{ error }}</div>

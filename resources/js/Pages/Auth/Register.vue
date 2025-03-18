@@ -1,13 +1,13 @@
 <template>
   <Head title="Register" />
-  <div class="flex items-center justify-center p-6 min-h-screen bg-gradient-to-br from-amber-50 to-gray-100">
+  <div class="flex items-center justify-center p-6 min-h-screen bg-gradient-to-br from-blue-50 to-gray-100">
     <div class="w-full max-w-xl">
       <div class="flex justify-end mb-4">
         <div class="inline-flex rounded-md shadow-sm" role="group">
-          <button @click="setLanguage('uk')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-amber-700 focus:z-10 focus:ring-2 focus:ring-amber-500" :class="{ 'bg-amber-100 text-amber-700': language === 'uk' }">
+          <button @click="setLanguage('uk')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-500" :class="{ 'bg-blue-100 text-blue-700': language === 'uk' }">
             Українська
           </button>
-          <button @click="setLanguage('en')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 hover:text-amber-700 focus:z-10 focus:ring-2 focus:ring-amber-500" :class="{ 'bg-amber-100 text-amber-700': language === 'en' }">
+          <button @click="setLanguage('en')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-500" :class="{ 'bg-blue-100 text-blue-700': language === 'en' }">
             English
           </button>
         </div>
@@ -17,7 +17,7 @@
       <form class="mt-6 bg-white rounded-lg shadow-xl overflow-hidden transform scale-110" @submit.prevent="register">
         <div class="px-12 py-14">
           <h1 class="text-center text-4xl font-bold text-gray-800">{{ language === 'uk' ? 'Реєстрація' : 'Register' }}</h1>
-          <div class="mt-6 mx-auto w-32 border-b-2 border-amber-300" />
+          <div class="mt-6 mx-auto w-32 border-b-2 border-blue-300" />
           
           <div class="mt-12 grid grid-cols-2 gap-6">
             <text-input v-model="form.first_name" :error="form.errors.first_name" class="col-span-1 text-lg" :label="language === 'uk' ? 'Ім\'я' : 'First Name'" />
@@ -36,14 +36,14 @@
           
           <div class="mt-8 flex items-center justify-between">
             <div class="flex items-center">
-              <Link href="/login" class="text-amber-700 hover:text-amber-900 text-base">
+              <Link href="/login" class="text-blue-700 hover:text-blue-900 text-base">
                 {{ language === 'uk' ? 'Вже маєте обліковий запис? Увійти' : 'Already have an account? Login' }}
               </Link>
             </div>
           </div>
         </div>
-        <div class="flex px-12 py-5 bg-gradient-to-r from-amber-50 to-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-amber ml-auto" type="submit">{{ language === 'uk' ? 'Зареєструватися' : 'Register' }}</loading-button>
+        <div class="flex px-12 py-5 bg-gradient-to-r from-blue-50 to-gray-50 border-t border-gray-100">
+          <loading-button :loading="form.processing" class="btn-blue ml-auto" type="submit">{{ language === 'uk' ? 'Зареєструватися' : 'Register' }}</loading-button>
         </div>
       </form>
     </div>
@@ -121,12 +121,12 @@ export default {
 </script>
 
 <style>
-.btn-amber {
+.btn-blue {
   padding: 0.75rem 2rem;
   border-radius: 0.375rem;
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
-  --tw-gradient-from: #f59e0b;
-  --tw-gradient-to: #d97706;
+  --tw-gradient-from: #6CB4EE;
+  --tw-gradient-to: #4A90E2;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
   color: white;
   font-size: 1rem;
@@ -136,15 +136,15 @@ export default {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
 }
 
-.btn-amber:hover {
-  --tw-gradient-from: #d97706;
-  --tw-gradient-to: #b45309;
+.btn-blue:hover {
+  --tw-gradient-from: #4A90E2;
+  --tw-gradient-to: #357ABD;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-.btn-amber:focus {
-  --tw-gradient-from: #d97706;
-  --tw-gradient-to: #b45309;
+.btn-blue:focus {
+  --tw-gradient-from: #4A90E2;
+  --tw-gradient-to: #357ABD;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 </style> 

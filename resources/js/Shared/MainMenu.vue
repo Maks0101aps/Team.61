@@ -2,66 +2,66 @@
   <div class="py-4">
     <div class="mb-6">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
+            :class="isUrl('') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/">
         <icon name="dashboard" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-              :class="isUrl('') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
+              :class="isUrl('') ? 'fill-white' : 'fill-blue-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('home', language === 'uk' ? 'Головна Сторінка' : 'Home Page') }}</div>
       </Link>
     </div>
 
     <div class="mb-6">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('students') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
+            :class="isUrl('students') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/students">
         <icon name="user-group" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-              :class="isUrl('students') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
+              :class="isUrl('students') ? 'fill-white' : 'fill-blue-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('students', language === 'uk' ? 'Студенти' : 'Students') }}</div>
       </Link>
     </div>
 
     <div class="mb-6">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('parents') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
+            :class="isUrl('parents') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/parents">
         <icon name="home" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-              :class="isUrl('parents') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
+              :class="isUrl('parents') ? 'fill-white' : 'fill-blue-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('parents', language === 'uk' ? 'Батьки' : 'Parents') }}</div>
       </Link>
     </div>
 
     <div class="mb-6">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('teachers') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
+            :class="isUrl('teachers') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/teachers">
         <icon name="book-open" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-              :class="isUrl('teachers') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
+              :class="isUrl('teachers') ? 'fill-white' : 'fill-blue-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('teachers', language === 'uk' ? 'Вчителі' : 'Teachers') }}</div>
       </Link>
     </div>
 
     <div class="mb-6">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('events') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
+            :class="isUrl('events') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/events">
         <icon name="calendar" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-              :class="isUrl('events') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
+              :class="isUrl('events') ? 'fill-white' : 'fill-blue-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('events', language === 'uk' ? 'Події' : 'Events') }}</div>
       </Link>
     </div>
 
     <div class="mb-6">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('tasks') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' : 'text-amber-100 hover:bg-amber-700/50 hover:text-white'" 
+            :class="isUrl('tasks') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/tasks">
         <icon name="list" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
-              :class="isUrl('tasks') ? 'fill-white' : 'fill-amber-300 group-hover:fill-white'" />
+              :class="isUrl('tasks') ? 'fill-white' : 'fill-blue-300 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('tasks', language === 'uk' ? 'Завдання' : 'Tasks') }}</div>
       </Link>
     </div>
@@ -69,22 +69,22 @@
     <!-- Mobile Language Switcher -->
     <div class="md:hidden mt-12">
       <div class="px-4">
-        <p class="text-amber-200 text-xs uppercase font-bold tracking-wider mb-4">
+        <p class="text-blue-200 text-xs uppercase font-bold tracking-wider mb-4">
           {{ language === 'uk' ? 'Мова' : 'Language' }}
         </p>
         <div class="flex space-x-3">
           <button @click="setLanguage('uk')" 
                   class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105" 
                   :class="language === 'uk' 
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' 
-                    : 'bg-amber-700/50 text-amber-200 hover:bg-amber-600/50 hover:text-white'">
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                    : 'bg-blue-700/50 text-blue-200 hover:bg-blue-600/50 hover:text-white'">
             UA
           </button>
           <button @click="setLanguage('en')" 
                   class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105" 
                   :class="language === 'en' 
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg' 
-                    : 'bg-amber-700/50 text-amber-200 hover:bg-amber-600/50 hover:text-white'">
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
+                    : 'bg-blue-700/50 text-blue-200 hover:bg-blue-600/50 hover:text-white'">
             EN
           </button>
         </div>

@@ -3,12 +3,12 @@
     <Head :title="language === 'uk' ? 'Завдання' : 'Tasks'" />
     
     <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-      <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
         {{ language === 'uk' ? 'Завдання' : 'Tasks' }}
       </h1>
       <div class="mt-4 md:mt-0 flex items-center">
         <Link 
-          class="flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+          class="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
           href="/tasks/create"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -27,7 +27,7 @@
               v-model="form.search" 
               type="text" 
               :placeholder="language === 'uk' ? 'Пошук завдань...' : 'Search tasks...'" 
-              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 transition-all duration-300"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300"
             >
             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -39,7 +39,7 @@
         <div class="w-full md:w-1/3">
           <select 
             v-model="form.trashed" 
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 transition-all duration-300"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300"
           >
             <option :value="null">{{ language === 'uk' ? 'Всі завдання' : 'All Tasks' }}</option>
             <option value="with">{{ language === 'uk' ? 'З видаленими' : 'With Deleted' }}</option>
@@ -60,26 +60,26 @@
         <div class="flex justify-between items-start">
           <div>
             <Link 
-              class="text-lg font-bold text-amber-800 hover:text-amber-600 transition-colors duration-200" 
+              class="text-lg font-bold text-blue-800 hover:text-blue-600 transition-colors duration-200" 
               :href="`/tasks/${task.id}/edit`"
             >
               {{ task.title }}
             </Link>
             <div class="mt-2 space-y-1">
               <div class="flex items-center text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
                 </svg>
                 {{ task.event || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
               </div>
               <div class="flex items-center text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
                 </svg>
                 {{ task.due_date || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
               </div>
               <div class="flex items-center text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                 </svg>
                 <span :class="{ 'text-green-600': task.completed, 'text-red-600': !task.completed }">
@@ -87,7 +87,7 @@
                 </span>
               </div>
               <div class="flex items-center text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
                 </svg>
                 {{ task.created_by || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
@@ -97,7 +97,7 @@
           <div class="flex space-x-2">
             <Link 
               :href="`/tasks/${task.id}/edit`" 
-              class="p-2 text-amber-600 hover:text-amber-800 transition-colors duration-200"
+              class="p-2 text-blue-600 hover:text-blue-800 transition-colors duration-200"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -124,25 +124,25 @@
     <div class="hidden md:block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
       <table class="w-full">
         <thead>
-          <tr class="bg-gradient-to-r from-amber-50 to-amber-100 text-left">
-            <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Назва' : 'Title' }}</th>
-            <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Подія' : 'Event' }}</th>
-            <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Дата виконання' : 'Due Date' }}</th>
-            <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Статус' : 'Status' }}</th>
-            <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Створив' : 'Created By' }}</th>
-            <th class="py-4 px-6 font-bold text-amber-900 text-center">{{ language === 'uk' ? 'Дії' : 'Actions' }}</th>
+          <tr class="bg-gradient-to-r from-blue-50 to-blue-100 text-left">
+            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Назва' : 'Title' }}</th>
+            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Подія' : 'Event' }}</th>
+            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Дата виконання' : 'Due Date' }}</th>
+            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Статус' : 'Status' }}</th>
+            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Створив' : 'Created By' }}</th>
+            <th class="py-4 px-6 font-bold text-blue-900 text-center">{{ language === 'uk' ? 'Дії' : 'Actions' }}</th>
           </tr>
         </thead>
         <tbody>
           <tr 
             v-for="task in tasks.data" 
             :key="task.id" 
-            class="border-t border-gray-100 transition-colors duration-200 hover:bg-amber-50"
+            class="border-t border-gray-100 transition-colors duration-200 hover:bg-blue-50"
             :class="{ 'bg-red-50 hover:bg-red-100': task.deleted_at }"
           >
             <td class="py-4 px-6">
               <Link 
-                class="font-medium text-amber-800 hover:text-amber-600 transition-colors duration-200 flex items-center" 
+                class="font-medium text-blue-800 hover:text-blue-600 transition-colors duration-200 flex items-center" 
                 :href="`/tasks/${task.id}/edit`"
               >
                 {{ task.title }}
@@ -174,7 +174,7 @@
               <div class="flex justify-center space-x-3">
                 <Link 
                   :href="`/tasks/${task.id}/edit`" 
-                  class="p-2 text-amber-600 hover:text-amber-800 transition-colors duration-200 rounded-full hover:bg-amber-100"
+                  class="p-2 text-blue-600 hover:text-blue-800 transition-colors duration-200 rounded-full hover:bg-blue-100"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -292,10 +292,10 @@ export default {
 }
 
 :deep(.pagination-link:not(.active)) {
-  @apply bg-white text-amber-700 hover:bg-amber-50;
+  @apply bg-white text-blue-700 hover:bg-blue-50;
 }
 
 :deep(.pagination-link.active) {
-  @apply bg-gradient-to-r from-amber-500 to-amber-700 text-white;
+  @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white;
 }
 </style> 

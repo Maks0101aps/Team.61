@@ -2,12 +2,12 @@
   <Head :title="language === 'uk' ? 'Батьки' : 'Parents'" />
 
   <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-    <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
+    <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
       {{ language === 'uk' ? 'Батьки' : 'Parents' }}
     </h1>
     <div class="mt-4 md:mt-0 flex items-center">
       <Link 
-        class="flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
+        class="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105"
         href="/parents/create"
       >
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -26,7 +26,7 @@
             v-model="form.search" 
             type="text" 
             :placeholder="language === 'uk' ? 'Пошук батьків...' : 'Search parents...'" 
-            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 transition-all duration-300"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300"
           >
           <div class="absolute inset-y-0 right-0 flex items-center pr-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -38,7 +38,7 @@
       <div class="w-full md:w-1/3">
         <select 
           v-model="form.trashed" 
-          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-amber-500 focus:ring focus:ring-amber-200 focus:ring-opacity-50 transition-all duration-300"
+          class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition-all duration-300"
         >
           <option :value="null">{{ language === 'uk' ? 'Всі батьки' : 'All Parents' }}</option>
           <option value="with">{{ language === 'uk' ? 'З видаленими' : 'With Deleted' }}</option>
@@ -59,20 +59,20 @@
       <div class="flex justify-between items-start">
         <div>
           <Link 
-            class="text-lg font-bold text-amber-800 hover:text-amber-600 transition-colors duration-200" 
+            class="text-lg font-bold text-blue-800 hover:text-blue-600 transition-colors duration-200" 
             :href="`/parents/${parent.id}/edit`"
           >
             {{ parent.name }}
           </Link>
           <div class="mt-2 space-y-1">
             <div class="flex items-center text-sm text-gray-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
               </svg>
               {{ parent.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
             </div>
             <div class="flex items-center text-sm text-gray-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
               </svg>
               {{ parent.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
@@ -82,7 +82,7 @@
         <div class="flex space-x-2">
           <Link 
             :href="`/parents/${parent.id}/edit`" 
-            class="p-2 text-amber-600 hover:text-amber-800 transition-colors duration-200"
+            class="p-2 text-blue-600 hover:text-blue-800 transition-colors duration-200"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
               <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -108,23 +108,23 @@
   <div class="hidden md:block bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl">
     <table class="w-full">
       <thead>
-        <tr class="bg-gradient-to-r from-amber-50 to-amber-100 text-left">
-          <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Ім\'я' : 'Name' }}</th>
-          <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Телефон' : 'Phone' }}</th>
-          <th class="py-4 px-6 font-bold text-amber-900">{{ language === 'uk' ? 'Місто' : 'City' }}</th>
-          <th class="py-4 px-6 font-bold text-amber-900 text-center">{{ language === 'uk' ? 'Дії' : 'Actions' }}</th>
+        <tr class="bg-gradient-to-r from-blue-50 to-blue-100 text-left">
+          <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Ім\'я' : 'Name' }}</th>
+          <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Телефон' : 'Phone' }}</th>
+          <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Місто' : 'City' }}</th>
+          <th class="py-4 px-6 font-bold text-blue-900 text-center">{{ language === 'uk' ? 'Дії' : 'Actions' }}</th>
         </tr>
       </thead>
       <tbody>
         <tr 
           v-for="parent in parents.data" 
           :key="parent.id" 
-          class="border-t border-gray-100 transition-colors duration-200 hover:bg-amber-50"
+          class="border-t border-gray-100 transition-colors duration-200 hover:bg-blue-50"
           :class="{ 'bg-red-50 hover:bg-red-100': parent.deleted_at }"
         >
           <td class="py-4 px-6">
             <Link 
-              class="font-medium text-amber-800 hover:text-amber-600 transition-colors duration-200 flex items-center" 
+              class="font-medium text-blue-800 hover:text-blue-600 transition-colors duration-200 flex items-center" 
               :href="`/parents/${parent.id}/edit`"
             >
               {{ parent.name }}
@@ -143,7 +143,7 @@
             <div class="flex justify-center space-x-3">
               <Link 
                 :href="`/parents/${parent.id}/edit`" 
-                class="p-2 text-amber-600 hover:text-amber-800 transition-colors duration-200 rounded-full hover:bg-amber-100"
+                class="p-2 text-blue-600 hover:text-blue-800 transition-colors duration-200 rounded-full hover:bg-blue-100"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -259,10 +259,10 @@ export default {
 }
 
 :deep(.pagination-link:not(.active)) {
-  @apply bg-white text-amber-700 hover:bg-amber-50;
+  @apply bg-white text-blue-700 hover:bg-blue-50;
 }
 
 :deep(.pagination-link.active) {
-  @apply bg-gradient-to-r from-amber-500 to-amber-700 text-white;
+  @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white;
 }
 </style> 

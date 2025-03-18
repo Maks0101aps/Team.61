@@ -5,7 +5,7 @@
     <!-- Hero Section -->
     <div class="relative overflow-hidden mb-12 rounded-2xl">
       <!-- Background with gradient overlay -->
-      <div class="absolute inset-0 bg-gradient-to-r from-amber-600 to-amber-800 opacity-90"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800 opacity-90"></div>
       
       <!-- Background pattern -->
       <div class="absolute inset-0 bg-pattern opacity-10"></div>
@@ -14,17 +14,17 @@
         <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl bg-clip-text">
           {{ localLanguage === 'uk' ? 'Шкільний Календар Подій' : 'School Event Calendar' }}
         </h1>
-        <p class="mt-8 max-w-2xl mx-auto text-xl text-amber-100 leading-relaxed">
+        <p class="mt-8 max-w-2xl mx-auto text-xl text-blue-100 leading-relaxed">
           {{ localLanguage === 'uk' ? 'Стеж за всіма важливими подіями у школі та не пропусти жодної дати!' : 'Keep track of all important school events and never miss a date!' }}
         </p>
         <div class="mt-12 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
           <div class="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-6">
             <a href="/events" 
-               class="flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl shadow-lg text-amber-700 bg-white hover:bg-amber-50 transition-all duration-300 transform hover:scale-105">
+               class="flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl shadow-lg text-blue-700 bg-white hover:bg-blue-50 transition-all duration-300 transform hover:scale-105">
               {{ localLanguage === 'uk' ? 'Переглянути події' : 'View Events' }}
             </a>
             <a href="/tasks" 
-               class="flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 transition-all duration-300 transform hover:scale-105">
+               class="flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105">
               {{ localLanguage === 'uk' ? 'Мої завдання' : 'My Tasks' }}
             </a>
           </div>
@@ -44,7 +44,7 @@
         <div class="lg:col-span-1">
           <div class="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:scale-[1.02]">
             <div class="flex justify-between items-center mb-6">
-              <h3 class="text-lg font-bold text-amber-900">
+              <h3 class="text-lg font-bold text-blue-900">
                 {{ localLanguage === 'uk' ? 'Завдання на сьогодні' : 'Today\'s Tasks' }}
               </h3>
               <div class="flex space-x-3">
@@ -59,15 +59,15 @@
 
             <div class="space-y-4">
               <div v-for="task in todayTasks" :key="task.id" 
-                   class="bg-amber-50 rounded-lg p-4 transition-all duration-300 hover:bg-amber-100 hover:shadow-md">
+                   class="bg-blue-50 rounded-lg p-4 transition-all duration-300 hover:bg-blue-100 hover:shadow-md">
                 <div class="flex items-start justify-between">
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-bold text-amber-900">{{ task.title }}</p>
-                    <p class="text-sm text-amber-700 mt-1">{{ task.event }}</p>
-                    <p class="text-xs text-amber-600 mt-2">{{ formatTime(task.due_date) }}</p>
+                    <p class="text-sm font-bold text-blue-900">{{ task.title }}</p>
+                    <p class="text-sm text-blue-700 mt-1">{{ task.event }}</p>
+                    <p class="text-xs text-blue-600 mt-2">{{ formatTime(task.due_date) }}</p>
                   </div>
                   <Link :href="`/tasks/${task.id}/edit`" 
-                        class="text-amber-600 hover:text-amber-900 transition-colors duration-200">
+                        class="text-blue-600 hover:text-blue-900 transition-colors duration-200">
                     <span class="sr-only">{{ localLanguage === 'uk' ? 'Редагувати' : 'Edit' }}</span>
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
@@ -77,7 +77,7 @@
               </div>
 
               <div v-if="todayTasks.length === 0" 
-                   class="text-center text-amber-600 py-8 bg-amber-50 rounded-lg">
+                   class="text-center text-blue-600 py-8 bg-blue-50 rounded-lg">
                 {{ localLanguage === 'uk' ? 'Немає завдань на сьогодні' : 'No tasks for today' }}
               </div>
             </div>

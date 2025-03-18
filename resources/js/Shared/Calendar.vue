@@ -2,7 +2,7 @@
   <div class="calendar-container">
     <div class="flex justify-between items-center mb-6">
       <div class="flex items-center space-x-4">
-        <h2 class="text-2xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
+        <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
           {{ currentMonthName }}
         </h2>
         <div class="flex space-x-2">
@@ -11,23 +11,23 @@
                   @click="currentView = mode.value"
                   class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105"
                   :class="currentView === mode.value 
-                    ? 'bg-gradient-to-r from-amber-500 to-amber-700 text-white shadow-lg' 
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-amber-50 hover:border-amber-300 shadow-sm'">
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
+                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm'">
             {{ mode.label }}
           </button>
         </div>
       </div>
       <div class="flex space-x-3">
         <button @click="previousPeriod" 
-                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-amber-50 hover:border-amber-300 transition-all duration-200 transform hover:scale-105 shadow-sm">
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 transform hover:scale-105 shadow-sm">
           {{ language === 'uk' ? 'Попередній' : 'Previous' }}
         </button>
         <button @click="nextPeriod" 
-                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-amber-50 hover:border-amber-300 transition-all duration-200 transform hover:scale-105 shadow-sm">
+                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 transform hover:scale-105 shadow-sm">
           {{ language === 'uk' ? 'Наступний' : 'Next' }}
         </button>
        <Link href="/events/create"
-              class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-700 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
+              class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
           {{ language === 'uk' ? 'Створити подію' : 'Create Event' }}
         </Link>
       </div>
@@ -35,28 +35,28 @@
 
     <!-- Monthly View -->
     <div v-if="currentView === 'month'" class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-amber-100 to-amber-200">
+      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
         <!-- Weekday headers -->
         <div v-for="day in weekDays" :key="day" 
-             class="bg-gradient-to-b from-amber-50 to-white py-3 text-center text-sm font-bold text-amber-900">
+             class="bg-gradient-to-b from-blue-50 to-white py-3 text-center text-sm font-bold text-blue-900">
           {{ day }}
         </div>
 
         <!-- Calendar days -->
         <div v-for="day in calendarDays" :key="day.date" 
-             class="bg-white min-h-[120px] p-3 relative transition-all duration-200 hover:bg-amber-50 group"
+             class="bg-white min-h-[120px] p-3 relative transition-all duration-200 hover:bg-blue-50 group"
              :class="{
                'bg-gray-50': !day.isCurrentMonth,
                'bg-red-50': hasConflicts(day.date)
              }">
           <div class="flex justify-between items-start">
             <div class="text-sm font-bold mb-2" 
-                 :class="{ 'text-gray-400': !day.isCurrentMonth, 'text-amber-900': day.isCurrentMonth }">
+                 :class="{ 'text-gray-400': !day.isCurrentMonth, 'text-blue-900': day.isCurrentMonth }">
               {{ day.dayNumber }}
             </div>
             <!-- Add Event Button -->
             <button @click.stop="createEventOnDate(day.date)"
-                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-white"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
                     :title="language === 'uk' ? 'Створити подію' : 'Create Event'">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
@@ -79,17 +79,17 @@
 
     <!-- Weekly View -->
     <div v-else-if="currentView === 'week'" class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-amber-100 to-amber-200">
+      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
         <!-- Weekday headers -->
         <div v-for="day in weekDays" :key="day" 
-             class="bg-gradient-to-b from-amber-50 to-white py-3 text-center text-sm font-bold text-amber-900">
+             class="bg-gradient-to-b from-blue-50 to-white py-3 text-center text-sm font-bold text-blue-900">
           {{ day }}
         </div>
 
         <!-- Week days -->
         <div v-for="day in weekDays" :key="day" 
-             class="bg-white min-h-[200px] p-3 transition-all duration-200 hover:bg-amber-50">
-          <div class="text-sm font-bold mb-2 text-amber-900">
+             class="bg-white min-h-[200px] p-3 transition-all duration-200 hover:bg-blue-50">
+          <div class="text-sm font-bold mb-2 text-blue-900">
             {{ getWeekDayDate(day) }}
           </div>
           <div class="space-y-1.5">
@@ -106,9 +106,9 @@
 
     <!-- Daily View -->
     <div v-else-if="currentView === 'day'" class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="grid grid-cols-1 gap-px bg-gradient-to-r from-amber-100 to-amber-200">
+      <div class="grid grid-cols-1 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
         <div class="bg-white p-6">
-          <div class="text-xl font-bold mb-6 text-amber-900">
+          <div class="text-xl font-bold mb-6 text-blue-900">
             {{ currentDate.format('DD MMMM YYYY') }}
           </div>
           <div class="space-y-4">
@@ -128,17 +128,17 @@
     <div v-else-if="currentView === 'year'" class="bg-white rounded-xl shadow-lg overflow-hidden">
       <div class="grid grid-cols-4 gap-4 p-6">
         <div v-for="month in 12" :key="month" 
-             class="border rounded-lg p-4 transition-all duration-200 hover:bg-amber-50">
-          <div class="text-sm font-bold mb-3 text-amber-900">
+             class="border rounded-lg p-4 transition-all duration-200 hover:bg-blue-50">
+          <div class="text-sm font-bold mb-3 text-blue-900">
             {{ getMonthName(month - 1) }}
           </div>
           <div class="grid grid-cols-7 gap-1">
             <div v-for="day in getMonthDays(month - 1)" :key="day.date"
-                 class="text-xs p-1.5 rounded-lg transition-all duration-200 hover:bg-amber-100"
+                 class="text-xs p-1.5 rounded-lg transition-all duration-200 hover:bg-blue-100"
                  :class="{
                    'bg-red-50': hasConflicts(day.date),
                    'text-gray-400': !day.isCurrentMonth,
-                   'text-amber-900': day.isCurrentMonth
+                   'text-blue-900': day.isCurrentMonth
                  }">
               {{ day.dayNumber }}
             </div>
@@ -152,7 +152,7 @@
          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 backdrop-blur-sm">
       <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl transform transition-all duration-300">
         <div class="flex justify-between items-start mb-6">
-          <h3 class="text-xl font-bold text-amber-900">{{ selectedEvent.title }}</h3>
+          <h3 class="text-xl font-bold text-blue-900">{{ selectedEvent.title }}</h3>
           <button @click="selectedEvent = null" 
                   class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
             <span class="sr-only">Close</span>
@@ -164,27 +164,27 @@
         
         <div class="space-y-6">
           <div>
-            <h4 class="text-sm font-medium text-amber-700">{{ language === 'uk' ? 'Час' : 'Time' }}</h4>
+            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Час' : 'Time' }}</h4>
             <p class="mt-1 text-sm text-gray-900">
               {{ formatDateTime(selectedEvent.start_date) }}
             </p>
           </div>
           
           <div>
-            <h4 class="text-sm font-medium text-amber-700">{{ language === 'uk' ? 'Тип' : 'Type' }}</h4>
+            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Тип' : 'Type' }}</h4>
             <p class="mt-1 text-sm text-gray-900">{{ selectedEvent.type }}</p>
           </div>
           
           <div v-if="selectedEvent.location">
-            <h4 class="text-sm font-medium text-amber-700">{{ language === 'uk' ? 'Місце' : 'Location' }}</h4>
+            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Місце' : 'Location' }}</h4>
             <p class="mt-1 text-sm text-gray-900">{{ selectedEvent.location }}</p>
           </div>
           
           <div v-if="selectedEvent.online_link">
-            <h4 class="text-sm font-medium text-amber-700">{{ language === 'uk' ? 'Онлайн посилання' : 'Online Link' }}</h4>
+            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Онлайн посилання' : 'Online Link' }}</h4>
             <a :href="selectedEvent.online_link" 
                target="_blank" 
-               class="mt-1 text-sm text-amber-600 hover:text-amber-900 transition-colors duration-200">
+               class="mt-1 text-sm text-blue-600 hover:text-blue-900 transition-colors duration-200">
               {{ selectedEvent.online_link }}
             </a>
           </div>
@@ -192,7 +192,7 @@
         
         <div class="mt-8 flex justify-end">
           <button @click="selectedEvent = null" 
-                  class="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-amber-50 hover:border-amber-300 transition-all duration-200">
+                  class="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
             {{ language === 'uk' ? 'Закрити' : 'Close' }}
           </button>
         </div>

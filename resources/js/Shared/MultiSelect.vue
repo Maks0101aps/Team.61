@@ -92,7 +92,7 @@ export default {
 }
 
 .multiselect__tags {
-  @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm min-h-[38px] py-1 pl-3 pr-10;
+  @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm min-h-[38px] py-1 pl-3 pr-10;
 }
 
 .multiselect__placeholder {
@@ -120,11 +120,11 @@ export default {
 }
 
 .multiselect__option--highlight {
-  @apply bg-indigo-500 text-white;
+  @apply bg-blue-500 text-white;
 }
 
 .multiselect__option--selected {
-  @apply bg-indigo-100 text-indigo-800 font-semibold;
+  @apply bg-blue-100 text-blue-800 font-semibold;
 }
 
 .multiselect__option--selected.multiselect__option--highlight {
@@ -132,7 +132,7 @@ export default {
 }
 
 .multiselect__tag {
-  @apply bg-indigo-100 text-indigo-800 text-sm rounded-md py-0.5 pl-2 pr-1 mr-1 mb-1;
+  @apply bg-blue-100 text-blue-800 text-sm rounded-md py-0.5 pl-2 pr-1 mr-1 mb-1;
 }
 
 .multiselect__tag-icon {
@@ -140,7 +140,7 @@ export default {
 }
 
 .multiselect__tag-icon:after {
-  @apply text-indigo-800;
+  @apply text-blue-800;
 }
 
 .multiselect__tag-icon:hover:after {
