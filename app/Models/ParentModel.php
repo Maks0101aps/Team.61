@@ -11,6 +11,20 @@ class ParentModel extends Model
     use HasFactory;
     use SoftDeletes;
 
+    protected $fillable = [
+        'account_id',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'email',
+        'phone',
+        'address',
+        'city',
+        'region',
+        'country',
+        'postal_code',
+    ];
+
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();

@@ -1,0 +1,34 @@
+Users in database:
+
+ID: 1
+Email: test@example.com
+First Name: Test
+Last Name: User
+Owner: No
+Created At: 2025-03-18 11:38:38
+------------------------------------
+ID: 2
+Email: johndoe@example.com
+First Name: John
+Last Name: Doe
+Owner: Yes
+Created At: 2025-03-18 12:09:35
+------------------------------------
+
+
+Users from User model:
+
+ID: 1
+Email: test@example.com
+First Name: Test
+Last Name: User
+Owner: No
+Created At: 2025-03-18 11:38:38
+------------------------------------
+ID: 2
+Email: johndoe@example.com
+First Name: John
+Last Name: Doe
+Owner: Yes
+Created At: 2025-03-18 12:09:35
+------------------------------------

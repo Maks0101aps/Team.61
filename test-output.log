@@ -1,0 +1,4 @@
+=== TESTING TASK MODEL RELATIONSHIPS ===
+No tasks found in the database.
+No events found. Creating a test event...
+Error creating event: SQLSTATE[23000]: Integrity constraint violation: 19 FOREIGN KEY constraint failed (Connection: sqlite, SQL: insert into "events" ("account_id", "title", "type", "start_date", "duration", "created_by", "updated_at", "created_at") values (1, Test Event, personal, 2025-03-18 11:36:00, 60, 1, 2025-03-18 11:36:00, 2025-03-18 11:36:00))
