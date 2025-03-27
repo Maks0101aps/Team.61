@@ -1,21 +1,22 @@
 <template>
   <div>
-    <label class="block text-sm font-medium text-gray-700">
-      <span v-if="value">{{ label }}</span>
-      <span v-else class="text-gray-500">{{ label }}</span>
-    </label>
+    <label v-if="label" class="form-label" :for="id">{{ label }}</label>
     <textarea
+      :id="id"
       :value="value"
       @input="$emit('update:modelValue', $event.target.value)"
-      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+      class="form-textarea"
+      :class="{ error: error }"
       :rows="rows"
       :placeholder="placeholder"
     ></textarea>
-    <div v-if="error" class="text-red-500 text-xs mt-1">{{ error }}</div>
+    <div v-if="error" class="form-error">{{ error }}</div>
   </div>
 </template>
 
 <script>
+import { v4 as uuid } from 'uuid'
+
 export default {
   props: {
     modelValue: String,
@@ -26,6 +27,12 @@ export default {
       default: 3,
     },
     placeholder: String,
+    id: {
+      type: String,
+      default() {
+        return `textarea-${uuid()}`
+      },
+    },
   },
   emits: ['update:modelValue'],
   computed: {

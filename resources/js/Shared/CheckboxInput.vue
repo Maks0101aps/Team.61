@@ -6,18 +6,18 @@
         type="checkbox"
         :checked="modelValue"
         @input="$emit('update:modelValue', $event.target.checked)"
-        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 focus:ring-opacity-50 border-gray-300 rounded"
       />
       <label :for="inputId" class="ml-2 block text-sm text-gray-900">
         {{ label }}
       </label>
     </div>
-    <div v-if="error" class="text-red-500 text-xs mt-1">{{ error }}</div>
+    <div v-if="error" class="form-error">{{ error }}</div>
   </div>
 </template>
 
 <script>
-let nextId = 0
+import { v4 as uuid } from 'uuid'
 
 export default {
   props: {
@@ -26,9 +26,9 @@ export default {
     error: String,
   },
   emits: ['update:modelValue'],
-  data() {
-    return {
-      inputId: `checkbox-${nextId++}`
+  computed: {
+    inputId() {
+      return `checkbox-${uuid()}`
     }
   }
 }

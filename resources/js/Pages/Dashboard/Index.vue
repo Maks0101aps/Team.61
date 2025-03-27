@@ -2,13 +2,20 @@
   <div>
     <Head :title="localLanguage === 'uk' ? 'Головна Сторінка' : 'Home Page'" />
     
-    <!-- Hero Section -->
-    <div class="relative overflow-hidden mb-12 rounded-2xl">
+    <!-- Hero Section - Only shown on first visit or until dismissed -->
+    <div v-if="showWelcomeBanner" class="relative overflow-hidden mb-12 rounded-2xl">
       <!-- Background with gradient overlay -->
       <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-800 opacity-90"></div>
       
       <!-- Background pattern -->
       <div class="absolute inset-0 bg-pattern opacity-10"></div>
+      
+      <!-- Close button -->
+      <button @click="dismissWelcomeBanner" class="absolute top-4 right-4 p-2 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200 transform hover:scale-105 focus:outline-none" aria-label="Close welcome banner">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
       
       <div class="relative max-w-5xl mx-auto px-6 py-20 sm:px-8 sm:py-28 lg:py-36 text-center">
         <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl bg-clip-text">
@@ -117,7 +124,8 @@ export default {
   },
   data() {
     return {
-      localLanguage: this.language
+      localLanguage: this.language,
+      showWelcomeBanner: true
     }
   },
   computed: {
@@ -146,9 +154,18 @@ export default {
   methods: {
     formatTime(date) {
       return dayjs(date).format('HH:mm')
+    },
+    dismissWelcomeBanner() {
+      this.showWelcomeBanner = false
+      localStorage.setItem('welcomeBannerDismissed', 'true')
     }
   },
   mounted() {
+    // Check if the welcome banner has been dismissed before
+    if (localStorage.getItem('welcomeBannerDismissed') === 'true') {
+      this.showWelcomeBanner = false
+    }
+    
     // Listen for language changes using the event bus
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {

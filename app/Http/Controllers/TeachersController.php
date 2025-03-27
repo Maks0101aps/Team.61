@@ -37,36 +37,43 @@ class TeachersController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Teachers/Create');
+        return Inertia::render('Teachers/Create', [
+            'subjects' => Teacher::getSubjects(),
+            'qualifications' => Teacher::getQualifications(),
+            'regions' => Teacher::getRegions(),
+        ]);
     }
 
     public function store(): RedirectResponse
     {
-        Auth::user()->account->teachers()->create(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'middle_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
-                    $query->where('account_id', Auth::user()->account_id);
-                })],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'subject' => ['nullable', 'max:100'],
-                'qualification' => ['nullable', 'max:100'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
+        $validatedData = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['nullable', 'max:50', 'email'],
+            'phone' => ['nullable', 'max:50'],
+            'subject' => ['nullable', 'max:100'],
+            'qualification' => ['nullable', 'max:100'],
+            'address' => ['nullable', 'max:150'],
+            'city' => ['nullable', 'max:50'],
+            'region' => ['nullable', 'max:50'],
+            'postal_code' => ['nullable', 'max:25'],
+        ]);
+
+        // Always set the country to UA
+        $validatedData['country'] = 'UA';
+        $validatedData['organization_id'] = null;
+
+        Auth::user()->account->teachers()->create($validatedData);
 
         return Redirect::route('teachers')->with('success', 'Teacher created.');
     }
 
     public function edit(Teacher $teacher): Response
     {
+        // Get cities based on the teacher's region if region is set
+        $cities = $teacher->region ? Teacher::getCitiesByRegion($teacher->region) : [];
+        
         return Inertia::render('Teachers/Edit', [
             'teacher' => [
                 'id' => $teacher->id,
@@ -85,36 +92,34 @@ class TeachersController extends Controller
                 'postal_code' => $teacher->postal_code,
                 'deleted_at' => $teacher->deleted_at,
             ],
-            'organizations' => Auth::user()->account->organizations()
-                ->orderBy('name')
-                ->get()
-                ->map
-                ->only('id', 'name'),
+            'subjects' => Teacher::getSubjects(),
+            'qualifications' => Teacher::getQualifications(),
+            'regions' => Teacher::getRegions(),
+            'cities' => $cities,
         ]);
     }
 
     public function update(Teacher $teacher): RedirectResponse
     {
-        $teacher->update(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'middle_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'organization_id' => [
-                    'nullable',
-                    Rule::exists('organizations', 'id')->where(fn ($query) => $query->where('account_id', Auth::user()->account_id)),
-                ],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'subject' => ['nullable', 'max:100'],
-                'qualification' => ['nullable', 'max:100'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
+        $validatedData = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['nullable', 'max:50', 'email'],
+            'phone' => ['nullable', 'max:50'],
+            'subject' => ['nullable', 'max:100'],
+            'qualification' => ['nullable', 'max:100'],
+            'address' => ['nullable', 'max:150'],
+            'city' => ['nullable', 'max:50'],
+            'region' => ['nullable', 'max:50'],
+            'postal_code' => ['nullable', 'max:25'],
+        ]);
+
+        // Always set the country to UA
+        $validatedData['country'] = 'UA';
+        $validatedData['organization_id'] = null;
+
+        $teacher->update($validatedData);
 
         return Redirect::back()->with('success', 'Teacher updated.');
     }
@@ -131,5 +136,12 @@ class TeachersController extends Controller
         $teacher->restore();
 
         return Redirect::back()->with('success', 'Teacher restored.');
+    }
+
+    public function getCitiesByRegion(string $region)
+    {
+        return response()->json([
+            'cities' => Teacher::getCitiesByRegion($region)
+        ]);
     }
 } 

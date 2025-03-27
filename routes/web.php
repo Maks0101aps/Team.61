@@ -116,6 +116,10 @@ Route::get('teachers', [TeachersController::class, 'index'])
     ->name('teachers')
     ->middleware('auth');
 
+Route::get('teachers/cities/{region}', [TeachersController::class, 'getCitiesByRegion'])
+    ->name('teachers.cities')
+    ->middleware('auth');
+
 Route::get('teachers/create', [TeachersController::class, 'create'])
     ->name('teachers.create')
     ->middleware('auth');

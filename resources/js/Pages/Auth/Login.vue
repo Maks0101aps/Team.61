@@ -20,13 +20,20 @@
           <div class="mt-6 mx-auto w-32 border-b-2 border-blue-300" />
           <text-input v-model="form.email" :error="form.errors.email" class="mt-12 text-lg" :label="language === 'uk' ? 'Електронна пошта' : 'Email'" type="email" autofocus autocapitalize="off" />
           <text-input v-model="form.password" :error="form.errors.password" class="mt-8 text-lg" :label="language === 'uk' ? 'Пароль' : 'Password'" type="password" />
-          <div class="flex items-center justify-between mt-8">
+          <div class="flex items-center mt-8">
             <label class="flex items-center select-none" for="remember">
               <input id="remember" v-model="form.remember" class="mr-1 h-5 w-5" type="checkbox" />
               <span class="text-base">{{ language === 'uk' ? "Запам'ятати мене" : 'Remember Me' }}</span>
             </label>
-            <Link href="/register" class="text-blue-700 hover:text-blue-900 text-base">
+          </div>
+          <div class="mt-6 py-2">
+            <Link href="/register" class="text-blue-700 hover:text-blue-900 text-sm font-medium">
               {{ language === 'uk' ? 'Потрібен обліковий запис? Зареєструватися' : 'Need an account? Register' }}
+            </Link>
+          </div>
+          <div class="mt-2 py-1">
+            <Link href="#" class="text-blue-700 hover:text-blue-900 text-sm font-medium">
+              {{ language === 'uk' ? 'Забули свій пароль?' : 'Forgot your password?' }}
             </Link>
           </div>
         </div>

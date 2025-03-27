@@ -15,21 +15,39 @@
           <text-input v-model="form.first_name" :error="errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Ім'я" />
           <text-input v-model="form.middle_name" :error="errors.middle_name" class="pb-8 pr-6 w-full lg:w-1/2" label="По-батькові" />
           <text-input v-model="form.last_name" :error="errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Прізвище" />
-          <select-input v-model="form.organization_id" :error="errors.organization_id" class="pb-8 pr-6 w-full lg:w-1/2" label="Організація">
-            <option :value="null" />
-            <option v-for="organization in organizations" :key="organization.id" :value="organization.id">{{ organization.name }}</option>
-          </select-input>
           <text-input v-model="form.email" :error="errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
           <text-input v-model="form.phone" :error="errors.phone" class="pb-8 pr-6 w-full lg:w-1/2" label="Телефон" />
-          <text-input v-model="form.subject" :error="errors.subject" class="pb-8 pr-6 w-full lg:w-1/2" label="Предмет" />
-          <text-input v-model="form.qualification" :error="errors.qualification" class="pb-8 pr-6 w-full lg:w-1/2" label="Кваліфікація" />
-          <text-input v-model="form.address" :error="errors.address" class="pb-8 pr-6 w-full lg:w-1/2" label="Адреса" />
-          <text-input v-model="form.city" :error="errors.city" class="pb-8 pr-6 w-full lg:w-1/2" label="Місто" />
-          <text-input v-model="form.region" :error="errors.region" class="pb-8 pr-6 w-full lg:w-1/2" label="Область" />
-          <select-input v-model="form.country" :error="errors.country" class="pb-8 pr-6 w-full lg:w-1/2" label="Країна">
-            <option :value="null" />
-            <option value="UA">Ukraine</option>
+          
+          <select-input v-model="form.subject" :error="errors.subject" class="pb-8 pr-6 w-full lg:w-1/2" label="Предмет">
+            <option :value="null">Оберіть предмет</option>
+            <option v-for="subject in subjects" :key="subject" :value="subject">{{ subject }}</option>
           </select-input>
+          
+          <select-input v-model="form.qualification" :error="errors.qualification" class="pb-8 pr-6 w-full lg:w-1/2" label="Кваліфікація">
+            <option :value="null">Оберіть кваліфікацію</option>
+            <option v-for="qualification in qualifications" :key="qualification" :value="qualification">{{ qualification }}</option>
+          </select-input>
+          
+          <text-input v-model="form.address" :error="errors.address" class="pb-8 pr-6 w-full lg:w-1/2" label="Адреса" />
+          
+          <select-input v-model="form.region" :error="errors.region" class="pb-8 pr-6 w-full lg:w-1/2" label="Область" @change="loadCities">
+            <option :value="null">Оберіть область</option>
+            <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
+          </select-input>
+          
+          <select-input v-model="form.city" :error="errors.city" class="pb-8 pr-6 w-full lg:w-1/2" label="Місто" :disabled="!cities.length">
+            <option :value="null">{{ cities.length ? 'Оберіть місто' : 'Спочатку оберіть область' }}</option>
+            <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+          </select-input>
+          
+          <div class="pb-8 pr-6 w-full lg:w-1/2">
+            <label class="form-label">Країна</label>
+            <div class="form-input bg-gray-50 border border-gray-200 rounded-md flex items-center px-4 py-2">
+              <span class="text-blue-800 font-medium">🇺🇦 Україна</span>
+              <input type="hidden" v-model="form.country" value="UA" />
+            </div>
+          </div>
+          
           <text-input v-model="form.postal_code" :error="errors.postal_code" class="pb-8 pr-6 w-full lg:w-1/2" label="Поштовий індекс" />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
@@ -48,6 +66,7 @@ import TextInput from '@/Shared/TextInput.vue'
 import SelectInput from '@/Shared/SelectInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
 import TrashedMessage from '@/Shared/TrashedMessage.vue'
+import axios from 'axios'
 
 export default {
   components: {
@@ -61,7 +80,13 @@ export default {
   layout: Layout,
   props: {
     teacher: Object,
-    organizations: Array,
+    subjects: Array,
+    qualifications: Array,
+    regions: Array,
+    cities: {
+      type: Array,
+      default: () => []
+    },
     errors: Object,
   },
   data() {
@@ -70,7 +95,6 @@ export default {
         first_name: this.teacher.first_name,
         middle_name: this.teacher.middle_name,
         last_name: this.teacher.last_name,
-        organization_id: this.teacher.organization_id,
         email: this.teacher.email,
         phone: this.teacher.phone,
         subject: this.teacher.subject,
@@ -78,10 +102,11 @@ export default {
         address: this.teacher.address,
         city: this.teacher.city,
         region: this.teacher.region,
-        country: this.teacher.country,
+        country: "UA",
         postal_code: this.teacher.postal_code,
       },
       processing: false,
+      cities: this.cities || [],
     }
   },
   methods: {
@@ -101,6 +126,20 @@ export default {
         this.$inertia.put(`/teachers/${this.teacher.id}/restore`)
       }
     },
+    loadCities() {
+      this.form.city = null;
+      this.cities = [];
+      
+      if (this.form.region) {
+        axios.get(`/teachers/cities/${encodeURIComponent(this.form.region)}`)
+          .then(response => {
+            this.cities = response.data.cities;
+          })
+          .catch(error => {
+            console.error('Error loading cities:', error);
+          });
+      }
+    }
   },
 }
 </script> 
