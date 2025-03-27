@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ParentModel;
+use App\Models\Student;
+use App\Models\Teacher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -33,7 +35,10 @@ class ParentsController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Parents/Create');
+        return Inertia::render('Parents/Create', [
+            'students' => Student::all()->map->only('id', 'first_name', 'middle_name', 'last_name', 'full_name'),
+            'regions' => Teacher::getRegions(),
+        ]);
     }
 
     public function store(): RedirectResponse
@@ -71,8 +76,11 @@ class ParentsController extends Controller
                 'region' => $parent->region,
                 'country' => $parent->country,
                 'postal_code' => $parent->postal_code,
+                'children' => $parent->children->map->only('id'),
                 'deleted_at' => $parent->deleted_at,
             ],
+            'students' => Student::all()->map->only('id', 'first_name', 'middle_name', 'last_name', 'full_name'),
+            'regions' => Teacher::getRegions(),
         ]);
     }
 

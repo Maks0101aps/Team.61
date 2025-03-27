@@ -1,25 +1,149 @@
 <template>
   <div>
     <Head :title="language === 'uk' ? 'Створення студента' : 'Create Student'" />
-    <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/students">{{ language === 'uk' ? 'Студенти' : 'Students' }}</Link>
-      <span class="text-indigo-400 font-medium">/</span> {{ language === 'uk' ? 'Створення' : 'Create' }}
-    </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="store">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Ім\'я' : 'First Name'" />
-          <text-input v-model="form.middle_name" :error="form.errors.middle_name" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'По батькові' : 'Middle Name'" />
-          <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Прізвище' : 'Last Name'" />
-          <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Електронна пошта' : 'Email'" />
-          <text-input v-model="form.phone" :error="form.errors.phone" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Телефон' : 'Phone'" />
-          <text-input v-model="form.address" :error="form.errors.address" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Адреса' : 'Address'" />
-          <text-input v-model="form.city" :error="form.errors.city" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Місто' : 'City'" />
-          <text-input v-model="form.region" :error="form.errors.region" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Область' : 'Region'" />
-          <text-input v-model="form.postal_code" :error="form.errors.postal_code" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Поштовий індекс' : 'Postal Code'" />
+    
+    <!-- Header with breadcrumbs and title -->
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <div class="flex items-center">
+          <Link class="text-blue-600 hover:text-blue-700 transition-colors duration-200" href="/students">
+            {{ language === 'uk' ? 'Студенти' : 'Students' }}
+          </Link>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          <span class="text-gray-700">{{ language === 'uk' ? 'Створення' : 'Create' }}</span>
         </div>
-        <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">{{ language === 'uk' ? 'Створити студента' : 'Create Student' }}</loading-button>
+        <h1 class="mt-1 text-3xl font-bold text-gray-900">
+          {{ language === 'uk' ? 'Створення студента' : 'Create Student' }}
+        </h1>
+      </div>
+      <div class="mt-4 sm:mt-0">
+        <Link 
+          href="/students" 
+          class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 flex items-center transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          {{ language === 'uk' ? 'Назад' : 'Back' }}
+        </Link>
+      </div>
+    </div>
+
+    <!-- Main form card -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <form @submit.prevent="store">
+        <!-- Form header -->
+        <div class="px-6 sm:px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+          <h2 class="text-lg font-medium text-gray-900">
+            {{ language === 'uk' ? 'Інформація про студента' : 'Student Information' }}
+          </h2>
+          <p class="mt-1 text-sm text-gray-600">
+            {{ language === 'uk' ? 'Заповніть особисті дані студента' : 'Fill in the student personal information' }}
+          </p>
+        </div>
+        
+        <!-- Form body -->
+        <div class="p-4 sm:p-6 md:p-8">
+          <!-- Personal Info Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              {{ language === 'uk' ? 'Особисті дані' : 'Personal Data' }}
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <text-input v-model="form.first_name" :error="form.errors.first_name" :label="language === 'uk' ? 'Ім\'я' : 'First Name'" />
+              <text-input v-model="form.middle_name" :error="form.errors.middle_name" :label="language === 'uk' ? 'По батькові' : 'Middle Name'" />
+              <text-input v-model="form.last_name" :error="form.errors.last_name" :label="language === 'uk' ? 'Прізвище' : 'Last Name'" class="md:col-span-2" />
+            </div>
+          </div>
+          
+          <!-- Contact Info Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              {{ language === 'uk' ? 'Контактна інформація' : 'Contact Information' }}
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <text-input 
+                v-model="form.email" 
+                :error="form.errors.email" 
+                :label="language === 'uk' ? 'Електронна пошта' : 'Email'" 
+                type="email" 
+              />
+              <text-input 
+                v-model="form.phone" 
+                :error="form.errors.phone" 
+                :label="language === 'uk' ? 'Телефон' : 'Phone'" 
+              />
+            </div>
+          </div>
+          
+          <!-- Address Section -->
+          <div class="mb-4">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              {{ language === 'uk' ? 'Адреса' : 'Address' }}
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <text-input 
+                v-model="form.address" 
+                :error="form.errors.address" 
+                :label="language === 'uk' ? 'Адреса' : 'Address'" 
+                class="md:col-span-2"
+              />
+              
+              <select-input 
+                v-model="form.region" 
+                :error="form.errors.region" 
+                :label="language === 'uk' ? 'Область' : 'Region'" 
+                @change="loadCities"
+                :help-text="language === 'uk' ? 'Оберіть область проживання' : 'Select your region'"
+              >
+                <option :value="null">{{ language === 'uk' ? 'Оберіть область' : 'Select region' }}</option>
+                <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
+              </select-input>
+              
+              <select-input 
+                v-model="form.city" 
+                :error="form.errors.city" 
+                :label="language === 'uk' ? 'Місто' : 'City'" 
+                :disabled="!cities.length"
+                :help-text="language === 'uk' ? 'Спочатку оберіть область для завантаження міст' : 'First select a region to load cities'"
+              >
+                <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
+                <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+              </select-input>
+              
+              <div class="form-group">
+                <label class="form-label block mb-2 text-sm font-medium text-gray-700">{{ language === 'uk' ? 'Країна' : 'Country' }}</label>
+                <div class="form-input w-full px-4 py-2.5 rounded-lg border-gray-300 bg-gray-50 border border-gray-200 flex items-center shadow-sm">
+                  <span class="text-blue-800 font-medium">🇺🇦 {{ language === 'uk' ? 'Україна' : 'Ukraine' }}</span>
+                  <input type="hidden" v-model="form.country" value="UA" />
+                </div>
+                <p class="text-gray-500 text-xs mt-1">{{ language === 'uk' ? 'Країна за замовчуванням - Україна' : 'Default country - Ukraine' }}</p>
+              </div>
+              
+              <text-input 
+                v-model="form.postal_code" 
+                :error="form.errors.postal_code" 
+                :label="language === 'uk' ? 'Поштовий індекс' : 'Postal Code'" 
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Form footer -->
+        <div class="px-6 sm:px-8 py-4 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-end gap-3">
+          <Link 
+            href="/students" 
+            class="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">
+            {{ language === 'uk' ? 'Скасувати' : 'Cancel' }}
+          </Link>
+          <loading-button 
+            :loading="form.processing" 
+            type="primary" 
+            class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
+            size="md">
+            {{ language === 'uk' ? 'Створити студента' : 'Create Student' }}
+          </loading-button>
         </div>
       </form>
     </div>
@@ -32,6 +156,7 @@ import Layout from '@/Shared/Layout.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import SelectInput from '@/Shared/SelectInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
+import axios from 'axios'
 
 export default {
   components: {
@@ -42,6 +167,12 @@ export default {
     TextInput,
   },
   layout: Layout,
+  props: {
+    regions: {
+      type: Array,
+      default: () => []
+    }
+  },
   remember: 'form',
   data() {
     return {
@@ -54,9 +185,11 @@ export default {
         address: '',
         city: '',
         region: '',
+        country: 'UA',
         postal_code: '',
       }),
       language: localStorage.getItem('language') || 'uk',
+      cities: [],
     }
   },
   mounted() {
@@ -72,6 +205,24 @@ export default {
     updateLanguage(event) {
       this.language = event.detail.language;
     },
+    loadCities() {
+      this.form.city = null;
+      this.cities = [];
+      
+      if (this.form.region) {
+        axios.get(`/cities/${encodeURIComponent(this.form.region)}`)
+          .then(response => {
+            this.cities = response.data.cities;
+          })
+          .catch(error => {
+            console.error('Error loading cities:', error);
+          });
+      }
+    }
   },
 }
 </script>
+
+<style scoped>
+/* Add any specific styles needed for the form here */
+</style>

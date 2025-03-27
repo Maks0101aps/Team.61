@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\Teacher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -34,7 +35,9 @@ class StudentsController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Students/Create');
+        return Inertia::render('Students/Create', [
+            'regions' => Teacher::getRegions(),
+        ]);
     }
 
     public function store(): RedirectResponse
@@ -73,6 +76,7 @@ class StudentsController extends Controller
                 'postal_code' => $student->postal_code,
                 'deleted_at' => $student->deleted_at,
             ],
+            'regions' => Teacher::getRegions(),
         ]);
     }
 

@@ -194,4 +194,11 @@ Route::put('students/{student}/restore', [StudentsController::class, 'restore'])
     ->name('students.restore')
     ->middleware('auth');
 
+// Cities lookup - usable by any form requiring city selection
+Route::get('cities/{region}', function ($region) {
+    return response()->json([
+        'cities' => \App\Models\Teacher::getCitiesByRegion($region)
+    ]);
+})->middleware('auth')->name('cities.by_region');
+
 

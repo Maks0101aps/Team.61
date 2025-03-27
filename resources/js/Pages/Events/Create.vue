@@ -1,113 +1,202 @@
 <template>
   <div>
-    <Head title="Створення події" />
-    <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/events">Події</Link>
-      <span class="text-indigo-400 font-medium">/</span> Створення
-    </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="store">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.title" :error="form.errors.title" class="pb-8 pr-6 w-full lg:w-1/2" label="Назва" />
-          <select-input v-model="form.type" :error="form.errors.type" class="pb-8 pr-6 w-full lg:w-1/2" label="Тип">
-            <option :value="null">Оберіть тип події</option>
-            <option v-for="(label, value) in types" :key="value" :value="value">{{ label }}</option>
-          </select-input>
-          <text-input
-            v-model="form.start_date"
-            :error="form.errors.start_date"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Дата початку"
-            type="datetime-local"
-          />
-          <text-input
-            v-model="form.duration"
-            :error="form.errors.duration"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Тривалість (хв.)"
-            type="number"
-          />
-          <text-area
-            v-model="form.content"
-            :error="form.errors.content"
-            class="pb-8 pr-6 w-full lg:w-full"
-            label="Контент"
-          />
-          <checkbox-input
-            v-model="form.is_content_hidden"
-            :error="form.errors.is_content_hidden"
-            class="pb-8 pr-6 w-full lg:w-full"
-            label="Приховати контент до початку події"
-          />
-          <text-input
-            v-model="form.location"
-            :error="form.errors.location"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Місце проведення"
-          />
-          <text-input
-            v-model="form.online_link"
-            :error="form.errors.online_link"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Посилання на онлайн-зустріч"
-          />
-          <text-area
-            v-model="form.tasks"
-            :error="form.errors.tasks"
-            class="pb-8 pr-6 w-full lg:w-full"
-            label="Завдання"
-          />
-          <multi-select
-            v-model="form.student_ids"
-            :options="students"
-            :error="form.errors.student_ids"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Студенти"
-            placeholder="Оберіть студентів"
-            track-by="id"
-            label-prop="name"
-          >
-            <template #option="{ option }">
-              <div class="flex items-center">
-                <div class="text-sm">{{ option.name }}</div>
-              </div>
-            </template>
-          </multi-select>
-          <multi-select
-            v-model="form.teacher_ids"
-            :options="teachers"
-            :error="form.errors.teacher_ids"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Вчителі"
-            placeholder="Оберіть вчителів"
-            track-by="id"
-            label-prop="name"
-          >
-            <template #option="{ option }">
-              <div class="flex items-center">
-                <div class="text-sm">{{ option.name }}</div>
-              </div>
-            </template>
-          </multi-select>
-          <multi-select
-            v-model="form.parent_ids"
-            :options="parents"
-            :error="form.errors.parent_ids"
-            class="pb-8 pr-6 w-full lg:w-full"
-            label="Батьки"
-            placeholder="Оберіть батьків"
-            track-by="id"
-            label-prop="name"
-          >
-            <template #option="{ option }">
-              <div class="flex items-center">
-                <div class="text-sm">{{ option.name }}</div>
-              </div>
-            </template>
-          </multi-select>
+    <Head title="Створити подію" />
+    
+    <!-- Header with breadcrumbs and title -->
+    <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <div class="flex items-center">
+          <Link class="text-blue-600 hover:text-blue-700 transition-colors duration-200" href="/events">
+            Події
+          </Link>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+          <span class="text-gray-700">Створення</span>
         </div>
-        <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">
+        <h1 class="mt-1 text-3xl font-bold text-gray-900">
+          Створення події
+        </h1>
+      </div>
+      <div class="mt-4 sm:mt-0">
+        <Link 
+          href="/events" 
+          class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 flex items-center transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Назад
+        </Link>
+      </div>
+    </div>
+
+    <!-- Main form card -->
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <form @submit.prevent="store">
+        <!-- Form header -->
+        <div class="px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+          <h2 class="text-lg font-medium text-gray-900">
+            Інформація про подію
+          </h2>
+          <p class="mt-1 text-sm text-gray-600">
+            Заповніть дані для створення нової події в системі
+          </p>
+        </div>
+        
+        <!-- Form body -->
+        <div class="p-8">
+          <!-- Basic Info Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              Основна інформація
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <text-input 
+                v-model="form.title" 
+                :error="form.errors.title" 
+                label="Назва події" 
+                help-text="Введіть інформативну назву для події"
+              />
+              
+              <select-input 
+                v-model="form.type" 
+                :error="form.errors.type" 
+                label="Тип події"
+                help-text="Оберіть тип події для правильної категоризації"
+              >
+                <option value="" disabled>Оберіть тип події</option>
+                <option v-for="type in types" :key="type" :value="type">{{ type }}</option>
+              </select-input>
+            </div>
+          </div>
+          
+          <!-- Timing Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              Часова інформація
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <text-input 
+                v-model="form.start_date" 
+                :error="form.errors.start_date" 
+                label="Дата початку" 
+                type="datetime-local"
+                help-text="Вкажіть дату і час початку події"
+              />
+              
+              <text-input 
+                v-model="form.duration" 
+                :error="form.errors.duration" 
+                label="Тривалість (у хвилинах)" 
+                type="number"
+                help-text="Вкажіть тривалість події у хвилинах"
+              />
+            </div>
+          </div>
+          
+          <!-- Location Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              Місце проведення
+            </h3>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <text-input 
+                v-model="form.location" 
+                :error="form.errors.location" 
+                label="Фізичне місце" 
+                help-text="Вкажіть фізичне місце проведення (за наявності)"
+              />
+              
+              <text-input 
+                v-model="form.online_link" 
+                :error="form.errors.online_link" 
+                label="Посилання для онлайн-участі" 
+                type="url"
+                help-text="Вкажіть посилання для онлайн-участі (за наявності)"
+              />
+            </div>
+          </div>
+          
+          <!-- Description Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              Опис події
+            </h3>
+            <div class="mb-6">
+              <text-area 
+                v-model="form.content" 
+                :error="form.errors.content" 
+                label="Детальний опис" 
+                rows="6"
+                help-text="Детально опишіть подію, включаючи всі важливі деталі"
+              />
+            </div>
+          </div>
+          
+          <!-- Participants Section -->
+          <div class="mb-4">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              Учасники події
+            </h3>
+            
+            <div class="grid grid-cols-1 gap-6">
+              <multi-select
+                v-model="form.teachers"
+                :options="teachers"
+                option-label="full_name"
+                option-value="id"
+                label="Вчителі"
+                placeholder="Оберіть вчителів для події"
+                :error="form.errors.teachers"
+                help-text="Оберіть вчителів, які мають бути присутніми на події"
+              />
+              
+              <multi-select
+                v-model="form.students"
+                :options="students"
+                option-label="full_name"
+                option-value="id"
+                label="Учні"
+                placeholder="Оберіть учнів для події"
+                :error="form.errors.students"
+                help-text="Оберіть учнів, які мають бути присутніми на події"
+              />
+              
+              <multi-select
+                v-model="form.parents"
+                :options="parents"
+                option-label="full_name"
+                option-value="id"
+                label="Батьки"
+                placeholder="Оберіть батьків для події"
+                :error="form.errors.parents"
+                help-text="Оберіть батьків, які мають бути присутніми на події"
+              />
+            </div>
+            
+            <div class="mt-6">
+              <checkbox-input 
+                v-model="form.notify_participants" 
+                :error="form.errors.notify_participants" 
+                label="Повідомити всіх учасників про подію" 
+                help-text="Відмітьте цю опцію, щоб надіслати повідомлення про подію всім обраним учасникам"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Form footer -->
+        <div class="px-8 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-end">
+          <Link 
+            href="/events" 
+            class="px-4 py-2 mr-3 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            Скасувати
+          </Link>
+          <loading-button 
+            :loading="form.processing" 
+            type="primary" 
+            class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
+            size="md">
             Створити подію
           </loading-button>
         </div>
@@ -130,60 +219,72 @@ export default {
   components: {
     Head,
     Link,
-    LoadingButton,
-    SelectInput,
     TextInput,
     TextArea,
+    SelectInput,
     CheckboxInput,
+    LoadingButton,
     MultiSelect,
   },
   layout: Layout,
   props: {
-    types: {
-      type: Object,
-      required: true
-    },
-    students: {
-      type: Array,
-      required: true
-    },
-    teachers: {
-      type: Array,
-      required: true
-    },
-    parents: {
-      type: Array,
-      required: true
-    }
+    types: Array,
+    teachers: Array,
+    students: Array,
+    parents: Array,
   },
-  remember: 'form',
   data() {
-    // Get date from URL query parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const dateFromUrl = urlParams.get('date');
-    
     return {
       form: this.$inertia.form({
-        title: null,
-        type: null,
-        start_date: dateFromUrl ? `${dateFromUrl}T09:00` : null,
+        title: '',
+        type: '',
+        start_date: '',
         duration: 60,
-        content: null,
-        is_content_hidden: false,
-        location: null,
-        online_link: null,
-        tasks: null,
-        student_ids: [],
-        teacher_ids: [],
-        parent_ids: [],
+        content: '',
+        location: '',
+        online_link: '',
+        teachers: [],
+        students: [],
+        parents: [],
+        notify_participants: false,
       }),
     }
   },
   methods: {
     store() {
-      this.form.post('/events', {
-        preserveScroll: true,
-      })
+      this.form.post('/events')
+    },
+  },
+  computed: {
+    currentLanguageLabels() {
+      return {
+        en: {
+          title: 'Title',
+          type: 'Type',
+          start_date: 'Start Date',
+          duration: 'Duration (in minutes)',
+          content: 'Content',
+          location: 'Location',
+          online_link: 'Online Link',
+          teachers: 'Teachers',
+          students: 'Students',
+          parents: 'Parents',
+          notify_participants: 'Notify Participants',
+        },
+        uk: {
+          title: 'Назва',
+          type: 'Тип',
+          start_date: 'Дата початку',
+          duration: 'Тривалість (у хвилинах)',
+          content: 'Опис',
+          location: 'Місце проведення',
+          online_link: 'Посилання для онлайн-участі',
+          teachers: 'Вчителі',
+          students: 'Учні',
+          parents: 'Батьки',
+          notify_participants: 'Повідомити учасників',
+        },
+      }[this.$page.props.locale || 'uk']
     },
   },
 }
