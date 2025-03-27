@@ -1,34 +1,68 @@
 <template>
   <div class="calendar-container">
-    <div class="flex justify-between items-center mb-6">
-      <div class="flex items-center space-x-4">
-        <h2 class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+    <!-- Calendar Header - Redesigned for better responsive behavior -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+      <!-- Month name and view mode buttons -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+        <h2 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
           {{ currentMonthName }}
         </h2>
-        <div class="flex space-x-2">
+        <div class="flex flex-wrap gap-1">
           <button v-for="mode in viewModes" 
                   :key="mode.value"
                   @click="currentView = mode.value"
-                  class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105"
+                  class="inline-flex items-center justify-center px-2 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200"
                   :class="currentView === mode.value 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' 
                     : 'bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm'">
-            {{ mode.label }}
+            <!-- Show icons on small screens -->
+            <span class="hidden sm:inline">{{ mode.label }}</span>
+            <!-- Icons for small screens -->
+            <span class="sm:hidden">
+              <svg v-if="mode.value === 'month'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V4zm2 0v14h6V4H7z" />
+              </svg>
+              <svg v-else-if="mode.value === 'week'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
+              </svg>
+              <svg v-else-if="mode.value === 'day'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm0-2a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" />
+              </svg>
+              <svg v-else-if="mode.value === 'year'" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M5 4a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V5a1 1 0 00-1-1H5z" />
+              </svg>
+            </span>
           </button>
         </div>
       </div>
-      <div class="flex space-x-3">
+      
+      <!-- Navigation and action buttons -->
+      <div class="flex flex-wrap items-center gap-1 sm:gap-2">
+        <!-- Previous/Next buttons with icons -->
         <button @click="previousPeriod" 
-                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 transform hover:scale-105 shadow-sm">
-          {{ language === 'uk' ? 'Попередній' : 'Previous' }}
+                class="inline-flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 bg-white border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+          </svg>
+          <span class="hidden sm:inline ml-1">{{ language === 'uk' ? 'Попередній' : 'Previous' }}</span>
         </button>
+        
         <button @click="nextPeriod" 
-                class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 transform hover:scale-105 shadow-sm">
-          {{ language === 'uk' ? 'Наступний' : 'Next' }}
+                class="inline-flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 bg-white border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+          </svg>
+          <span class="hidden sm:inline ml-1">{{ language === 'uk' ? 'Наступний' : 'Next' }}</span>
         </button>
-       <Link href="/events/create"
-              class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-lg">
-          {{ language === 'uk' ? 'Створити подію' : 'Create Event' }}
+        
+        <!-- Create Event button -->
+        <Link href="/events/create"
+              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-md text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+          </svg>
+          <span class="hidden sm:inline ml-1">{{ language === 'uk' ? 'Створити' : 'Create' }}</span>
         </Link>
       </div>
     </div>
@@ -56,9 +90,9 @@
             </div>
             <!-- Add Event Button -->
             <button @click.stop="createEventOnDate(day.date)"
-                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-lg bg-blue-500 hover:bg-blue-600 text-white"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-md bg-blue-500 hover:bg-blue-600 text-white"
                     :title="language === 'uk' ? 'Створити подію' : 'Create Event'">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
               </svg>
             </button>
@@ -438,7 +472,14 @@ export default {
 
 <style scoped>
 .calendar-container {
-  @apply bg-white rounded-xl shadow-lg p-6;
+  @apply bg-white rounded-xl shadow-lg p-4 sm:p-6;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 640px) {
+  .calendar-container {
+    @apply p-3;
+  }
 }
 
 /* Добавляем анимацию для модального окна */
