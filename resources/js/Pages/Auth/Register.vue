@@ -21,7 +21,13 @@
           
           <div class="mt-12 grid grid-cols-2 gap-6">
             <text-input v-model="form.first_name" :error="form.errors.first_name" class="col-span-1 text-lg" :label="language === 'uk' ? 'Ім\'я' : 'First Name'" />
-            <text-input v-model="form.last_name" :error="form.errors.last_name" class="col-span-1 text-lg" :label="language === 'uk' ? 'Прізвище' : 'Last Name'" />
+            <text-input 
+              v-model="form.last_name" 
+              :error="form.errors.last_name" 
+              class="col-span-1 text-lg" 
+              :label="language === 'uk' ? 'Прізвище' : 'Last Name'" 
+              @update:modelValue="onLastNameChange"
+            />
           </div>
           
           <text-input v-model="form.middle_name" :error="form.errors.middle_name" class="mt-8 text-lg" :label="language === 'uk' ? 'По батькові (необов\'язково)' : 'Middle Name (Optional)'" />
@@ -41,9 +47,20 @@
             :error="form.errors.parent_id" 
             class="mt-8 text-lg" 
             :label="language === 'uk' ? 'Виберіть батька/матір' : 'Select Parent'"
+            :disabled="!form.last_name || filteredParents.length === 0"
           >
-            <option value="" disabled>{{ language === 'uk' ? 'Оберіть батька/матір' : 'Select parent' }}</option>
-            <option v-for="parent in parents" :key="parent.id" :value="parent.id">
+            <option value="" disabled>
+              <template v-if="!form.last_name">
+                {{ language === 'uk' ? 'Спочатку введіть прізвище' : 'Enter last name first' }}
+              </template>
+              <template v-else-if="filteredParents.length === 0">
+                {{ language === 'uk' ? 'Немає батьків з таким прізвищем' : 'No parents with this last name' }}
+              </template>
+              <template v-else>
+                {{ language === 'uk' ? 'Оберіть батька/матір' : 'Select parent' }}
+              </template>
+            </option>
+            <option v-for="parent in filteredParents" :key="parent.id" :value="parent.id">
               {{ parent.first_name }} {{ parent.middle_name }} {{ parent.last_name }}
             </option>
           </select-input>
@@ -119,6 +136,14 @@ export default {
         return localizedRoles;
       }
       return this.roles;
+    },
+    filteredParents() {
+      if (!this.form.last_name || !this.parents) return [];
+      
+      // Filter parents by matching last name (case insensitive)
+      return this.parents.filter(parent => 
+        parent.last_name.toLowerCase() === this.form.last_name.toLowerCase()
+      );
     }
   },
   methods: {
@@ -133,6 +158,16 @@ export default {
       // Reset parent_id when changing roles
       if (role !== 'student') {
         this.form.parent_id = '';
+      }
+    },
+    onLastNameChange(value) {
+      // Reset parent_id when last name changes
+      this.form.parent_id = '';
+      
+      // Debug info
+      if (this.form.role === 'student') {
+        console.log('Last name changed to:', value);
+        console.log('Filtered parents:', this.filteredParents);
       }
     }
   },
