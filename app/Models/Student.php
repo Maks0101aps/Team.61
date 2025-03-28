@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
@@ -14,6 +15,21 @@ class Student extends Model
 
     protected $table = 'contacts'; // Используем ту же таблицу, что и для контактов
 
+    protected $fillable = [
+        'account_id',
+        'organization_id',
+        'first_name',
+        'middle_name',
+        'last_name',
+        'email',
+        'phone',
+        'address',
+        'city',
+        'region',
+        'country',
+        'postal_code',
+    ];
+
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
@@ -22,6 +38,11 @@ class Student extends Model
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    public function parents(): BelongsToMany
+    {
+        return $this->belongsToMany(ParentModel::class, 'parent_student', 'student_id', 'parent_model_id');
     }
 
     public function getNameAttribute()

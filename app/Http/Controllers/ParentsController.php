@@ -43,20 +43,29 @@ class ParentsController extends Controller
 
     public function store(): RedirectResponse
     {
-        Auth::user()->account->parents()->create(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'middle_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
+        $validated = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['nullable', 'max:50', 'email'],
+            'phone' => ['nullable', 'max:50'],
+            'address' => ['nullable', 'max:150'],
+            'city' => ['nullable', 'max:50'],
+            'region' => ['nullable', 'max:50'],
+            'country' => ['nullable', 'max:2'],
+            'postal_code' => ['nullable', 'max:25'],
+            'children' => ['nullable', 'array'],
+            'children.*.id' => ['exists:contacts,id'],
+        ]);
+
+        $childrenIds = collect($validated['children'] ?? [])->pluck('id')->filter();
+        unset($validated['children']);
+
+        $parent = Auth::user()->account->parents()->create($validated);
+
+        if ($childrenIds->isNotEmpty()) {
+            $parent->children()->attach($childrenIds);
+        }
 
         return Redirect::route('parents')->with('success', 'Батька створено.');
     }
@@ -86,20 +95,28 @@ class ParentsController extends Controller
 
     public function update(ParentModel $parent): RedirectResponse
     {
-        $parent->update(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'middle_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-            ])
-        );
+        $validated = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['nullable', 'max:50', 'email'],
+            'phone' => ['nullable', 'max:50'],
+            'address' => ['nullable', 'max:150'],
+            'city' => ['nullable', 'max:50'],
+            'region' => ['nullable', 'max:50'],
+            'country' => ['nullable', 'max:2'],
+            'postal_code' => ['nullable', 'max:25'],
+            'children' => ['nullable', 'array'],
+            'children.*.id' => ['exists:contacts,id'],
+        ]);
+
+        $childrenIds = collect($validated['children'] ?? [])->pluck('id')->filter();
+        unset($validated['children']);
+
+        $parent->update($validated);
+        
+        // Sync the children relationships
+        $parent->children()->sync($childrenIds);
 
         return Redirect::back()->with('success', 'Батька оновлено.');
     }

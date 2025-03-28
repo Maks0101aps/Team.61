@@ -29,9 +29,23 @@
           <text-input v-model="form.password" :error="form.errors.password" class="mt-8 text-lg" :label="language === 'uk' ? 'Пароль' : 'Password'" type="password" />
           <text-input v-model="form.password_confirmation" :error="form.errors.password_confirmation" class="mt-8 text-lg" :label="language === 'uk' ? 'Підтвердження паролю' : 'Confirm Password'" type="password" />
           
-          <select-input v-model="form.role" :error="form.errors.role" class="mt-8 text-lg" :label="language === 'uk' ? 'Роль' : 'Role'">
+          <select-input v-model="form.role" :error="form.errors.role" class="mt-8 text-lg" :label="language === 'uk' ? 'Роль' : 'Role'" @update:modelValue="onRoleChange">
             <option value="" disabled>{{ language === 'uk' ? 'Оберіть роль' : 'Select a role' }}</option>
             <option v-for="(label, value) in getLocalizedRoles" :key="value" :value="value">{{ label }}</option>
+          </select-input>
+          
+          <!-- Parent selection (only visible for student role) -->
+          <select-input 
+            v-if="form.role === 'student'" 
+            v-model="form.parent_id" 
+            :error="form.errors.parent_id" 
+            class="mt-8 text-lg" 
+            :label="language === 'uk' ? 'Виберіть батька/матір' : 'Select Parent'"
+          >
+            <option value="" disabled>{{ language === 'uk' ? 'Оберіть батька/матір' : 'Select parent' }}</option>
+            <option v-for="parent in parents" :key="parent.id" :value="parent.id">
+              {{ parent.first_name }} {{ parent.middle_name }} {{ parent.last_name }}
+            </option>
           </select-input>
           
           <div class="mt-8 flex items-center justify-between">
@@ -68,8 +82,12 @@ export default {
   },
   props: {
     roles: Object,
+    parents: Array,
   },
   data() {
+    // For debugging - log parents to console
+    console.log('Parents received:', this.parents);
+    
     return {
       language: localStorage.getItem('language') || 'uk', // Default to Ukrainian, but check localStorage first
       form: this.$inertia.form({
@@ -80,6 +98,7 @@ export default {
         password: '',
         password_confirmation: '',
         role: '',
+        parent_id: '',
       }),
       ukRoles: {
         teacher: 'Вчитель',
@@ -109,12 +128,27 @@ export default {
     setLanguage(lang) {
       this.language = lang
       localStorage.setItem('language', lang)
+    },
+    onRoleChange(role) {
+      // Reset parent_id when changing roles
+      if (role !== 'student') {
+        this.form.parent_id = '';
+      }
     }
   },
   mounted() {
     // Ensure we have a language set in localStorage
     if (!localStorage.getItem('language')) {
       localStorage.setItem('language', 'uk')
+    }
+    
+    // Debug parents
+    console.log('Parents in mounted:', this.parents);
+    if (this.parents) {
+      console.log('Parents count:', this.parents.length);
+      if (this.parents.length > 0) {
+        console.log('First parent:', this.parents[0]);
+      }
     }
   }
 }
