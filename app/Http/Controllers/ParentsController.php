@@ -134,4 +134,38 @@ class ParentsController extends Controller
 
         return Redirect::back()->with('success', 'Батька відновлено.');
     }
+
+    /**
+     * Get detailed parent information by ID.
+     * This method is used by the registration form for students
+     * to fetch their parent's address data.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getParentById($id)
+    {
+        $parent = ParentModel::find($id);
+        
+        if (!$parent) {
+            return response()->json(['error' => 'Parent not found'], 404);
+        }
+        
+        return response()->json([
+            'parent' => [
+                'id' => $parent->id,
+                'first_name' => $parent->first_name,
+                'middle_name' => $parent->middle_name,
+                'last_name' => $parent->last_name,
+                'email' => $parent->email,
+                'phone' => $parent->phone,
+                'address' => $parent->address,
+                'city' => $parent->city,
+                'region' => $parent->region,
+                'street' => $parent->street,
+                'house_number' => $parent->house_number,
+                'postal_code' => $parent->postal_code,
+            ]
+        ]);
+    }
 }

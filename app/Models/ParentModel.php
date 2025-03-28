@@ -38,6 +38,8 @@ class ParentModel extends Model
         'region',
         'country',
         'postal_code',
+        'street',
+        'house_number',
     ];
 
     public function children(): BelongsToMany

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Account;
 use App\Models\ParentModel;
 use App\Models\Student;
+use App\Models\Teacher;
 use App\Models\User;
 use App\Providers\AppServiceProvider;
 use Illuminate\Http\RedirectResponse;
@@ -38,8 +39,12 @@ class RegisterController extends Controller
                 User::ROLE_STUDENT => 'Student',
                 User::ROLE_PARENT => 'Parent',
             ],
-                'parentTypes' => ParentModel::getParentTypes(),
-            'parents' => $parents->map->only('id', 'first_name', 'middle_name', 'last_name'),
+            'parentTypes' => ParentModel::getParentTypes(),
+            'parents' => $parents->map->only('id', 'first_name', 'middle_name', 'last_name', 'phone', 'address', 'city', 'region', 'postal_code', 'street', 'house_number'),
+            // Добавляем списки для полей формы учителя
+            'subjects' => Teacher::getSubjects(),
+            'qualifications' => Teacher::getQualifications(),
+            'regions' => Teacher::getRegions(),
         ]);
     }
 
@@ -72,6 +77,16 @@ class RegisterController extends Controller
                 ParentModel::TYPE_MOTHER,
                 ParentModel::TYPE_FATHER,
             ]);
+        }
+        
+        // Add teacher fields validation only for teacher role
+        if ($request->role === User::ROLE_TEACHER) {
+            $rules['subject'] = 'required|string|max:100';
+            $rules['qualification'] = 'required|string|max:100';
+            $rules['phone'] = 'nullable|string|max:50|regex:/^\+380/';
+            $rules['region'] = 'nullable|string|max:50';
+            $rules['city'] = 'nullable|string|max:50';
+            $rules['postal_code'] = 'nullable|string|max:25';
         }
         
         $validator = Validator::make($request->all(), $rules);
@@ -122,10 +137,37 @@ class RegisterController extends Controller
                 'last_name' => $request->last_name,
                 'email' => $request->email,
                 'parent_type' => $request->parent_type,
+                'phone' => $request->phone,
+                'region' => $request->region,
+                'city' => $request->city,
+                'street' => $request->street,
+                'house_number' => $request->house_number,
+                'postal_code' => $request->postal_code,
             ]);
             
             // Log the created parent for debugging
             Log::info('Created parent: ' . json_encode($parent));
+        }
+        
+        // If user is a teacher, create a teacher record
+        if ($request->role === User::ROLE_TEACHER) {
+            $teacher = Teacher::create([
+                'account_id' => $account->id,
+                'first_name' => $request->first_name,
+                'middle_name' => $request->middle_name ?? '',
+                'last_name' => $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone ?? '',
+                'subject' => $request->subject,
+                'qualification' => $request->qualification,
+                'region' => $request->region ?? '',
+                'city' => $request->city ?? '',
+                'country' => 'UA', // Всегда Украина
+                'postal_code' => $request->postal_code ?? '',
+            ]);
+            
+            // Log the created teacher for debugging
+            Log::info('Created teacher: ' . json_encode($teacher));
         }
 
         // Log the user in

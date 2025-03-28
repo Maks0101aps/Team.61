@@ -13,6 +13,8 @@ use App\Http\Controllers\TasksController;
 use App\Http\Middleware\CheckStudentRole;
 use App\Http\Middleware\CheckParentRole;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CitiesController;
+use App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -223,5 +225,18 @@ Route::get('cities/{region}', function ($region) {
         'cities' => \App\Models\Teacher::getCitiesByRegion($region)
     ]);
 })->middleware('auth')->name('cities.by_region');
+
+// Public cities lookup for registration
+Route::get('public/cities/{region}', function ($region) {
+    return response()->json([
+        'cities' => \App\Models\Teacher::getCitiesByRegion($region)
+    ]);
+})->name('public.cities.by_region');
+
+// Helpers для формы регистрации
+Route::get('public/cities/{region}', [CitiesController::class, 'getCitiesByRegion']);
+
+// Получение информации о родителе по ID для формы регистрации студента
+Route::get('public/parent/{id}', [ParentsController::class, 'getParentById']);
 
 
