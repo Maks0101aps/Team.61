@@ -172,8 +172,8 @@
             size="md">
             {{ language === 'uk' ? 'Створити вчителя' : 'Create Teacher' }}
           </loading-button>
-        </div>
-      </form>
+      </div>
+    </form>
     </div>
   </div>
 </template>

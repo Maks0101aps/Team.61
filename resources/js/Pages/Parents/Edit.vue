@@ -16,7 +16,7 @@
         </div>
         <h1 class="mt-1 text-3xl font-bold text-gray-900">
           {{ language === 'uk' ? 'Редагування батька' : 'Edit Parent' }}: {{ parent.first_name }} {{ parent.last_name }}
-        </h1>
+  </h1>
       </div>
       <div class="mt-4 sm:mt-0">
         <Link 
@@ -132,7 +132,7 @@
               >
                 <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
-              </select-input>
+        </select-input>
               
               <div class="form-group">
                 <label class="form-label block mb-2 text-sm font-medium text-gray-700">{{ currentLanguageLabels.country }}</label>
@@ -170,7 +170,7 @@
               />
             </div>
           </div>
-        </div>
+      </div>
         
         <!-- Form footer -->
         <div class="px-6 sm:px-8 py-4 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-end gap-3">
@@ -180,7 +180,7 @@
             @click="destroy"
           >
             <span>{{ language === 'uk' ? 'Видалити батька' : 'Delete Parent' }}</span>
-          </button>
+        </button>
           <div class="flex-grow"></div>
           <Link 
             :href="`/parents/${parent.id}`" 
@@ -193,9 +193,9 @@
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
             {{ language === 'uk' ? 'Оновити батька' : 'Update Parent' }}
-          </loading-button>
-        </div>
-      </form>
+        </loading-button>
+      </div>
+    </form>
     </div>
   </div>
 </template>
@@ -322,7 +322,7 @@ export default {
     },
   },
 }
-</script>
+</script> 
 
 <style scoped>
 /* Add any specific styles needed for the form here */

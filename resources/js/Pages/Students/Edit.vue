@@ -16,7 +16,7 @@
         </div>
         <h1 class="mt-1 text-3xl font-bold text-gray-900">
           {{ language === 'uk' ? 'Редагування студента' : 'Edit Student' }}: {{ student.first_name }} {{ student.last_name }}
-        </h1>
+    </h1>
       </div>
       <div class="mt-4 sm:mt-0">
         <Link 

@@ -30,7 +30,17 @@
             </dropdown>
           </div>
           <div class="md:text-md flex items-center justify-between p-4 w-full bg-white border-b shadow-sm md:px-12 md:py-0">
-            <div class="mr-4 mt-1 text-blue-900 font-medium">{{ auth.user.account.name }}</div>
+            <div class="mr-4 mt-1 text-blue-900 font-medium">
+              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+                {{ auth.user.role ? (language === 'uk' ? 
+                    (auth.user.role === 'teacher' ? 'Вчитель' : 
+                     auth.user.role === 'student' ? 'Учень' : 
+                     auth.user.role === 'parent' ? 'Батько' : auth.user.role) : 
+                    (auth.user.role === 'teacher' ? 'Teacher' : 
+                     auth.user.role === 'student' ? 'Student' : 
+                     auth.user.role === 'parent' ? 'Parent' : auth.user.role)) : '' }}
+              </span>
+            </div>
             <div class="flex items-center space-x-6">
               <div class="hidden md:flex items-center">
                 <div class="inline-flex rounded-lg shadow-sm" role="group">

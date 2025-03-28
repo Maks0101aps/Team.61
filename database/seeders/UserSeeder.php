@@ -30,6 +30,7 @@ class UserSeeder extends Seeder
             'email' => 'johndoe@example.com',
             'password' => Hash::make('secret'), // Plain text password is 'secret'
             'owner' => true,
+            'role' => User::ROLE_TEACHER,
         ]);
         
         $this->command->info('Test user created successfully. Email: johndoe@example.com, Password: secret');

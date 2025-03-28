@@ -16,7 +16,7 @@
         </div>
         <h1 class="mt-1 text-3xl font-bold text-gray-900">
           {{ language === 'uk' ? 'Редагування вчителя' : 'Edit Teacher' }}: {{ teacher.first_name }} {{ teacher.last_name }}
-        </h1>
+    </h1>
       </div>
       <div class="mt-4 sm:mt-0">
         <Link 
@@ -127,7 +127,7 @@
               >
                 <option :value="null">{{ language === 'uk' ? 'Оберіть область' : 'Select region' }}</option>
                 <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
-              </select-input>
+          </select-input>
               
               <select-input 
                 v-model="form.city" 
@@ -138,7 +138,7 @@
               >
                 <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
-              </select-input>
+          </select-input>
               
               <div class="form-group">
                 <label class="form-label block mb-2 text-sm font-medium text-gray-700">{{ currentLanguageLabels.country }}</label>
@@ -241,7 +241,7 @@ export default {
       cities: [],
       language: localStorage.getItem('language') || 'uk',
     }
-  },
+      },
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     if (this.form.region) {
@@ -316,7 +316,7 @@ export default {
     },
   },
 }
-</script>
+</script> 
 
 <style scoped>
 /* Add any specific styles needed for the form here */

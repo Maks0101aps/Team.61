@@ -24,6 +24,7 @@ class UsersTableSeeder extends Seeder
             'email' => 'johndoe@example.com',
             'password' => 'secret',
             'owner' => true,
+            'role' => User::ROLE_TEACHER,
         ]);
     }
 }

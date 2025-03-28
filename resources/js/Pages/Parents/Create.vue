@@ -16,7 +16,7 @@
         </div>
         <h1 class="mt-1 text-3xl font-bold text-gray-900">
           {{ language === 'uk' ? 'Створення батька' : 'Create Parent' }}
-        </h1>
+  </h1>
       </div>
       <div class="mt-4 sm:mt-0">
         <Link 
@@ -186,8 +186,8 @@
             size="md">
             {{ language === 'uk' ? 'Створити батька' : 'Create Parent' }}
           </loading-button>
-        </div>
-      </form>
+      </div>
+    </form>
     </div>
   </div>
 </template>
