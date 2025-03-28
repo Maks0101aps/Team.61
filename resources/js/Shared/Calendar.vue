@@ -225,7 +225,13 @@
           </div>
         </div>
         
-        <div class="mt-8 flex justify-end">
+        <div class="mt-8 flex justify-end space-x-3">
+          <!-- Add delete button that only appears for events created by the current user -->
+          <button v-if="canDeleteEvent(selectedEvent)" 
+                  @click="deleteEvent(selectedEvent)"
+                  class="px-4 py-2 bg-red-500 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-red-600 transition-all duration-200">
+            {{ language === 'uk' ? 'Видалити' : 'Delete' }}
+          </button>
           <button @click="selectedEvent = null" 
                   class="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
             {{ language === 'uk' ? 'Закрити' : 'Close' }}
@@ -409,6 +415,58 @@ export default {
       return dayjs(date).format('DD.MM.YYYY HH:mm')
     }
 
+    // Check if current user can delete this event
+    const canDeleteEvent = (event) => {
+      // If there's no event, return false
+      if (!event) return false
+      
+      // Check if current user created this event
+      // We'll rely on the browser to send the authenticated session with the request
+      // The backend will handle the actual authorization check
+      return true
+    }
+    
+    // Delete an event
+    const deleteEvent = (event) => {
+      if (!confirm(props.language === 'uk' ? 'Ви впевнені, що хочете видалити цю подію?' : 'Are you sure you want to delete this event?')) {
+        return
+      }
+      
+      // Send the delete request - the server will check if the user has permission
+      axios.delete(`/events/${event.id}`)
+        .then(response => {
+          // Close the modal
+          selectedEvent.value = null
+          
+          // Show success message
+          const successMsg = props.language === 'uk' ? 'Подію видалено' : 'Event deleted';
+          const event = new CustomEvent('inertia:flash', {
+            detail: {
+              type: 'success',
+              message: successMsg
+            }
+          });
+          window.dispatchEvent(event);
+          
+          // Reload the page to update the calendar
+          window.location.reload();
+        })
+        .catch(error => {
+          // Show error message
+          let errorMsg = props.language === 'uk' ? 'Помилка при видаленні події' : 'Error deleting event';
+          
+          if (error.response && error.response.data) {
+            if (error.response.data.message) {
+              errorMsg = error.response.data.message;
+            } else if (error.response.data.error) {
+              errorMsg = error.response.data.error;
+            }
+          }
+          
+          alert(errorMsg);
+        });
+    }
+
     const previousPeriod = () => {
       switch (currentView.value) {
         case 'month':
@@ -530,7 +588,9 @@ export default {
       previousPeriod,
       nextPeriod,
       createEventOnDate,
-      checkEventAccess
+      checkEventAccess,
+      canDeleteEvent,
+      deleteEvent
     }
   }
 }

@@ -58,14 +58,27 @@
                 help-text="Введіть інформативну назву для події"
               />
               
+              <div v-if="isStudent">
+                <div class="border border-amber-200 bg-amber-50 rounded-md p-4">
+                  <div class="text-sm font-medium text-amber-800 mb-1">Тип події</div>
+                  <div class="text-sm text-amber-700">
+                    Учні можуть створювати тільки особисті події.
+                  </div>
+                  <div class="mt-2 font-semibold">
+                    Тип: Особиста подія
+                  </div>
+                </div>
+                <input type="hidden" v-model="form.type" value="personal" />
+              </div>
               <select-input 
+                v-else
                 v-model="form.type" 
                 :error="form.errors.type" 
                 label="Тип події"
                 help-text="Оберіть тип події для правильної категоризації"
               >
                 <option value="" disabled>Оберіть тип події</option>
-                <option v-for="type in types" :key="type" :value="type">{{ type }}</option>
+                <option v-for="(label, value) in types" :key="value" :value="value">{{ label }}</option>
               </select-input>
             </div>
           </div>
@@ -131,6 +144,15 @@
                 help-text="Детально опишіть подію, включаючи всі важливі деталі"
               />
             </div>
+            <div class="mb-6">
+              <text-area 
+                v-model="form.tasks" 
+                :error="form.errors.tasks" 
+                label="Завдання" 
+                rows="4"
+                help-text="Опишіть завдання, які потрібно виконати в рамках цієї події"
+              />
+            </div>
           </div>
           
           <!-- Participants Section -->
@@ -140,21 +162,29 @@
             </h3>
             
             <div class="grid grid-cols-1 gap-6">
-              <multi-select
-                v-model="form.teachers"
-                :options="teachers"
-                option-label="full_name"
-                option-value="id"
-                label="Вчителі"
-                placeholder="Оберіть вчителів для події"
-                :error="form.errors.teachers"
-                help-text="Оберіть вчителів, які мають бути присутніми на події"
-              />
+              <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4">
+                <div class="text-sm font-medium text-amber-800 mb-1">Вчителі</div>
+                <div class="text-sm text-amber-700">
+                  Учні не можуть запрошувати вчителів на події. Це обмеження встановлено системою.
+                </div>
+              </div>
+              <div v-else>
+                <multi-select
+                  v-model="form.teachers"
+                  :options="teachers"
+                  option-label="name"
+                  option-value="id"
+                  label="Вчителі"
+                  placeholder="Оберіть вчителів для події"
+                  :error="form.errors.teachers"
+                  help-text="Оберіть вчителів, які мають бути присутніми на події"
+                />
+              </div>
               
               <multi-select
                 v-model="form.students"
                 :options="students"
-                option-label="full_name"
+                option-label="name"
                 option-value="id"
                 label="Учні"
                 placeholder="Оберіть учнів для події"
@@ -162,16 +192,24 @@
                 help-text="Оберіть учнів, які мають бути присутніми на події"
               />
               
-              <multi-select
-                v-model="form.parents"
-                :options="parents"
-                option-label="full_name"
-                option-value="id"
-                label="Батьки"
-                placeholder="Оберіть батьків для події"
-                :error="form.errors.parents"
-                help-text="Оберіть батьків, які мають бути присутніми на події"
-              />
+              <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4">
+                <div class="text-sm font-medium text-amber-800 mb-1">Батьки</div>
+                <div class="text-sm text-amber-700">
+                  Учні не можуть запрошувати батьків на події. Це обмеження встановлено системою.
+                </div>
+              </div>
+              <div v-else>
+                <multi-select
+                  v-model="form.parents"
+                  :options="parents"
+                  option-label="name"
+                  option-value="id"
+                  label="Батьки"
+                  placeholder="Оберіть батьків для події"
+                  :error="form.errors.parents"
+                  help-text="Оберіть батьків, які мають бути присутніми на події"
+                />
+              </div>
             </div>
             
             <div class="mt-6">
@@ -237,12 +275,13 @@ export default {
     return {
       form: this.$inertia.form({
         title: '',
-        type: '',
+        type: this.$page.props.auth.user.role === 'student' ? 'personal' : '',
         start_date: '',
         duration: 60,
         content: '',
         location: '',
         online_link: '',
+        tasks: '',
         teachers: [],
         students: [],
         parents: [],
@@ -252,10 +291,19 @@ export default {
   },
   methods: {
     store() {
+      // If user is a student, ensure teachers and parents arrays are empty
+      if (this.isStudent) {
+        this.form.teachers = [];
+        this.form.parents = [];
+      }
+      
       this.form.post('/events')
     },
   },
   computed: {
+    isStudent() {
+      return this.$page.props.auth.user.role === 'student';
+    },
     currentLanguageLabels() {
       return {
         en: {
@@ -266,6 +314,7 @@ export default {
           content: 'Content',
           location: 'Location',
           online_link: 'Online Link',
+          tasks: 'Tasks',
           teachers: 'Teachers',
           students: 'Students',
           parents: 'Parents',
@@ -279,6 +328,7 @@ export default {
           content: 'Опис',
           location: 'Місце проведення',
           online_link: 'Посилання для онлайн-участі',
+          tasks: 'Завдання',
           teachers: 'Вчителі',
           students: 'Учні',
           parents: 'Батьки',

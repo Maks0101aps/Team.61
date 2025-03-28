@@ -65,7 +65,8 @@
             </div>
 
             <div class="space-y-4">
-              <div v-for="task in todayTasks" :key="task.id" 
+              <!-- Tasks for today -->
+              <div v-for="task in todayTasks" :key="`task-${task.id}`" 
                    class="bg-blue-50 rounded-lg p-4 transition-all duration-300 hover:bg-blue-100 hover:shadow-md">
                 <div class="flex items-start justify-between">
                   <div class="flex-1 min-w-0">
@@ -82,8 +83,27 @@
                   </Link>
                 </div>
               </div>
+              
+              <!-- Events for today -->
+              <div v-for="event in todayEvents" :key="`event-${event.id}`" 
+                   class="bg-purple-50 rounded-lg p-4 transition-all duration-300 hover:bg-purple-100 hover:shadow-md">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-purple-900">{{ event.title }}</p>
+                    <p class="text-sm text-purple-700 mt-1">{{ localLanguage === 'uk' ? 'Подія' : 'Event' }}</p>
+                    <p class="text-xs text-purple-600 mt-2">{{ formatTime(event.start_date) }}</p>
+                  </div>
+                  <Link :href="`/events/${event.id}/edit`" 
+                        class="text-purple-600 hover:text-purple-900 transition-colors duration-200">
+                    <span class="sr-only">{{ localLanguage === 'uk' ? 'Редагувати' : 'Edit' }}</span>
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
 
-              <div v-if="todayTasks.length === 0" 
+              <div v-if="todayTasks.length === 0 && todayEvents.length === 0" 
                    class="text-center text-blue-600 py-8 bg-blue-50 rounded-lg">
                 {{ localLanguage === 'uk' ? 'Немає завдань на сьогодні' : 'No tasks for today' }}
               </div>
@@ -138,6 +158,15 @@ export default {
         return dayjs(a.due_date).diff(dayjs(b.due_date))
       })
     },
+    todayEvents() {
+      const today = dayjs().startOf('day')
+      return this.events.filter(event => {
+        const eventDate = dayjs(event.start_date).startOf('day')
+        return eventDate.isSame(today)
+      }).sort((a, b) => {
+        return dayjs(a.start_date).diff(dayjs(b.start_date))
+      })
+    },
     completedTasks() {
       return this.todayTasks.filter(task => task.completed)
     },
@@ -148,7 +177,7 @@ export default {
       return this.completedTasks.length
     },
     uncompletedTasksCount() {
-      return this.uncompletedTasks.length
+      return this.uncompletedTasks.length + this.todayEvents.length
     }
   },
   methods: {

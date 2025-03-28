@@ -13,7 +13,25 @@
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.title" :error="form.errors.title" class="pb-8 pr-6 w-full lg:w-1/2" label="Назва" />
-          <select-input v-model="form.type" :error="form.errors.type" class="pb-8 pr-6 w-full lg:w-1/2" label="Тип">
+          <div v-if="isStudent" class="pb-8 pr-6 w-full lg:w-1/2">
+            <div class="border border-amber-200 bg-amber-50 rounded-md p-4">
+              <div class="text-sm font-medium text-amber-800 mb-1">Тип події</div>
+              <div class="text-sm text-amber-700">
+                Учні можуть створювати тільки особисті події.
+              </div>
+              <div class="mt-2 font-semibold">
+                Тип: Особиста подія
+              </div>
+            </div>
+            <input type="hidden" v-model="form.type" value="personal" />
+          </div>
+          <select-input 
+            v-else
+            v-model="form.type" 
+            :error="form.errors.type" 
+            class="pb-8 pr-6 w-full lg:w-1/2" 
+            label="Тип"
+          >
             <option :value="null" />
             <option v-for="(label, value) in types" :key="value" :value="value">{{ label }}</option>
           </select-input>
@@ -77,7 +95,14 @@
               </div>
             </template>
           </multi-select>
+          <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4 pb-8 pr-6 w-full lg:w-1/2">
+            <div class="text-sm font-medium text-amber-800 mb-1">Вчителі</div>
+            <div class="text-sm text-amber-700">
+              Учні не можуть запрошувати вчителів на події. Це обмеження встановлено системою.
+            </div>
+          </div>
           <multi-select
+            v-else
             v-model="form.teacher_ids"
             :options="teachers"
             :error="form.errors.teacher_ids"
@@ -93,7 +118,14 @@
               </div>
             </template>
           </multi-select>
+          <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4 pb-8 pr-6 w-full lg:w-full">
+            <div class="text-sm font-medium text-amber-800 mb-1">Батьки</div>
+            <div class="text-sm text-amber-700">
+              Учні не можуть запрошувати батьків на події. Це обмеження встановлено системою.
+            </div>
+          </div>
           <multi-select
+            v-else
             v-model="form.parent_ids"
             :options="parents"
             :error="form.errors.parent_ids"
@@ -111,6 +143,14 @@
           </multi-select>
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+          <button
+            v-if="isStudent && isOwnEvent"
+            type="button"
+            class="text-red-600 hover:text-red-800 font-medium focus:outline-none"
+            @click="destroy"
+          >
+            Видалити подію
+          </button>
           <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">
             Оновити подію
           </loading-button>
@@ -156,7 +196,7 @@ export default {
     return {
       form: this.$inertia.form({
         title: this.event.title,
-        type: this.event.type,
+        type: this.isStudent ? 'personal' : this.event.type,
         start_date: this.event.start_date,
         duration: this.event.duration,
         content: this.event.content,
@@ -170,13 +210,30 @@ export default {
       }),
     }
   },
+  computed: {
+    isStudent() {
+      return this.$page.props.auth.user.role === 'student';
+    },
+    isOwnEvent() {
+      return this.event.created_by === this.$page.props.auth.user.id;
+    },
+  },
   methods: {
     update() {
+      if (this.isStudent) {
+        this.form.teacher_ids = [];
+        this.form.parent_ids = [];
+      }
+      
       this.form.put(`/events/${this.event.id}`)
     },
     destroy() {
       if (confirm('Ви впевнені, що хочете видалити цю подію?')) {
-        this.$inertia.delete(`/events/${this.event.id}`)
+        this.$inertia.delete(`/events/${this.event.id}`, {
+          onSuccess: () => {
+            this.$inertia.visit('/events');
+          }
+        });
       }
     },
     restore() {

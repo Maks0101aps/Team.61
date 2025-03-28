@@ -38,6 +38,7 @@ class DashboardController extends Controller
                     'location' => $event->location,
                     'online_link' => $event->online_link,
                     'created_by' => $event->creator->name,
+                    'created_by_id' => $event->created_by,
                     'is_content_hidden' => $event->is_content_hidden,
                 ];
             });

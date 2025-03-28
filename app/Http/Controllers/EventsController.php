@@ -82,7 +82,9 @@ class EventsController extends Controller
 
     public function store()
     {
-        $validated = Request::validate([
+        $user = Auth::user();
+        
+        $validated = request()->validate([
             'title' => ['required', 'max:100'],
             'type' => ['required', 'in:' . implode(',', array_keys(Event::getTypes()))],
             'start_date' => ['required', 'date'],
@@ -99,6 +101,21 @@ class EventsController extends Controller
             'parent_ids' => ['array'],
             'parent_ids.*.id' => ['exists:parent_models,id'],
         ]);
+
+        // For students, enforce that they can only create personal events and can't invite teachers or parents
+        if ($user->isStudent()) {
+            if ($validated['type'] !== Event::TYPE_PERSONAL) {
+                return back()->with('error', __('Учні можуть створювати тільки особисті події'));
+            }
+            
+            if (!empty($validated['teacher_ids'])) {
+                return back()->with('error', __('Учні не можуть запрошувати вчителів на події'));
+            }
+            
+            if (!empty($validated['parent_ids'])) {
+                return back()->with('error', __('Учні не можуть запрошувати батьків на події'));
+            }
+        }
 
         $event = Auth::user()->account->events()->create([
             'title' => $validated['title'],
@@ -125,7 +142,7 @@ class EventsController extends Controller
             $event->parents()->attach(collect($validated['parent_ids'])->pluck('id'));
         }
 
-        return Redirect::route('events.index')->with('success', 'Event created.');
+        return Redirect::route('events.index')->with('success', __('Event created.'));
     }
 
     public function edit(Event $event)
@@ -139,7 +156,7 @@ class EventsController extends Controller
             
             // Students can only edit their own events
             if ($event->created_by !== $user->id) {
-                return Redirect::back()->with('error', 'Учні можуть редагувати тільки власні події');
+                return Redirect::back()->with('error', __('Учні можуть редагувати тільки власні події'));
             }
         }
         
@@ -159,6 +176,7 @@ class EventsController extends Controller
                 'student_ids' => $event->students->map->only('id'),
                 'teacher_ids' => $event->teachers->map->only('id'),
                 'parent_ids' => $event->parents->map->only('id'),
+                'created_by' => $event->created_by,
             ],
             'types' => $types,
             'students' => Auth::user()->account->students()
@@ -182,6 +200,8 @@ class EventsController extends Controller
 
     public function update(Event $event)
     {
+        $user = Auth::user();
+        
         $validated = Request::validate([
             'title' => ['required', 'max:100'],
             'type' => ['required', 'in:' . implode(',', array_keys(Event::getTypes()))],
@@ -200,6 +220,21 @@ class EventsController extends Controller
             'parent_ids.*.id' => ['exists:parent_models,id'],
         ]);
 
+        // For students, enforce that they can only create personal events and can't invite teachers or parents
+        if ($user->isStudent()) {
+            if ($validated['type'] !== Event::TYPE_PERSONAL) {
+                return back()->with('error', __('Учні можуть створювати тільки особисті події'));
+            }
+            
+            if (!empty($validated['teacher_ids'])) {
+                return back()->with('error', __('Учні не можуть запрошувати вчителів на події'));
+            }
+            
+            if (!empty($validated['parent_ids'])) {
+                return back()->with('error', __('Учні не можуть запрошувати батьків на події'));
+            }
+        }
+
         $event->update([
             'title' => $validated['title'],
             'type' => $validated['type'],
@@ -216,20 +251,39 @@ class EventsController extends Controller
         $event->teachers()->sync(collect($validated['teacher_ids'] ?? [])->pluck('id'));
         $event->parents()->sync(collect($validated['parent_ids'] ?? [])->pluck('id'));
 
-        return Redirect::back()->with('success', 'Event updated.');
+        return Redirect::back()->with('success', __('Event updated.'));
     }
 
     public function destroy(Event $event)
     {
+        $user = Auth::user();
+        
+        // Students can only delete their own events
+        if ($user->isStudent() && $event->created_by !== $user->id) {
+            if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'message' => __('Учні можуть видаляти тільки власні події')
+                ], 403);
+            }
+            
+            return Redirect::back()->with('error', __('Учні можуть видаляти тільки власні події'));
+        }
+        
         $event->delete();
 
-        return Redirect::back()->with('success', 'Event deleted.');
+        if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'message' => __('Подію видалено')
+            ]);
+        }
+        
+        return Redirect::route('events.index')->with('success', __('Event deleted.'));
     }
 
     public function restore(Event $event)
     {
         $event->restore();
 
-        return Redirect::back()->with('success', 'Event restored.');
+        return Redirect::back()->with('success', __('Event restored.'));
     }
 } 
