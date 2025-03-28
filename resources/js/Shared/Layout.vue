@@ -35,10 +35,10 @@
                 {{ auth.user.role ? (language === 'uk' ? 
                     (auth.user.role === 'teacher' ? 'Вчитель' : 
                      auth.user.role === 'student' ? 'Учень' : 
-                     auth.user.role === 'parent' ? 'Батько' : auth.user.role) : 
+                     auth.user.role === 'parent' ? (parentType === 'mother' ? 'Мати' : 'Батько') : auth.user.role) : 
                     (auth.user.role === 'teacher' ? 'Teacher' : 
                      auth.user.role === 'student' ? 'Student' : 
-                     auth.user.role === 'parent' ? 'Parent' : auth.user.role)) : '' }}
+                     auth.user.role === 'parent' ? (parentType === 'mother' ? 'Mother' : 'Father') : auth.user.role)) : '' }}
               </span>
             </div>
             <div class="flex items-center space-x-6">
@@ -136,6 +136,7 @@ export default {
   data() {
     return {
       language: localStorage.getItem('language') || 'uk', // Default to Ukrainian
+      parentType: 'mother', // Default value
     }
   },
   methods: {
@@ -161,6 +162,20 @@ export default {
     // Ensure we have a language set in localStorage
     if (!localStorage.getItem('language')) {
       localStorage.setItem('language', 'uk')
+    }
+    
+    // Fetch parent type if the user is a parent
+    if (this.auth.user.role === 'parent') {
+      fetch(`/api/parent-type/${this.auth.user.id}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.parentType) {
+            this.parentType = data.parentType;
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching parent type:', error);
+        });
     }
   }
 }

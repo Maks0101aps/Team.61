@@ -12,12 +12,26 @@ class ParentModel extends Model
     use HasFactory;
     use SoftDeletes;
 
+    // Типы родителей
+    const TYPE_MOTHER = 'mother';
+    const TYPE_FATHER = 'father';
+    
+    // Локализованные названия типов родителей
+    public static function getParentTypes()
+    {
+        return [
+            self::TYPE_MOTHER => 'Мати',
+            self::TYPE_FATHER => 'Батько',
+        ];
+    }
+
     protected $fillable = [
         'account_id',
         'first_name',
         'middle_name',
         'last_name',
         'email',
+        'parent_type',
         'phone',
         'address',
         'city',
@@ -39,6 +53,11 @@ class ParentModel extends Model
     public function getNameAttribute()
     {
         return $this->first_name.' '.$this->middle_name.' '.$this->last_name;
+    }
+
+    public function getParentTypeNameAttribute()
+    {
+        return self::getParentTypes()[$this->parent_type] ?? 'Невідомо';
     }
 
     public function scopeOrderByName($query)

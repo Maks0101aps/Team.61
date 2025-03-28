@@ -38,6 +38,7 @@ class RegisterController extends Controller
                 User::ROLE_STUDENT => 'Student',
                 User::ROLE_PARENT => 'Parent',
             ],
+                'parentTypes' => ParentModel::getParentTypes(),
             'parents' => $parents->map->only('id', 'first_name', 'middle_name', 'last_name'),
         ]);
     }
@@ -63,6 +64,14 @@ class RegisterController extends Controller
         // Add parent_id validation only for student role
         if ($request->role === User::ROLE_STUDENT) {
             $rules['parent_id'] = 'required|exists:parent_models,id';
+        }
+        
+        // Add parent_type validation only for parent role
+        if ($request->role === User::ROLE_PARENT) {
+            $rules['parent_type'] = 'required|in:' . implode(',', [
+                ParentModel::TYPE_MOTHER,
+                ParentModel::TYPE_FATHER,
+            ]);
         }
         
         $validator = Validator::make($request->all(), $rules);
@@ -112,6 +121,7 @@ class RegisterController extends Controller
                 'middle_name' => $request->middle_name ?? '',
                 'last_name' => $request->last_name,
                 'email' => $request->email,
+                'parent_type' => $request->parent_type,
             ]);
             
             // Log the created parent for debugging

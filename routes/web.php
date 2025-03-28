@@ -11,6 +11,7 @@ use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\TasksController;
 use App\Http\Middleware\CheckStudentRole;
+use App\Http\Middleware\CheckParentRole;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,19 +69,19 @@ Route::middleware(['auth', 'App\Http\Middleware\CheckRole:teacher'])->group(func
 
 Route::get('users/{user}/edit', [UsersController::class, 'edit'])
     ->name('users.edit')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::put('users/{user}', [UsersController::class, 'update'])
     ->name('users.update')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::delete('users/{user}', [UsersController::class, 'destroy'])
     ->name('users.destroy')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::put('users/{user}/restore', [UsersController::class, 'restore'])
     ->name('users.restore')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 // Parents
 Route::get('parents', [ParentsController::class, 'index'])
@@ -89,27 +90,27 @@ Route::get('parents', [ParentsController::class, 'index'])
 
 Route::get('parents/create', [ParentsController::class, 'create'])
     ->name('parents.create')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::post('parents', [ParentsController::class, 'store'])
     ->name('parents.store')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::get('parents/{parent}/edit', [ParentsController::class, 'edit'])
     ->name('parents.edit')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::put('parents/{parent}', [ParentsController::class, 'update'])
     ->name('parents.update')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::delete('parents/{parent}', [ParentsController::class, 'destroy'])
     ->name('parents.destroy')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::get('parents/{parent}/restore', [ParentsController::class, 'restore'])
     ->name('parents.restore')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 // Teachers
 
@@ -123,27 +124,27 @@ Route::get('teachers/cities/{region}', [TeachersController::class, 'getCitiesByR
 
 Route::get('teachers/create', [TeachersController::class, 'create'])
     ->name('teachers.create')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::post('teachers', [TeachersController::class, 'store'])
     ->name('teachers.store')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::get('teachers/{teacher}/edit', [TeachersController::class, 'edit'])
     ->name('teachers.edit')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::put('teachers/{teacher}', [TeachersController::class, 'update'])
     ->name('teachers.update')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::delete('teachers/{teacher}', [TeachersController::class, 'destroy'])
     ->name('teachers.destroy')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::put('teachers/{teacher}/restore', [TeachersController::class, 'restore'])
     ->name('teachers.restore')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 // Images
 
@@ -156,8 +157,8 @@ Route::middleware('auth')->group(function () {
     // Index route - all authenticated users can view events
     Route::get('events', [EventsController::class, 'index'])->name('events.index');
     
-    // Routes that students should not access
-    Route::middleware([CheckStudentRole::class])->group(function () {
+    // Routes that students and parents should not access
+    Route::middleware([CheckStudentRole::class, CheckParentRole::class])->group(function () {
         Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
         Route::post('events', [EventsController::class, 'store'])->name('events.store');
         Route::get('events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
@@ -172,8 +173,8 @@ Route::middleware('auth')->group(function () {
     // Index route - all authenticated users can view tasks
     Route::get('tasks', [TasksController::class, 'index'])->name('tasks.index');
     
-    // Routes that students should not access
-    Route::middleware([CheckStudentRole::class])->group(function () {
+    // Routes that students and parents should not access
+    Route::middleware([CheckStudentRole::class, CheckParentRole::class])->group(function () {
         Route::get('tasks/create', [TasksController::class, 'create'])->name('tasks.create');
         Route::post('tasks', [TasksController::class, 'store'])->name('tasks.store');
         Route::get('tasks/{task}/edit', [TasksController::class, 'edit'])->name('tasks.edit');
@@ -191,27 +192,27 @@ Route::get('students', [StudentsController::class, 'index'])
 
 Route::get('students/create', [StudentsController::class, 'create'])
     ->name('students.create')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::post('students', [StudentsController::class, 'store'])
     ->name('students.store')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::get('students/{student}/edit', [StudentsController::class, 'edit'])
     ->name('students.edit')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::put('students/{student}', [StudentsController::class, 'update'])
     ->name('students.update')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::delete('students/{student}', [StudentsController::class, 'destroy'])
     ->name('students.destroy')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 Route::put('students/{student}/restore', [StudentsController::class, 'restore'])
     ->name('students.restore')
-    ->middleware(['auth', CheckStudentRole::class]);
+    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
 
 // Cities lookup - usable by any form requiring city selection
 Route::get('cities/{region}', function ($region) {

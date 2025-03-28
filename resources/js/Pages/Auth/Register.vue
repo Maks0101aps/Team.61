@@ -40,6 +40,18 @@
             <option v-for="(label, value) in getLocalizedRoles" :key="value" :value="value">{{ label }}</option>
           </select-input>
           
+          <!-- Parent type selection (only visible for parent role) -->
+          <select-input 
+            v-if="form.role === 'parent'" 
+            v-model="form.parent_type" 
+            :error="form.errors.parent_type" 
+            class="mt-8 text-lg" 
+            :label="language === 'uk' ? 'Тип (мати/батько)' : 'Parent Type'"
+          >
+            <option value="" disabled>{{ language === 'uk' ? 'Оберіть тип' : 'Select type' }}</option>
+            <option v-for="(label, value) in getLocalizedParentTypes" :key="value" :value="value">{{ label }}</option>
+          </select-input>
+          
           <!-- Parent selection (only visible for student role) -->
           <select-input 
             v-if="form.role === 'student'" 
@@ -100,6 +112,7 @@ export default {
   props: {
     roles: Object,
     parents: Array,
+    parentTypes: Object,
   },
   data() {
     // For debugging - log parents to console
@@ -116,6 +129,7 @@ export default {
         password_confirmation: '',
         role: '',
         parent_id: '',
+        parent_type: '',
       }),
       ukRoles: {
         teacher: 'Вчитель',
@@ -137,6 +151,10 @@ export default {
       }
       return this.roles;
     },
+    getLocalizedParentTypes() {
+      // Parent types are already localized in Ukrainian
+      return this.parentTypes;
+    },
     filteredParents() {
       if (!this.form.last_name || !this.parents) return [];
       
@@ -156,9 +174,8 @@ export default {
     },
     onRoleChange(role) {
       // Reset parent_id when changing roles
-      if (role !== 'student') {
-        this.form.parent_id = '';
-      }
+      this.form.parent_id = '';
+      this.form.parent_type = '';
     },
     onLastNameChange(value) {
       // Reset parent_id when last name changes
