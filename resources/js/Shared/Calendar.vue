@@ -58,7 +58,8 @@
         
         <!-- Create Event button -->
         <Link href="/events/create"
-              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-md text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg">
+              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-md text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+              @click.prevent="checkEventAccess">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
           </svg>
@@ -89,7 +90,7 @@
               {{ day.dayNumber }}
             </div>
             <!-- Add Event Button -->
-            <button @click.stop="createEventOnDate(day.date)"
+            <button @click.stop="checkEventAccess(day.date)"
                     class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 rounded-md bg-blue-500 hover:bg-blue-600 text-white"
                     :title="language === 'uk' ? 'Створити подію' : 'Create Event'">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
@@ -241,6 +242,7 @@ import dayjs from 'dayjs'
 import { Link } from '@inertiajs/vue3'
 import 'dayjs/locale/uk'
 import 'dayjs/locale/en'
+import axios from 'axios'
 
 export default {
   components: {
@@ -444,6 +446,69 @@ export default {
     const createEventOnDate = (date) => {
       window.location.href = `/events/create?date=${date}`
     }
+    
+    const checkEventAccess = (date = null) => {
+      // Make an axios request to check if the user can access event creation
+      axios.get('/events/create', { 
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => {
+        if (date) {
+          createEventOnDate(date)
+        } else {
+          window.location.href = '/events/create'
+        }
+      })
+      .catch(error => {
+        if (error.response && error.response.status === 403) {
+          // If we have a specific error message from the server
+          if (error.response.data && error.response.data.message) {
+            // Use Inertia's method to set a flash message
+            const event = new CustomEvent('inertia:flash', {
+              detail: {
+                type: 'error',
+                message: error.response.data.message
+              }
+            })
+            window.dispatchEvent(event)
+            
+            // Display an alert to make sure the message is visible immediately
+            alert(error.response.data.message);
+          } else if (error.response.data && error.response.data.error) {
+            // Backward compatibility with 'error' property
+            const event = new CustomEvent('inertia:flash', {
+              detail: {
+                type: 'error',
+                message: error.response.data.error
+              }
+            })
+            window.dispatchEvent(event)
+            
+            // Display an alert to make sure the message is visible immediately
+            alert(error.response.data.error);
+          } else {
+            // Use a default message
+            const defaultMsg = props.language === 'uk' 
+              ? 'Ви не маєте права створювати події'
+              : 'You do not have permission to create events';
+              
+            const event = new CustomEvent('inertia:flash', {
+              detail: {
+                type: 'error',
+                message: defaultMsg
+              }
+            })
+            window.dispatchEvent(event)
+            
+            // Display an alert to make sure the message is visible immediately
+            alert(defaultMsg);
+          }
+        } else {
+          // For other errors, redirect to events page with error
+          window.location.href = '/events'
+        }
+      })
+    }
 
     return {
       currentDate,
@@ -464,7 +529,8 @@ export default {
       formatDateTime,
       previousPeriod,
       nextPeriod,
-      createEventOnDate
+      createEventOnDate,
+      checkEventAccess
     }
   }
 }

@@ -27,5 +27,7 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'student' => \App\Http\Middleware\CheckStudentRole::class,
         'parent' => \App\Http\Middleware\CheckParentRole::class,
+        'student.event' => \App\Http\Middleware\CheckStudentEventAccess::class,
+        'parent.event' => \App\Http\Middleware\CheckParentEventAccess::class,
     ];
 } 

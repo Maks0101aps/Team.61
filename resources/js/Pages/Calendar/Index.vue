@@ -12,7 +12,8 @@
         <div class="flex space-x-3">
           <Link 
             href="/events/create" 
-            class="flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-md text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105">
+            class="flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-md text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105"
+            @click.prevent="checkEventAccess">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
@@ -134,6 +135,64 @@ export default {
           console.error('Error fetching tasks:', error)
           this.loadingTasks = false
         })
+    },
+    checkEventAccess() {
+      // Make an axios request to check if the user can access event creation
+      axios.get('/events/create', { 
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => {
+        window.location.href = '/events/create'
+      })
+      .catch(error => {
+        if (error.response && error.response.status === 403) {
+          // If we have a specific error message from the server
+          if (error.response.data && error.response.data.message) {
+            // Use Inertia's method to set a flash message
+            const event = new CustomEvent('inertia:flash', {
+              detail: {
+                type: 'error',
+                message: error.response.data.message
+              }
+            })
+            window.dispatchEvent(event)
+            
+            // Display an alert to make sure the message is visible immediately
+            alert(error.response.data.message);
+          } else if (error.response.data && error.response.data.error) {
+            // Backward compatibility with 'error' property
+            const event = new CustomEvent('inertia:flash', {
+              detail: {
+                type: 'error',
+                message: error.response.data.error
+              }
+            })
+            window.dispatchEvent(event)
+            
+            // Display an alert to make sure the message is visible immediately
+            alert(error.response.data.error);
+          } else {
+            // Use a default message
+            const defaultMsg = this.localLanguage === 'uk' 
+              ? 'Ви не маєте права створювати події'
+              : 'You do not have permission to create events';
+              
+            const event = new CustomEvent('inertia:flash', {
+              detail: {
+                type: 'error',
+                message: defaultMsg
+              }
+            })
+            window.dispatchEvent(event)
+            
+            // Display an alert to make sure the message is visible immediately
+            alert(defaultMsg);
+          }
+        } else {
+          // For other errors, redirect to events page with error
+          window.location.href = '/events'
+        }
+      })
     }
   },
   mounted() {

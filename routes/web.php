@@ -157,14 +157,17 @@ Route::middleware('auth')->group(function () {
     // Index route - all authenticated users can view events
     Route::get('events', [EventsController::class, 'index'])->name('events.index');
     
-    // Routes that students and parents should not access
-    Route::middleware([CheckStudentRole::class, CheckParentRole::class])->group(function () {
-        Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
-        Route::post('events', [EventsController::class, 'store'])->name('events.store');
-        Route::get('events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
-        Route::put('events/{event}', [EventsController::class, 'update'])->name('events.update');
-        Route::delete('events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
-        Route::put('events/{event}/restore', [EventsController::class, 'restore'])->name('events.restore');
+    // Routes that students can access but with restrictions on what they can do
+    Route::middleware([\App\Http\Middleware\CheckStudentEventAccess::class])->group(function () {
+        // Routes that parents should not access at all
+        Route::middleware([\App\Http\Middleware\CheckParentEventAccess::class])->group(function () {
+            Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
+            Route::post('events', [EventsController::class, 'store'])->name('events.store');
+            Route::get('events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
+            Route::put('events/{event}', [EventsController::class, 'update'])->name('events.update');
+            Route::delete('events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
+            Route::put('events/{event}/restore', [EventsController::class, 'restore'])->name('events.restore');
+        });
     });
 });
 

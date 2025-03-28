@@ -38,23 +38,45 @@ class EventsController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        
+        // If user is a parent, they cannot create events
+        if ($user->isParent()) {
+            if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'message' => __('Батьки не можуть створювати або змінювати події')
+                ], 403);
+            }
+            
+            return redirect()->route('events.index')
+                ->with('error', __('Батьки не можуть створювати або змінювати події'));
+        }
+        
+        $types = Event::getTypes();
+        
+        // If user is a student, only allow personal events
+        if ($user->isStudent()) {
+            $types = [Event::TYPE_PERSONAL => $types[Event::TYPE_PERSONAL]];
+        }
+        
         return Inertia::render('Events/Create', [
-            'types' => Event::getTypes(),
+            'types' => $types,
             'students' => Auth::user()->account->students()
                 ->orderByName()
                 ->get()
                 ->map
                 ->only('id', 'name'),
-            'teachers' => Auth::user()->account->teachers()
+            // Show teachers and parents only for non-students
+            'teachers' => !$user->isStudent() ? Auth::user()->account->teachers()
                 ->orderBy('last_name')
                 ->get()
                 ->map
-                ->only('id', 'name'),
-            'parents' => Auth::user()->account->parents()
+                ->only('id', 'name') : [],
+            'parents' => !$user->isStudent() ? Auth::user()->account->parents()
                 ->orderBy('last_name')
                 ->get()
                 ->map
-                ->only('id', 'name'),
+                ->only('id', 'name') : [],
         ]);
     }
 
@@ -108,6 +130,19 @@ class EventsController extends Controller
 
     public function edit(Event $event)
     {
+        $user = Auth::user();
+        $types = Event::getTypes();
+        
+        // If user is a student, only allow personal events
+        if ($user->isStudent()) {
+            $types = [Event::TYPE_PERSONAL => $types[Event::TYPE_PERSONAL]];
+            
+            // Students can only edit their own events
+            if ($event->created_by !== $user->id) {
+                return Redirect::back()->with('error', 'Учні можуть редагувати тільки власні події');
+            }
+        }
+        
         return Inertia::render('Events/Edit', [
             'event' => [
                 'id' => $event->id,
@@ -125,22 +160,23 @@ class EventsController extends Controller
                 'teacher_ids' => $event->teachers->map->only('id'),
                 'parent_ids' => $event->parents->map->only('id'),
             ],
-            'types' => Event::getTypes(),
+            'types' => $types,
             'students' => Auth::user()->account->students()
                 ->orderByName()
                 ->get()
                 ->map
                 ->only('id', 'name'),
-            'teachers' => Auth::user()->account->teachers()
+            // Show teachers and parents only for non-students
+            'teachers' => !$user->isStudent() ? Auth::user()->account->teachers()
                 ->orderBy('last_name')
                 ->get()
                 ->map
-                ->only('id', 'name'),
-            'parents' => Auth::user()->account->parents()
+                ->only('id', 'name') : [],
+            'parents' => !$user->isStudent() ? Auth::user()->account->parents()
                 ->orderBy('last_name')
                 ->get()
                 ->map
-                ->only('id', 'name'),
+                ->only('id', 'name') : [],
         ]);
     }
 

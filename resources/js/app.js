@@ -55,5 +55,18 @@ createInertiaApp({
     app.use(languageEventBus)
     app.mixin(languageMixin)
     app.mount(el)
+    
+    // Listen for custom flash messages from components
+    window.addEventListener('inertia:flash', (event) => {
+      const { type, message } = event.detail;
+      if (type && message) {
+        // Use Inertia's flash message system
+        if (window.Inertia) {
+          window.Inertia.shared.flash[type] = message;
+          // Trigger a re-render
+          window.dispatchEvent(new Event('inertia:success'));
+        }
+      }
+    });
   },
 })
