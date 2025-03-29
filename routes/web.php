@@ -71,11 +71,11 @@ Route::middleware(['auth', 'App\Http\Middleware\CheckRole:teacher'])->group(func
 
 Route::get('users/{user}/edit', [UsersController::class, 'edit'])
     ->name('users.edit')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
+    ->middleware(['auth']);
 
 Route::put('users/{user}', [UsersController::class, 'update'])
     ->name('users.update')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
+    ->middleware(['auth']);
 
 Route::delete('users/{user}', [UsersController::class, 'destroy'])
     ->name('users.destroy')

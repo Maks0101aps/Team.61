@@ -6,6 +6,7 @@
         :id="id"
         :type="actualType"
         :value="value"
+        :disabled="disabled"
         @input="$emit('update:modelValue', $event.target.value)"
         class="form-input w-full px-4 py-2.5 rounded-lg border-gray-300 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
         :class="{ 'border-red-400 focus:border-red-500 focus:ring-red-200': error, 'pr-10': type === 'email' || type === 'password' || type === 'search' }"
@@ -46,6 +47,7 @@
       </div>
     </div>
     <div v-if="error" class="form-error mt-1 text-sm text-red-600">{{ error }}</div>
+    <div v-if="helpText" class="text-xs text-gray-500 mt-1">{{ helpText }}</div>
   </div>
 </template>
 
@@ -62,6 +64,11 @@ export default {
       default: 'text',
     },
     placeholder: String,
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    helpText: String,
     id: {
       type: String,
       default() {
