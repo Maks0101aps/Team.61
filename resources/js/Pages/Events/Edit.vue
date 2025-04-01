@@ -23,7 +23,7 @@
                 Тип: Особиста подія
               </div>
             </div>
-            <input type="hidden" v-model="form.type" value="personal" />
+            <input type="hidden" v-model="form.type" />
           </div>
           <select-input 
             v-else
