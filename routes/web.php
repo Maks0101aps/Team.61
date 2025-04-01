@@ -10,6 +10,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ParentsController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\TasksController;
+use App\Http\Controllers\ReportsController;
 use App\Http\Middleware\CheckStudentRole;
 use App\Http\Middleware\CheckParentRole;
 use Illuminate\Support\Facades\Route;
@@ -238,5 +239,26 @@ Route::get('public/cities/{region}', [CitiesController::class, 'getCitiesByRegio
 
 // Получение информации о родителе по ID для формы регистрации студента
 Route::get('public/parent/{id}', [ParentsController::class, 'getParentById']);
+
+// Reports
+Route::middleware(['auth', CheckStudentRole::class, CheckParentRole::class])->group(function () {
+    // Main reports page
+    Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
+    
+    // Student reports
+    Route::get('reports/students/attendance', [ReportsController::class, 'studentAttendance'])->name('reports.students.attendance');
+    Route::get('reports/students/performance', [ReportsController::class, 'studentPerformance'])->name('reports.students.performance');
+    Route::get('reports/students/list', [ReportsController::class, 'studentList'])->name('reports.students.list');
+    
+    // Teacher reports
+    Route::get('reports/teachers/workload', [ReportsController::class, 'teacherWorkload'])->name('reports.teachers.workload');
+    Route::get('reports/teachers/schedule', [ReportsController::class, 'teacherSchedule'])->name('reports.teachers.schedule');
+    Route::get('reports/teachers/list', [ReportsController::class, 'teacherList'])->name('reports.teachers.list');
+    
+    // Event reports
+    Route::get('reports/events/calendar', [ReportsController::class, 'eventCalendar'])->name('reports.events.calendar');
+    Route::get('reports/events/attendance', [ReportsController::class, 'eventAttendance'])->name('reports.events.attendance');
+    Route::get('reports/events/summary', [ReportsController::class, 'eventSummary'])->name('reports.events.summary');
+});
 
 

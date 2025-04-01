@@ -66,6 +66,17 @@
       </Link>
     </div>
     
+    <div class="mb-6">
+      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
+            :class="isUrl('reports') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+            href="/reports">
+        <icon name="printer" 
+              class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
+              :class="isUrl('reports') ? 'fill-white' : 'fill-blue-300 group-hover:fill-white'" />
+        <div class="text-sm font-medium">{{ __('reports', language === 'uk' ? 'Звіти' : 'Reports') }}</div>
+      </Link>
+    </div>
+    
     <!-- Mobile Language Switcher -->
     <div class="md:hidden mt-12">
       <div class="px-4">
