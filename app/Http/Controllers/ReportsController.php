@@ -70,12 +70,13 @@ class ReportsController extends Controller
     }
 
     /**
-     * Display event calendar report.
+     * Display event calendar report - shows calendar in the reports section
      */
     public function eventCalendar()
     {
-        // To be implemented
-        return Inertia::render('Reports/Events/Calendar');
+        // Show the calendar in the reports section using the Attendance view
+        // instead of redirecting to homepage
+        return Inertia::render('Reports/Events/Attendance');
     }
 
     /**

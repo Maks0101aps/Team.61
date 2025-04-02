@@ -19,8 +19,16 @@
       </div>
       <div class="mt-4 sm:mt-0">
         <Link 
+          href="/reports/events/attendance" 
+          class="px-4 py-2 rounded-lg border border-blue-500 text-blue-600 bg-white hover:bg-blue-50 flex items-center transition-colors duration-200 shadow-sm mr-2 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          {{ language === 'uk' ? 'Відвідуваність подій' : 'Event Attendance' }}
+        </Link>
+        <Link 
           href="/reports" 
-          class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 flex items-center transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          class="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 flex items-center transition-colors duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 inline-block">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
@@ -260,69 +268,63 @@ export default {
         period: 'month',
         status: ''
       },
-      attendanceData: [
-        {
-          id: 1,
-          name: language === 'uk' ? 'Петро Іваненко' : 'Petro Ivanenko',
-          email: 'petro@example.com',
-          group: language === 'uk' ? 'Група 1' : 'Group 1',
-          attendancePercentage: 95,
-          daysPresent: 19,
-          daysAbsent: 1,
-          late: 2
-        },
-        {
-          id: 2,
-          name: language === 'uk' ? 'Марія Коваленко' : 'Maria Kovalenko',
-          email: 'maria@example.com',
-          group: language === 'uk' ? 'Група 1' : 'Group 1',
-          attendancePercentage: 85,
-          daysPresent: 17,
-          daysAbsent: 3,
-          late: 1
-        },
-        {
-          id: 3,
-          name: language === 'uk' ? 'Олександр Шевченко' : 'Oleksandr Shevchenko',
-          email: 'oleksandr@example.com',
-          group: language === 'uk' ? 'Група 2' : 'Group 2',
-          attendancePercentage: 100,
-          daysPresent: 20,
-          daysAbsent: 0,
-          late: 0
-        },
-        {
-          id: 4,
-          name: language === 'uk' ? 'Анна Мельник' : 'Anna Melnyk',
-          email: 'anna@example.com',
-          group: language === 'uk' ? 'Група 2' : 'Group 2',
-          attendancePercentage: 70,
-          daysPresent: 14,
-          daysAbsent: 6,
-          late: 3
-        },
-        {
-          id: 5,
-          name: language === 'uk' ? 'Микола Бондаренко' : 'Mykola Bondarenko',
-          email: 'mykola@example.com',
-          group: language === 'uk' ? 'Група 3' : 'Group 3',
-          attendancePercentage: 90,
-          daysPresent: 18,
-          daysAbsent: 2,
-          late: 1
-        },
-        {
-          id: 6,
-          name: language === 'uk' ? 'Юлія Ткаченко' : 'Yulia Tkachenko',
-          email: 'yulia@example.com',
-          group: language === 'uk' ? 'Група 3' : 'Group 3',
-          attendancePercentage: 80,
-          daysPresent: 16,
-          daysAbsent: 4,
-          late: 2
-        },
-      ]
+      attendanceData: []
     }
+  },
+  created() {
+    // Initialize data
+    this.attendanceData = [
+      {
+        id: 1,
+        email: 'petro@example.com',
+        attendancePercentage: 95,
+        daysPresent: 19,
+        daysAbsent: 1,
+        late: 2
+      },
+      {
+        id: 2,
+        email: 'maria@example.com',
+        attendancePercentage: 85,
+        daysPresent: 17,
+        daysAbsent: 3,
+        late: 1
+      },
+      {
+        id: 3,
+        email: 'oleksandr@example.com',
+        attendancePercentage: 100,
+        daysPresent: 20,
+        daysAbsent: 0,
+        late: 0
+      },
+      {
+        id: 4,
+        email: 'anna@example.com',
+        attendancePercentage: 70,
+        daysPresent: 14,
+        daysAbsent: 6,
+        late: 3
+      },
+      {
+        id: 5,
+        email: 'mykola@example.com',
+        attendancePercentage: 90,
+        daysPresent: 18,
+        daysAbsent: 2,
+        late: 1
+      },
+      {
+        id: 6,
+        email: 'yulia@example.com',
+        attendancePercentage: 80,
+        daysPresent: 16,
+        daysAbsent: 4,
+        late: 2
+      },
+    ];
+    // Set localized names and groups
+    this.updateStudentNames();
   },
   computed: {
     filteredAttendanceData() {
@@ -367,28 +369,26 @@ export default {
     updateStudentNames() {
       // Update student names based on language
       this.attendanceData = this.attendanceData.map(student => {
-        const isUkrainian = this.language === 'uk';
-        if (student.id === 1) {
-          student.name = isUkrainian ? 'Петро Іваненко' : 'Petro Ivanenko';
-          student.group = isUkrainian ? 'Група 1' : 'Group 1';
-        } else if (student.id === 2) {
-          student.name = isUkrainian ? 'Марія Коваленко' : 'Maria Kovalenko';
-          student.group = isUkrainian ? 'Група 1' : 'Group 1';
-        } else if (student.id === 3) {
-          student.name = isUkrainian ? 'Олександр Шевченко' : 'Oleksandr Shevchenko';
-          student.group = isUkrainian ? 'Група 2' : 'Group 2';
-        } else if (student.id === 4) {
-          student.name = isUkrainian ? 'Анна Мельник' : 'Anna Melnyk';
-          student.group = isUkrainian ? 'Група 2' : 'Group 2';
-        } else if (student.id === 5) {
-          student.name = isUkrainian ? 'Микола Бондаренко' : 'Mykola Bondarenko';
-          student.group = isUkrainian ? 'Група 3' : 'Group 3';
-        } else if (student.id === 6) {
-          student.name = isUkrainian ? 'Юлія Ткаченко' : 'Yulia Tkachenko';
-          student.group = isUkrainian ? 'Група 3' : 'Group 3';
-        }
+        student.name = this.getLocalizedName(student.id);
+        student.group = this.getLocalizedGroup(Math.ceil(student.id / 2));
         return student;
       });
+    },
+    getLocalizedName(id) {
+      const isUkrainian = this.language === 'uk';
+      switch(id) {
+        case 1: return isUkrainian ? 'Петро Іваненко' : 'Petro Ivanenko';
+        case 2: return isUkrainian ? 'Марія Коваленко' : 'Maria Kovalenko';
+        case 3: return isUkrainian ? 'Олександр Шевченко' : 'Oleksandr Shevchenko';
+        case 4: return isUkrainian ? 'Анна Мельник' : 'Anna Melnyk';
+        case 5: return isUkrainian ? 'Микола Бондаренко' : 'Mykola Bondarenko';
+        case 6: return isUkrainian ? 'Юлія Ткаченко' : 'Yulia Tkachenko';
+        default: return isUkrainian ? 'Студент' : 'Student';
+      }
+    },
+    getLocalizedGroup(id) {
+      const isUkrainian = this.language === 'uk';
+      return isUkrainian ? `Група ${id}` : `Group ${id}`;
     },
     exportToPdf() {
       alert(this.language === 'uk' ? 'Експорт у PDF...' : 'Exporting to PDF...');
