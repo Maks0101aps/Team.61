@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             // Other seeders can be uncommented if needed
+            // UsersTableSeeder::class,
             // OrganizationSeeder::class,
             // TeacherSeeder::class,
         ]);
