@@ -123,7 +123,7 @@
               <p class="text-sm text-blue-600 font-medium">
                 {{ language === 'uk' ? 'Середня відвідуваність' : 'Average Attendance' }}
               </p>
-              <h4 class="text-2xl font-bold text-blue-800 mt-1">87.5%</h4>
+              <h4 class="text-2xl font-bold text-blue-800 mt-1">{{ averageAttendance }}%</h4>
             </div>
             <div class="p-2 bg-blue-100 rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,7 +132,7 @@
             </div>
           </div>
           <div class="w-full h-2 bg-blue-200 rounded-full mt-3">
-            <div class="h-full bg-blue-600 rounded-full" style="width: 87.5%"></div>
+            <div class="h-full bg-blue-600 rounded-full" style="width: {{ averageAttendance }}%"></div>
           </div>
         </div>
         
@@ -142,7 +142,7 @@
               <p class="text-sm text-green-600 font-medium">
                 {{ language === 'uk' ? 'Присутні' : 'Present' }}
               </p>
-              <h4 class="text-2xl font-bold text-green-800 mt-1">126 / 144</h4>
+              <h4 class="text-2xl font-bold text-green-800 mt-1">{{ totalPresent }} / {{ totalStudents }}</h4>
             </div>
             <div class="p-2 bg-green-100 rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -161,7 +161,7 @@
               <p class="text-sm text-red-600 font-medium">
                 {{ language === 'uk' ? 'Відсутні' : 'Absent' }}
               </p>
-              <h4 class="text-2xl font-bold text-red-800 mt-1">18 / 144</h4>
+              <h4 class="text-2xl font-bold text-red-800 mt-1">{{ totalAbsent }} / {{ totalStudents }}</h4>
             </div>
             <div class="p-2 bg-red-100 rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -268,69 +268,28 @@ export default {
         period: 'month',
         status: ''
       },
-      attendanceData: []
+      attendanceData: [],
+      statistics: {}
     }
   },
   created() {
-    // Initialize data
-    this.attendanceData = [
-      {
-        id: 1,
-        email: 'petro@example.com',
-        attendancePercentage: 95,
-        daysPresent: 19,
-        daysAbsent: 1,
-        late: 2
-      },
-      {
-        id: 2,
-        email: 'maria@example.com',
-        attendancePercentage: 85,
-        daysPresent: 17,
-        daysAbsent: 3,
-        late: 1
-      },
-      {
-        id: 3,
-        email: 'oleksandr@example.com',
-        attendancePercentage: 100,
-        daysPresent: 20,
-        daysAbsent: 0,
-        late: 0
-      },
-      {
-        id: 4,
-        email: 'anna@example.com',
-        attendancePercentage: 70,
-        daysPresent: 14,
-        daysAbsent: 6,
-        late: 3
-      },
-      {
-        id: 5,
-        email: 'mykola@example.com',
-        attendancePercentage: 90,
-        daysPresent: 18,
-        daysAbsent: 2,
-        late: 1
-      },
-      {
-        id: 6,
-        email: 'yulia@example.com',
-        attendancePercentage: 80,
-        daysPresent: 16,
-        daysAbsent: 4,
-        late: 2
-      },
-    ];
-    // Set localized names and groups
+    // Get real data from props
+    if (this.$page.props.initialStudentData) {
+      this.attendanceData = this.$page.props.initialStudentData;
+    }
+    
+    if (this.$page.props.statistics) {
+      this.statistics = this.$page.props.statistics;
+    }
+    
+    // Add localized names
     this.updateStudentNames();
   },
   computed: {
     filteredAttendanceData() {
       return this.attendanceData.filter(student => {
         // Filter by group
-        if (this.filters.group && student.group !== this.filters.group) {
+        if (this.filters.group && !student.group.includes(this.filters.group)) {
           return false;
         }
         
@@ -345,6 +304,25 @@ export default {
         
         return true;
       });
+    },
+    totalStudents() {
+      return this.statistics.totalStudents || this.attendanceData.length;
+    },
+    averageAttendance() {
+      return this.statistics.averageAttendance || 
+        Math.round(this.attendanceData.reduce((sum, student) => sum + student.attendancePercentage, 0) / 
+        Math.max(1, this.attendanceData.length));
+    },
+    totalPresent() {
+      return this.statistics.totalPresent || 
+        this.attendanceData.reduce((sum, student) => sum + student.daysPresent, 0);
+    },
+    totalAbsent() {
+      return this.statistics.totalAbsent || 
+        this.attendanceData.reduce((sum, student) => sum + student.daysAbsent, 0);
+    },
+    totalDays() {
+      return this.totalPresent + this.totalAbsent;
     }
   },
   mounted() {

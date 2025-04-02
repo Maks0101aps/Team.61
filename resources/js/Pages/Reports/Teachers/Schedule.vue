@@ -247,90 +247,56 @@ export default {
         { id: 6, number: '6', time: '13:25 - 14:10' },
         { id: 7, number: '7', time: '14:20 - 15:05' }
       ],
-      teachers: [
-        { 
-          id: 1, 
-          name: 'Іваненко Олена Петрівна', 
-          nameEn: 'Ivanenko Olena',
-          subject: 'math' 
-        },
-        { 
-          id: 2, 
-          name: 'Петренко Ігор Михайлович', 
-          nameEn: 'Petrenko Ihor',
-          subject: 'phys' 
-        },
-        { 
-          id: 3, 
-          name: 'Ковальчук Наталія Іванівна', 
-          nameEn: 'Kovalchuk Nataliia',
-          subject: 'chem' 
-        },
-        { 
-          id: 4, 
-          name: 'Шевченко Василь Андрійович', 
-          nameEn: 'Shevchenko Vasyl',
-          subject: 'bio' 
-        },
-        { 
-          id: 5, 
-          name: 'Мельник Тетяна Степанівна', 
-          nameEn: 'Melnyk Tetiana',
-          subject: 'hist' 
-        }
-      ],
-      schedule: [
-        // Teacher 1 (Math)
-        { teacherId: 1, day: 'monday', period: 1, class: '9-А', room: '201' },
-        { teacherId: 1, day: 'monday', period: 2, class: '9-Б', room: '201' },
-        { teacherId: 1, day: 'monday', period: 4, class: '10-A', room: '201' },
-        { teacherId: 1, day: 'tuesday', period: 3, class: '8-А', room: '201' },
-        { teacherId: 1, day: 'tuesday', period: 4, class: '8-Б', room: '201' },
-        { teacherId: 1, day: 'wednesday', period: 1, class: '11-А', room: '201' },
-        { teacherId: 1, day: 'wednesday', period: 2, class: '11-Б', room: '201' },
-        { teacherId: 1, day: 'thursday', period: 3, class: '9-А', room: '201' },
-        { teacherId: 1, day: 'thursday', period: 5, class: '10-А', room: '201' },
-        { teacherId: 1, day: 'friday', period: 2, class: '9-Б', room: '201' },
-        { teacherId: 1, day: 'friday', period: 4, class: '10-Б', room: '201' },
+      teachers: [],
+      schedule: []
+    }
+  },
+  created() {
+    // Load days and periods from props if provided
+    if (this.$page.props.days) {
+      this.days = this.$page.props.days.map(day => day.toLowerCase());
+    }
+    
+    if (this.$page.props.periods) {
+      this.periods = Object.entries(this.$page.props.periods).map(([id, time]) => ({
+        id: parseInt(id),
+        number: id,
+        time: time
+      }));
+    }
+    
+    // Load teachers and schedule from props
+    if (this.$page.props.teacherSchedules) {
+      this.teachers = this.$page.props.teacherSchedules.map(teacher => ({
+        id: teacher.id,
+        name: teacher.name,
+        nameEn: teacher.name,  // We could translate this if needed
+        subject: teacher.subject
+      }));
+      
+      // Convert schedule from the backend format to our component format
+      let scheduleItems = [];
+      
+      this.$page.props.teacherSchedules.forEach(teacher => {
+        const days = Object.keys(teacher.schedule);
         
-        // Teacher 2 (Physics)
-        { teacherId: 2, day: 'monday', period: 3, class: '10-A', room: '304' },
-        { teacherId: 2, day: 'monday', period: 5, class: '11-А', room: '304' },
-        { teacherId: 2, day: 'tuesday', period: 2, class: '9-А', room: '304' },
-        { teacherId: 2, day: 'tuesday', period: 5, class: '9-Б', room: '304' },
-        { teacherId: 2, day: 'wednesday', period: 3, class: '10-Б', room: '304' },
-        { teacherId: 2, day: 'wednesday', period: 4, class: '11-Б', room: '304' },
-        { teacherId: 2, day: 'thursday', period: 1, class: '8-А', room: '304' },
-        { teacherId: 2, day: 'thursday', period: 2, class: '8-Б', room: '304' },
-        { teacherId: 2, day: 'friday', period: 3, class: '11-А', room: '304' },
-        
-        // Teacher 3 (Chemistry)
-        { teacherId: 3, day: 'monday', period: 2, class: '8-А', room: '203' },
-        { teacherId: 3, day: 'monday', period: 6, class: '11-Б', room: '203' },
-        { teacherId: 3, day: 'tuesday', period: 1, class: '9-А', room: '203' },
-        { teacherId: 3, day: 'wednesday', period: 5, class: '10-А', room: '203' },
-        { teacherId: 3, day: 'thursday', period: 4, class: '9-Б', room: '203' },
-        { teacherId: 3, day: 'friday', period: 1, class: '8-Б', room: '203' },
-        { teacherId: 3, day: 'friday', period: 5, class: '11-А', room: '203' },
-        
-        // Teacher 4 (Biology)
-        { teacherId: 4, day: 'monday', period: 1, class: '10-Б', room: '308' },
-        { teacherId: 4, day: 'tuesday', period: 2, class: '11-А', room: '308' },
-        { teacherId: 4, day: 'tuesday', period: 6, class: '9-А', room: '308' },
-        { teacherId: 4, day: 'wednesday', period: 3, class: '8-А', room: '308' },
-        { teacherId: 4, day: 'thursday', period: 1, class: '9-Б', room: '308' },
-        { teacherId: 4, day: 'friday', period: 3, class: '8-Б', room: '308' },
-        { teacherId: 4, day: 'friday', period: 6, class: '11-Б', room: '308' },
-        
-        // Teacher 5 (History)
-        { teacherId: 5, day: 'monday', period: 4, class: '11-Б', room: '105' },
-        { teacherId: 5, day: 'tuesday', period: 3, class: '10-А', room: '105' },
-        { teacherId: 5, day: 'wednesday', period: 2, class: '9-А', room: '105' },
-        { teacherId: 5, day: 'wednesday', period: 6, class: '9-Б', room: '105' },
-        { teacherId: 5, day: 'thursday', period: 3, class: '11-А', room: '105' },
-        { teacherId: 5, day: 'friday', period: 1, class: '10-Б', room: '105' },
-        { teacherId: 5, day: 'friday', period: 5, class: '8-А', room: '105' }
-      ]
+        days.forEach(day => {
+          const lessons = teacher.schedule[day];
+          
+          lessons.forEach(lesson => {
+            scheduleItems.push({
+              teacherId: teacher.id,
+              day: day.toLowerCase(),
+              period: lesson.period,
+              class: lesson.class,
+              room: lesson.room,
+              subject: teacher.subject
+            });
+          });
+        });
+      });
+      
+      this.schedule = scheduleItems;
     }
   },
   computed: {

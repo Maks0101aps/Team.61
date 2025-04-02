@@ -105,7 +105,7 @@
             </div>
             <div class="ml-4">
               <h3 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Всього подій' : 'Total Events' }}</h3>
-              <p class="text-2xl font-bold text-gray-900">42</p>
+              <p class="text-2xl font-bold text-gray-900">{{ statistics.totalEvents }}</p>
             </div>
           </div>
           <div class="mt-4 flex items-center text-sm">
@@ -128,7 +128,7 @@
             </div>
             <div class="ml-4">
               <h3 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Середня відвідуваність' : 'Average Attendance' }}</h3>
-              <p class="text-2xl font-bold text-gray-900">78%</p>
+              <p class="text-2xl font-bold text-gray-900">{{ statistics.averageAttendance }}%</p>
             </div>
           </div>
           <div class="mt-4 flex items-center text-sm">
@@ -151,11 +151,11 @@
             </div>
             <div class="ml-4">
               <h3 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Найвища відвідуваність' : 'Highest Attendance' }}</h3>
-              <p class="text-2xl font-bold text-gray-900">97%</p>
+              <p class="text-2xl font-bold text-gray-900">{{ statistics.highestAttendance ? statistics.highestAttendance.percentage : '0' }}%</p>
             </div>
           </div>
           <div class="mt-4 text-sm text-gray-600">
-            {{ language === 'uk' ? 'Концерт до дня вчителя' : 'Teacher\'s Day Concert' }}
+            {{ statistics.highestAttendance ? statistics.highestAttendance.event : (language === 'uk' ? 'Немає даних' : 'No data') }}
           </div>
         </div>
         
@@ -168,11 +168,11 @@
             </div>
             <div class="ml-4">
               <h3 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Найнижча відвідуваність' : 'Lowest Attendance' }}</h3>
-              <p class="text-2xl font-bold text-gray-900">45%</p>
+              <p class="text-2xl font-bold text-gray-900">{{ statistics.lowestAttendance ? statistics.lowestAttendance.percentage : '0' }}%</p>
             </div>
           </div>
           <div class="mt-4 text-sm text-gray-600">
-            {{ language === 'uk' ? 'Батьківські збори (9-Б клас)' : 'Parent Meeting (9-B class)' }}
+            {{ statistics.lowestAttendance ? statistics.lowestAttendance.event : (language === 'uk' ? 'Немає даних' : 'No data') }}
           </div>
         </div>
       </div>
@@ -223,62 +223,44 @@
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 <!-- Example rows - in a real application these would be loaded from the backend -->
-                <tr v-for="(event, index) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" :key="index" class="hover:bg-gray-50 transition-colors duration-150">
+                <tr v-for="(event, index) in events" :key="index" class="hover:bg-gray-50 transition-colors duration-150">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <div class="ml-0">
                         <div class="text-sm font-medium text-gray-900">
-                          {{ [
-                            language === 'uk' ? 'Шкільний концерт' : 'School Concert', 
-                            language === 'uk' ? 'Батьківські збори' : 'Parent Meeting', 
-                            language === 'uk' ? 'Олімпіада з математики' : 'Math Olympiad', 
-                            language === 'uk' ? 'Екскурсія до музею' : 'Museum Excursion', 
-                            language === 'uk' ? 'Спортивний турнір' : 'Sports Tournament'
-                          ][index % 5] }} {{ Math.floor(index / 5) + 1 }}
+                          {{ event.name }}
                         </div>
                       </div>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ new Date(2023, (index % 12), 1 + index).toLocaleDateString() }}</div>
+                    <div class="text-sm text-gray-900">{{ new Date(event.date).toLocaleDateString() }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900">
-                      {{ [
-                        language === 'uk' ? 'Концерт' : 'Concert', 
-                        language === 'uk' ? 'Батьківські збори' : 'Parent meeting', 
-                        language === 'uk' ? 'Олімпіада' : 'Olympiad', 
-                        language === 'uk' ? 'Екскурсія' : 'Excursion', 
-                        language === 'uk' ? 'Спортивний захід' : 'Sports event'
-                      ][index % 5] }}
+                      {{ event.type }}
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                       <div class="w-full bg-gray-200 rounded-full h-2.5">
                         <div :class="{
-                          'bg-red-500': 45 + (index * 5) < 60,
-                          'bg-yellow-500': 45 + (index * 5) >= 60 && 45 + (index * 5) < 80,
-                          'bg-green-500': 45 + (index * 5) >= 80
-                        }" class="h-2.5 rounded-full" :style="{ width: (45 + (index * 5) > 100 ? 100 : 45 + (index * 5)) + '%' }"></div>
+                          'bg-red-500': event.attendancePercentage < 60,
+                          'bg-yellow-500': event.attendancePercentage >= 60 && event.attendancePercentage < 80,
+                          'bg-green-500': event.attendancePercentage >= 80
+                        }" class="h-2.5 rounded-full" :style="{ width: event.attendancePercentage + '%' }"></div>
                       </div>
-                      <span class="ml-2 text-sm text-gray-900 font-medium">{{ 45 + (index * 5) > 100 ? 100 : 45 + (index * 5) }}%</span>
+                      <span class="ml-2 text-sm text-gray-900 font-medium">{{ event.attendancePercentage }}%</span>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
                       :class="{
-                        'bg-blue-100 text-blue-800': index % 3 === 0,
-                        'bg-green-100 text-green-800': index % 3 === 1,
-                        'bg-red-100 text-red-800': index % 3 === 2
+                        'bg-blue-100 text-blue-800': event.status === 'Planned',
+                        'bg-green-100 text-green-800': event.status === 'Completed',
+                        'bg-red-100 text-red-800': event.status === 'Cancelled'
                       }">
-                      {{ 
-                        index % 3 === 0 
-                          ? (language === 'uk' ? 'Заплановано' : 'Planned') 
-                          : index % 3 === 1 
-                            ? (language === 'uk' ? 'Завершено' : 'Completed')
-                            : (language === 'uk' ? 'Скасовано' : 'Cancelled')
-                      }}
+                      {{ event.status }}
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -364,6 +346,23 @@ export default {
   data() {
     return {
       language: localStorage.getItem('language') || 'uk',
+      events: [],
+      statistics: {
+        totalEvents: 0,
+        averageAttendance: 0,
+        highestAttendance: null,
+        lowestAttendance: null
+      }
+    }
+  },
+  created() {
+    // Load real data from props
+    if (this.$page.props.initialEventData) {
+      this.events = this.$page.props.initialEventData;
+    }
+    
+    if (this.$page.props.statistics) {
+      this.statistics = this.$page.props.statistics;
     }
   },
   mounted() {

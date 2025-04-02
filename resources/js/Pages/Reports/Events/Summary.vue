@@ -37,11 +37,11 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'Від' : 'From' }}</label>
-            <input type="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+            <input type="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" v-model="datePeriod.from" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'До' : 'To' }}</label>
-            <input type="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" />
+            <input type="date" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" v-model="datePeriod.to" />
           </div>
           <div class="flex items-end">
             <button class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full">
@@ -51,22 +51,22 @@
         </div>
         <div class="mt-4">
           <div class="flex flex-wrap gap-2">
-            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md" @click="setPeriod('month')">
               {{ language === 'uk' ? 'Поточний місяць' : 'Current Month' }}
             </button>
-            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md" @click="setPeriod('quarter')">
               {{ language === 'uk' ? 'Поточний квартал' : 'Current Quarter' }}
             </button>
-            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md" @click="setPeriod('year')">
               {{ language === 'uk' ? 'Поточний рік' : 'Current Year' }}
             </button>
-            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md" @click="setPeriod('prev_month')">
               {{ language === 'uk' ? 'Минулий місяць' : 'Previous Month' }}
             </button>
-            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md">
+            <button class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md" @click="setPeriod('prev_quarter')">
               {{ language === 'uk' ? 'Минулий квартал' : 'Previous Quarter' }}
             </button>
-            <button class="px-3 py-1 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-md">
+            <button class="px-3 py-1 text-sm bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-md" @click="setPeriod('prev_year')">
               {{ language === 'uk' ? 'Весь навчальний рік' : 'Entire School Year' }}
             </button>
           </div>
@@ -84,7 +84,7 @@
             </div>
             <div class="ml-4">
               <h2 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Всього подій' : 'Total Events' }}</h2>
-              <p class="text-3xl font-bold text-gray-900">76</p>
+              <p class="text-3xl font-bold text-gray-900">{{ summaryData.totalEvents.current }}</p>
             </div>
           </div>
           <div class="mt-4">
@@ -93,7 +93,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                 </svg>
-                <span class="ml-1">+12%</span>
+                <span class="ml-1">{{ summaryData.totalEvents.percentChange }}%</span>
               </span>
               <span class="ml-2 text-gray-600">{{ language === 'uk' ? 'порівняно з минулим роком' : 'vs previous year' }}</span>
             </div>
@@ -109,7 +109,7 @@
             </div>
             <div class="ml-4">
               <h2 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Середня відвідуваність' : 'Average Attendance' }}</h2>
-              <p class="text-3xl font-bold text-gray-900">82%</p>
+              <p class="text-3xl font-bold text-gray-900">{{ summaryData.averageAttendance.current }}%</p>
             </div>
           </div>
           <div class="mt-4">
@@ -118,7 +118,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                 </svg>
-                <span class="ml-1">+3.5%</span>
+                <span class="ml-1">{{ summaryData.averageAttendance.percentChange }}%</span>
               </span>
               <span class="ml-2 text-gray-600">{{ language === 'uk' ? 'порівняно з минулим роком' : 'vs previous year' }}</span>
             </div>
@@ -134,7 +134,7 @@
             </div>
             <div class="ml-4">
               <h2 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Всього годин' : 'Total Hours' }}</h2>
-              <p class="text-3xl font-bold text-gray-900">214</p>
+              <p class="text-3xl font-bold text-gray-900">{{ summaryData.totalHours.current }}</p>
             </div>
           </div>
           <div class="mt-4">
@@ -143,7 +143,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
-                <span class="ml-1">-2.3%</span>
+                <span class="ml-1">{{ summaryData.totalHours.percentChange }}%</span>
               </span>
               <span class="ml-2 text-gray-600">{{ language === 'uk' ? 'порівняно з минулим роком' : 'vs previous year' }}</span>
             </div>
@@ -159,7 +159,7 @@
             </div>
             <div class="ml-4">
               <h2 class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Всього учасників' : 'Total Participants' }}</h2>
-              <p class="text-3xl font-bold text-gray-900">3,845</p>
+              <p class="text-3xl font-bold text-gray-900">{{ summaryData.totalParticipants.current }}</p>
             </div>
           </div>
           <div class="mt-4">
@@ -168,7 +168,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
                 </svg>
-                <span class="ml-1">+18.2%</span>
+                <span class="ml-1">{{ summaryData.totalParticipants.percentChange }}%</span>
               </span>
               <span class="ml-2 text-gray-600">{{ language === 'uk' ? 'порівняно з минулим роком' : 'vs previous year' }}</span>
             </div>
@@ -197,54 +197,14 @@
           </div>
           <div>
             <ul class="divide-y divide-gray-200">
-              <li class="py-3 flex justify-between items-center">
+              <li class="py-3 flex justify-between items-center" v-for="eventType in summaryData.eventTypes" :key="eventType.type">
                 <div class="flex items-center">
                   <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
-                  <span class="text-gray-700">{{ language === 'uk' ? 'Концерти' : 'Concerts' }}</span>
+                  <span class="text-gray-700">{{ eventType.type }}</span>
                 </div>
                 <div class="flex items-center">
-                  <span class="font-semibold">22%</span>
-                  <span class="ml-2 text-gray-500 text-sm">(17)</span>
-                </div>
-              </li>
-              <li class="py-3 flex justify-between items-center">
-                <div class="flex items-center">
-                  <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
-                  <span class="text-gray-700">{{ language === 'uk' ? 'Батьківські збори' : 'Parent Meetings' }}</span>
-                </div>
-                <div class="flex items-center">
-                  <span class="font-semibold">28%</span>
-                  <span class="ml-2 text-gray-500 text-sm">(21)</span>
-                </div>
-              </li>
-              <li class="py-3 flex justify-between items-center">
-                <div class="flex items-center">
-                  <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
-                  <span class="text-gray-700">{{ language === 'uk' ? 'Олімпіади' : 'Olympiads' }}</span>
-                </div>
-                <div class="flex items-center">
-                  <span class="font-semibold">15%</span>
-                  <span class="ml-2 text-gray-500 text-sm">(11)</span>
-                </div>
-              </li>
-              <li class="py-3 flex justify-between items-center">
-                <div class="flex items-center">
-                  <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
-                  <span class="text-gray-700">{{ language === 'uk' ? 'Екскурсії' : 'Excursions' }}</span>
-                </div>
-                <div class="flex items-center">
-                  <span class="font-semibold">18%</span>
-                  <span class="ml-2 text-gray-500 text-sm">(14)</span>
-                </div>
-              </li>
-              <li class="py-3 flex justify-between items-center">
-                <div class="flex items-center">
-                  <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
-                  <span class="text-gray-700">{{ language === 'uk' ? 'Спортивні заходи' : 'Sports Events' }}</span>
-                </div>
-                <div class="flex items-center">
-                  <span class="font-semibold">17%</span>
-                  <span class="ml-2 text-gray-500 text-sm">(13)</span>
+                  <span class="font-semibold">{{ eventType.percentage }}%</span>
+                  <span class="ml-2 text-gray-500 text-sm">({{ eventType.count }})</span>
                 </div>
               </li>
             </ul>
@@ -271,23 +231,23 @@
           <div class="bg-blue-50 p-4 rounded-lg">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-medium text-blue-800">{{ language === 'uk' ? 'Найвища відвідуваність' : 'Highest Attendance' }}</h3>
-              <span class="text-blue-600 font-semibold">94%</span>
+              <span class="text-blue-600 font-semibold">{{ getMonthName(summaryData.highestAttendanceMonth.month) }}</span>
             </div>
-            <p class="text-sm text-blue-600 mt-1">{{ language === 'uk' ? 'Грудень 2023' : 'December 2023' }}</p>
+            <p class="text-sm text-blue-600 mt-1">{{ summaryData.highestAttendanceMonth.attendance }}%</p>
           </div>
           <div class="bg-red-50 p-4 rounded-lg">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-medium text-red-800">{{ language === 'uk' ? 'Найнижча відвідуваність' : 'Lowest Attendance' }}</h3>
-              <span class="text-red-600 font-semibold">68%</span>
+              <span class="text-red-600 font-semibold">{{ getMonthName(summaryData.lowestAttendanceMonth.month) }}</span>
             </div>
-            <p class="text-sm text-red-600 mt-1">{{ language === 'uk' ? 'Липень 2023' : 'July 2023' }}</p>
+            <p class="text-sm text-red-600 mt-1">{{ summaryData.lowestAttendanceMonth.attendance }}%</p>
           </div>
           <div class="bg-green-50 p-4 rounded-lg">
             <div class="flex items-center justify-between">
               <h3 class="text-sm font-medium text-green-800">{{ language === 'uk' ? 'Найбільше подій' : 'Most Events' }}</h3>
-              <span class="text-green-600 font-semibold">12</span>
+              <span class="text-green-600 font-semibold">{{ summaryData.mostEventsMonth.count }}</span>
             </div>
-            <p class="text-sm text-green-600 mt-1">{{ language === 'uk' ? 'Травень 2023' : 'May 2023' }}</p>
+            <p class="text-sm text-green-600 mt-1">{{ getMonthName(summaryData.mostEventsMonth.month) }}</p>
           </div>
         </div>
       </div>
@@ -308,25 +268,102 @@ export default {
   data() {
     return {
       language: localStorage.getItem('language') || 'uk',
-    }
+      summaryData: {
+        totalEvents: { current: 0, percentChange: 0 },
+        averageAttendance: { current: 0, percentChange: 0 },
+        totalHours: { current: 0, percentChange: 0 },
+        totalParticipants: { current: 0, percentChange: 0 },
+        eventTypes: [],
+        monthlyTrends: [],
+        highestAttendanceMonth: { month: 0, attendance: 0 },
+        lowestAttendanceMonth: { month: 0, attendance: 0 },
+        mostEventsMonth: { month: 0, count: 0 }
+      },
+      datePeriod: {
+        from: new Date().toISOString().split('T')[0],
+        to: new Date().toISOString().split('T')[0]
+      }
+    };
   },
-  mounted() {
-    window.addEventListener('language-changed', this.updateLanguage);
+  created() {
+    // Get the selected language from localStorage
+    this.language = localStorage.getItem('language') || 'uk';
     
-    // Also listen for language changes using the event bus
-    if (this.$languageEventBus) {
-      this.$languageEventBus.on('language-changed', (lang) => {
-        this.language = lang
-      })
+    // Listen for language change events
+    window.addEventListener('languageChanged', this.handleLanguageChange);
+    
+    // Load real data from props if available
+    if (this.$page.props.summaryData) {
+      this.summaryData = this.$page.props.summaryData;
     }
+    
+    // Set default date period to current month
+    const now = new Date();
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    
+    this.datePeriod.from = firstDay.toISOString().split('T')[0];
+    this.datePeriod.to = lastDay.toISOString().split('T')[0];
   },
   beforeUnmount() {
-    window.removeEventListener('language-changed', this.updateLanguage);
+    // Clean up event listener when component is unmounted
+    window.removeEventListener('languageChanged', this.handleLanguageChange);
   },
   methods: {
-    updateLanguage(event) {
+    handleLanguageChange(event) {
       this.language = event.detail.language;
     },
-  },
-}
+    getMonthName(monthNumber) {
+      if (this.language === 'uk') {
+        const ukrainianMonths = ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень', 
+                              'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'];
+        return ukrainianMonths[monthNumber - 1] || '';
+      } else {
+        const englishMonths = ['January', 'February', 'March', 'April', 'May', 'June', 
+                            'July', 'August', 'September', 'October', 'November', 'December'];
+        return englishMonths[monthNumber - 1] || '';
+      }
+    },
+    setPeriod(period) {
+      const now = new Date();
+      let fromDate, toDate;
+      
+      switch(period) {
+        case 'month':
+          fromDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          toDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+          break;
+        case 'quarter':
+          const currentQuarter = Math.floor(now.getMonth() / 3);
+          fromDate = new Date(now.getFullYear(), currentQuarter * 3, 1);
+          toDate = new Date(now.getFullYear(), (currentQuarter + 1) * 3, 0);
+          break;
+        case 'year':
+          fromDate = new Date(now.getFullYear(), 0, 1);
+          toDate = new Date(now.getFullYear(), 11, 31);
+          break;
+        case 'prev_month':
+          fromDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          toDate = new Date(now.getFullYear(), now.getMonth(), 0);
+          break;
+        case 'prev_quarter':
+          const prevQuarter = Math.floor(now.getMonth() / 3) - 1;
+          const prevQuarterYear = prevQuarter < 0 ? now.getFullYear() - 1 : now.getFullYear();
+          const adjustedQuarter = prevQuarter < 0 ? 3 : prevQuarter;
+          fromDate = new Date(prevQuarterYear, adjustedQuarter * 3, 1);
+          toDate = new Date(prevQuarterYear, (adjustedQuarter + 1) * 3, 0);
+          break;
+        case 'prev_year':
+          fromDate = new Date(now.getFullYear() - 1, 0, 1);
+          toDate = new Date(now.getFullYear() - 1, 11, 31);
+          break;
+      }
+      
+      if (fromDate && toDate) {
+        this.datePeriod.from = fromDate.toISOString().split('T')[0];
+        this.datePeriod.to = toDate.toISOString().split('T')[0];
+      }
+    }
+  }
+};
 </script> 

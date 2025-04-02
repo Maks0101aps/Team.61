@@ -280,117 +280,65 @@ export default {
         period: 'current',
         level: ''
       },
-      students: [
-        {
-          id: 1,
-          name: 'Петро Іваненко',
-          email: 'petro@example.com',
-          group: 'Група 1',
-          grades: {
-            math: 10,
-            phys: 9,
-            chem: 11,
-            bio: 8,
-            hist: 10,
-            lit: 9
-          },
-          average: 9.5,
-          trend: 0.5
-        },
-        {
-          id: 2,
-          name: 'Марія Коваленко',
-          email: 'maria@example.com',
-          group: 'Група 1',
-          grades: {
-            math: 12,
-            phys: 10,
-            chem: 11,
-            bio: 12,
-            hist: 11,
-            lit: 12
-          },
-          average: 11.3,
-          trend: 0.8
-        },
-        {
-          id: 3,
-          name: 'Олександр Шевченко',
-          email: 'oleksandr@example.com',
-          group: 'Група 2',
-          grades: {
-            math: 7,
-            phys: 6,
-            chem: 8,
-            bio: 9,
-            hist: 7,
-            lit: 8
-          },
-          average: 7.5,
-          trend: -0.3
-        },
-        {
-          id: 4,
-          name: 'Анна Мельник',
-          email: 'anna@example.com',
-          group: 'Група 2',
-          grades: {
-            math: 8,
-            phys: 7,
-            chem: 9,
-            bio: 10,
-            hist: 11,
-            lit: 10
-          },
-          average: 9.2,
-          trend: 1.2
-        },
-        {
-          id: 5,
-          name: 'Микола Бондаренко',
-          email: 'mykola@example.com',
-          group: 'Група 3',
-          grades: {
-            math: 4,
-            phys: 5,
-            chem: 6,
-            bio: 7,
-            hist: 6,
-            lit: 8
-          },
-          average: 6.0,
-          trend: 0.2
-        },
-        {
-          id: 6,
-          name: 'Юлія Ткаченко',
-          email: 'yulia@example.com',
-          group: 'Група 3',
-          grades: {
-            math: 3,
-            phys: 4,
-            chem: 3,
-            bio: 5,
-            hist: 6,
-            lit: 5
-          },
-          average: 4.3,
-          trend: -0.7
-        }
-      ],
-      subjectPerformance: [
-        { id: 'math', average: 7.3 },
-        { id: 'phys', average: 6.8 },
-        { id: 'chem', average: 8.0 },
-        { id: 'bio', average: 8.5 },
-        { id: 'hist', average: 8.5 },
-        { id: 'lit', average: 8.7 }
-      ],
+      students: [],
+      subjects: [],
+      subjectPerformance: [],
       performanceDistribution: {
-        high: 7,
-        medium: 9,
-        low: 3,
-        critical: 1
+        high: 0,
+        medium: 0,
+        low: 0,
+        critical: 0
+      }
+    }
+  },
+  created() {
+    // Load real data from props
+    if (this.$page.props.studentData) {
+      this.students = this.$page.props.studentData;
+    }
+    
+    if (this.$page.props.subjects) {
+      this.subjects = this.$page.props.subjects;
+    }
+    
+    if (this.$page.props.statistics) {
+      // Calculate subject performance from real data
+      if (this.subjects && this.subjects.length > 0) {
+        this.subjectPerformance = this.subjects.map(subject => {
+          return {
+            id: subject,
+            name: this.getSubjectName(subject),
+            average: this.$page.props.statistics.subjectAverages[subject] || 0
+          };
+        });
+      }
+      
+      // Calculate performance distribution from real data
+      if (this.students && this.students.length > 0) {
+        let high = 0;
+        let medium = 0;
+        let low = 0;
+        let critical = 0;
+        
+        this.students.forEach(student => {
+          const avg = student.averageGrade.current;
+          if (avg >= 10) {
+            high++;
+          } else if (avg >= 7) {
+            medium++;
+          } else if (avg >= 4) {
+            low++;
+          } else {
+            critical++;
+          }
+        });
+        
+        this.performanceDistribution = {
+          high,
+          medium,
+          low,
+          critical
+        };
       }
     }
   },

@@ -99,44 +99,49 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <!-- Example rows - in a real application these would be loaded from the backend -->
-              <tr v-for="(student, index) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" :key="index">
+              <!-- Real data from the server -->
+              <tr v-for="(student, index) in filteredStudents" :key="student.id">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <div class="flex-shrink-0 h-10 w-10">
-                      <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                    <div class="flex-shrink-0 h-8 w-8">
+                      <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                        {{ student.name.charAt(0) }}
                       </div>
                     </div>
                     <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900">
-                        {{ language === 'uk' ? 'Студент ' : 'Student ' }}{{ index + 1 }}
-                      </div>
-                      <div class="text-sm text-gray-500">
-                        ID: {{ 1000 + index }}
-                      </div>
+                      <div class="text-sm font-medium text-gray-900">{{ student.name }}</div>
                     </div>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ Math.floor(Math.random() * 11) + 1 }}-{{ ['A', 'B', 'C'][Math.floor(Math.random() * 3)] }}</div>
+                  <div class="text-sm text-gray-900">{{ student.grade }}-{{ student.group }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">+380 {{ Math.floor(Math.random() * 90 + 10) }} {{ Math.floor(Math.random() * 900 + 100) }} {{ Math.floor(Math.random() * 9000 + 1000) }}</div>
+                  <div class="text-sm text-gray-900">{{ student.parentPhone }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">student{{ index + 1 }}@example.com</div>
+                  <div class="text-sm text-gray-900">{{ student.email }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" :class="index % 5 === 0 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'">
-                    {{ index % 5 === 0 ? (language === 'uk' ? 'Неактивний' : 'Inactive') : (language === 'uk' ? 'Активний' : 'Active') }}
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
+                    :class="{
+                      'bg-green-100 text-green-800': student.status === 'Active',
+                      'bg-red-100 text-red-800': student.status === 'Inactive'
+                    }">
+                    {{ student.status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">{{ language === 'uk' ? 'Перегляд' : 'View' }}</a>
                   <a href="#" class="text-blue-600 hover:text-blue-900">{{ language === 'uk' ? 'Звіт' : 'Report' }}</a>
+                </td>
+              </tr>
+              <!-- Empty state -->
+              <tr v-if="filteredStudents.length === 0">
+                <td class="px-6 py-4 whitespace-nowrap text-center" colspan="6">
+                  <div class="text-gray-500">
+                    {{ language === 'uk' ? 'Немає даних для відображення' : 'No data to display' }}
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -216,6 +221,40 @@ export default {
   data() {
     return {
       language: localStorage.getItem('language') || 'uk',
+      students: [],
+      filters: {
+        grade: '',
+        group: '',
+        status: ''
+      }
+    }
+  },
+  created() {
+    // Get real data from props
+    if (this.$page.props.initialStudentData) {
+      this.students = this.$page.props.initialStudentData;
+    }
+  },
+  computed: {
+    filteredStudents() {
+      return this.students.filter(student => {
+        // Filter by grade
+        if (this.filters.grade && student.grade.toString() !== this.filters.grade) {
+          return false;
+        }
+        
+        // Filter by group
+        if (this.filters.group && !student.group.includes(this.filters.group)) {
+          return false;
+        }
+        
+        // Filter by status
+        if (this.filters.status && student.status !== this.filters.status) {
+          return false;
+        }
+        
+        return true;
+      });
     }
   },
   mounted() {

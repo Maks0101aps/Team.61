@@ -97,66 +97,50 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <!-- Example rows - in a real application these would be loaded from the backend -->
-              <tr v-for="(teacher, index) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]" :key="index">
+              <!-- Real data from the server -->
+              <tr v-for="(teacher, index) in filteredTeachers" :key="teacher.id">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
-                    <div class="flex-shrink-0 h-10 w-10">
-                      <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                    <div class="flex-shrink-0 h-8 w-8">
+                      <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium">
+                        {{ teacher.name.charAt(0) }}
                       </div>
                     </div>
                     <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900">
-                        {{ language === 'uk' ? 'Вчитель ' : 'Teacher ' }}{{ index + 1 }}
-                      </div>
-                      <div class="text-sm text-gray-500">
-                        ID: {{ 2000 + index }}
-                      </div>
+                      <div class="text-sm font-medium text-gray-900">{{ teacher.name }}</div>
                     </div>
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">
-                    {{ [
-                      language === 'uk' ? 'Математика' : 'Mathematics',
-                      language === 'uk' ? 'Українська мова' : 'Ukrainian language',
-                      language === 'uk' ? 'Англійська мова' : 'English language',
-                      language === 'uk' ? 'Історія' : 'History',
-                      language === 'uk' ? 'Фізика' : 'Physics',
-                      language === 'uk' ? 'Хімія' : 'Chemistry',
-                      language === 'uk' ? 'Біологія' : 'Biology'
-                    ][index % 7] }}
-                  </div>
+                  <div class="text-sm text-gray-900">{{ teacher.subjects.join(', ') }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">+380 {{ Math.floor(Math.random() * 90 + 10) }} {{ Math.floor(Math.random() * 900 + 100) }} {{ Math.floor(Math.random() * 9000 + 1000) }}</div>
-                  <div class="text-sm text-gray-500">teacher{{ index + 1 }}@example.com</div>
+                  <div class="text-sm text-gray-900">{{ teacher.phone || (language === 'uk' ? 'Немає даних' : 'Not available') }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-gray-900">{{ Math.floor(Math.random() * 30) + 1 }} {{ language === 'uk' ? 'років' : 'years' }}</div>
+                  <div class="text-sm text-gray-900">{{ teacher.experience }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" 
                     :class="{
-                      'bg-green-100 text-green-800': index % 3 === 0,
-                      'bg-yellow-100 text-yellow-800': index % 3 === 1,
-                      'bg-red-100 text-red-800': index % 3 === 2
+                      'bg-green-100 text-green-800': teacher.status === 'Active',
+                      'bg-red-100 text-red-800': teacher.status === 'Inactive',
+                      'bg-yellow-100 text-yellow-800': teacher.status === 'On leave'
                     }">
-                    {{ 
-                      index % 3 === 0 
-                        ? (language === 'uk' ? 'Активний' : 'Active') 
-                        : index % 3 === 1 
-                          ? (language === 'uk' ? 'Відпустка' : 'On leave')
-                          : (language === 'uk' ? 'Неактивний' : 'Inactive')
-                    }}
+                    {{ teacher.status }}
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <a href="#" class="text-blue-600 hover:text-blue-900 mr-3">{{ language === 'uk' ? 'Перегляд' : 'View' }}</a>
                   <a href="#" class="text-blue-600 hover:text-blue-900">{{ language === 'uk' ? 'Звіт' : 'Report' }}</a>
+                </td>
+              </tr>
+              <!-- Empty state -->
+              <tr v-if="filteredTeachers.length === 0">
+                <td class="px-6 py-4 whitespace-nowrap text-center" colspan="6">
+                  <div class="text-gray-500">
+                    {{ language === 'uk' ? 'Немає даних для відображення' : 'No data to display' }}
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -236,6 +220,53 @@ export default {
   data() {
     return {
       language: localStorage.getItem('language') || 'uk',
+      teachers: [],
+      filters: {
+        subject: '',
+        experience: '',
+        status: ''
+      }
+    }
+  },
+  created() {
+    // Get real data from props
+    if (this.$page.props.initialTeacherData) {
+      this.teachers = this.$page.props.initialTeacherData;
+    }
+  },
+  computed: {
+    filteredTeachers() {
+      return this.teachers.filter(teacher => {
+        // Filter by subject
+        if (this.filters.subject && !teacher.subjects.some(s => s.includes(this.filters.subject))) {
+          return false;
+        }
+        
+        // Filter by experience
+        if (this.filters.experience) {
+          const yearsMatch = teacher.experience.match(/(\d+)/);
+          if (yearsMatch) {
+            const years = parseInt(yearsMatch[0]);
+            
+            if (this.filters.experience === 'Less than 5 years' && years >= 5) {
+              return false;
+            } else if (this.filters.experience === '5-10 years' && (years < 5 || years > 10)) {
+              return false;
+            } else if (this.filters.experience === '10-20 years' && (years < 10 || years > 20)) {
+              return false;
+            } else if (this.filters.experience === 'More than 20 years' && years <= 20) {
+              return false;
+            }
+          }
+        }
+        
+        // Filter by status
+        if (this.filters.status && teacher.status !== this.filters.status) {
+          return false;
+        }
+        
+        return true;
+      });
     }
   },
   mounted() {

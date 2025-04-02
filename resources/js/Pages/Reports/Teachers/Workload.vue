@@ -269,56 +269,20 @@ export default {
         period: 'current',
         sort: 'name'
       },
-      teachers: [
-        {
-          id: 1,
-          name: 'Іванова Олена Петрівна',
-          email: 'ivanova@school.ua',
-          subjects: ['math', 'phys'],
-          classCount: 6,
-          hoursPerWeek: 24.5
-        },
-        {
-          id: 2,
-          name: 'Петренко Андрій Миколайович',
-          email: 'petrenko@school.ua',
-          subjects: ['chem', 'bio'],
-          classCount: 5,
-          hoursPerWeek: 18.0
-        },
-        {
-          id: 3,
-          name: 'Коваленко Марія Степанівна',
-          email: 'kovalenko@school.ua',
-          subjects: ['hist', 'lit'],
-          classCount: 8,
-          hoursPerWeek: 26.0
-        },
-        {
-          id: 4,
-          name: 'Шевченко Олег Іванович',
-          email: 'shevchenko@school.ua',
-          subjects: ['math'],
-          classCount: 7,
-          hoursPerWeek: 21.0
-        },
-        {
-          id: 5,
-          name: 'Бондаренко Ірина Василівна',
-          email: 'bondarenko@school.ua',
-          subjects: ['bio', 'chem'],
-          classCount: 5,
-          hoursPerWeek: 19.5
-        },
-        {
-          id: 6,
-          name: 'Мельник Сергій Олександрович',
-          email: 'melnyk@school.ua',
-          subjects: ['phys', 'math'],
-          classCount: 7,
-          hoursPerWeek: 28.5
-        }
-      ]
+      teachers: []
+    }
+  },
+  created() {
+    // Load real data from props
+    if (this.$page.props.teacherData) {
+      this.teachers = this.$page.props.teacherData.map(teacher => ({
+        id: teacher.id,
+        name: teacher.name,
+        email: teacher.email || '',
+        subjects: teacher.subject ? [teacher.subject] : [],
+        classCount: teacher.totalClasses,
+        hoursPerWeek: teacher.totalHours
+      }));
     }
   },
   computed: {
