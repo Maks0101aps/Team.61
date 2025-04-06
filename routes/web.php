@@ -251,7 +251,6 @@ Route::middleware(['auth', CheckStudentRole::class, CheckParentRole::class])->gr
     Route::get('reports/students/list', [ReportsController::class, 'studentList'])->name('reports.students.list');
     
     // Teacher reports
-    Route::get('reports/teachers/workload', [ReportsController::class, 'teacherWorkload'])->name('reports.teachers.workload');
     Route::get('reports/teachers/schedule', [ReportsController::class, 'teacherSchedule'])->name('reports.teachers.schedule');
     Route::get('reports/teachers/list', [ReportsController::class, 'teacherList'])->name('reports.teachers.list');
     

@@ -71,20 +71,9 @@
           </h2>
         </div>
         <p class="text-gray-600 mb-6">
-          {{ language === 'uk' ? 'Навантаження, розклад та статистика по вчителям' : 'Workload, schedule and statistics for teachers' }}
+          {{ language === 'uk' ? 'Розклад та статистика по вчителям' : 'Schedule and statistics for teachers' }}
         </p>
         <div class="space-y-3">
-          <Link 
-            href="/reports/teachers/workload" 
-            class="block w-full py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors duration-200 flex items-center"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
-              <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
-            </svg>
-            {{ language === 'uk' ? 'Навантаження' : 'Workload' }}
-          </Link>
-          
           <Link 
             href="/reports/teachers/schedule" 
             class="block w-full py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors duration-200 flex items-center"
