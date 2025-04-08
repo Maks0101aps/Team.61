@@ -29,6 +29,7 @@ class TeachersController extends Controller
                     'phone' => $teacher->phone,
                     'city' => $teacher->city,
                     'subject' => $teacher->subject,
+                    'qualification' => $teacher->qualification,
                     'deleted_at' => $teacher->deleted_at,
                     'organization' => $teacher->organization ? $teacher->organization->only('name') : null,
                 ]),
@@ -51,7 +52,7 @@ class TeachersController extends Controller
             'middle_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['nullable', 'max:50', 'email'],
-            'phone' => ['nullable', 'max:50'],
+            'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
             'subject' => ['nullable', 'max:100'],
             'qualification' => ['nullable', 'max:100'],
             'address' => ['nullable', 'max:150'],
@@ -106,7 +107,7 @@ class TeachersController extends Controller
             'middle_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['nullable', 'max:50', 'email'],
-            'phone' => ['nullable', 'max:50'],
+            'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
             'subject' => ['nullable', 'max:100'],
             'qualification' => ['nullable', 'max:100'],
             'address' => ['nullable', 'max:150'],
@@ -118,6 +119,11 @@ class TeachersController extends Controller
         // Always set the country to UA
         $validatedData['country'] = 'UA';
         $validatedData['organization_id'] = null;
+
+        // Очищаем номер телефона от форматирования перед сохранением
+        if (isset($validatedData['phone'])) {
+            $validatedData['phone'] = preg_replace('/[^0-9+]/', '', $validatedData['phone']);
+        }
 
         $teacher->update($validatedData);
 
