@@ -48,7 +48,7 @@ class ParentsController extends Controller
             'middle_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['nullable', 'max:50', 'email'],
-            'phone' => ['nullable', 'max:50'],
+            'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
             'address' => ['nullable', 'max:150'],
             'city' => ['nullable', 'max:50'],
             'region' => ['nullable', 'max:50'],
@@ -100,7 +100,7 @@ class ParentsController extends Controller
             'middle_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['nullable', 'max:50', 'email'],
-            'phone' => ['nullable', 'max:50'],
+            'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
             'address' => ['nullable', 'max:150'],
             'city' => ['nullable', 'max:50'],
             'region' => ['nullable', 'max:50'],
@@ -112,6 +112,11 @@ class ParentsController extends Controller
 
         $childrenIds = collect($validated['children'] ?? [])->pluck('id')->filter();
         unset($validated['children']);
+
+        // Очищаем номер телефона от форматирования перед сохранением
+        if (isset($validated['phone'])) {
+            $validated['phone'] = preg_replace('/[^0-9+]/', '', $validated['phone']);
+        }
 
         $parent->update($validated);
         

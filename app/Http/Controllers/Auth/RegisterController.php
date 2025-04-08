@@ -83,9 +83,19 @@ class RegisterController extends Controller
         if ($request->role === User::ROLE_TEACHER) {
             $rules['subject'] = 'required|string|max:100';
             $rules['qualification'] = 'required|string|max:100';
-            $rules['phone'] = 'nullable|string|max:50|regex:/^\+380/';
+            $rules['phone'] = 'nullable|string|regex:/^\+380[0-9]{9}$/|max:13';
             $rules['region'] = 'nullable|string|max:50';
             $rules['city'] = 'nullable|string|max:50';
+            $rules['postal_code'] = 'nullable|string|max:25';
+        }
+        
+        // Add parent fields validation for parent role
+        if ($request->role === User::ROLE_PARENT) {
+            $rules['phone'] = 'nullable|string|regex:/^\+380[0-9]{9}$/|max:13';
+            $rules['region'] = 'nullable|string|max:50';
+            $rules['city'] = 'nullable|string|max:50';
+            $rules['street'] = 'nullable|string|max:100';
+            $rules['house_number'] = 'nullable|string|max:20';
             $rules['postal_code'] = 'nullable|string|max:25';
         }
         

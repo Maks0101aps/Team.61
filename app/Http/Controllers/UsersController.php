@@ -150,12 +150,16 @@ class UsersController extends Controller
                 'postal_code' => ['nullable', 'string', 'max:20'],
                 'street' => ['nullable', 'string', 'max:255'],
                 'house_number' => ['nullable', 'string', 'max:50'],
-                'phone' => ['nullable', 'string', 'max:50'],
+                'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
             ]);
             
             // Find and update the parent model
             $parent = ParentModel::where('email', $user->email)->first();
             if ($parent) {
+                // Очищаем номер телефона от форматирования перед сохранением
+                if (isset($parentData['phone'])) {
+                    $parentData['phone'] = preg_replace('/[^0-9+]/', '', $parentData['phone']);
+                }
                 $parent->update($parentData);
             }
         }
