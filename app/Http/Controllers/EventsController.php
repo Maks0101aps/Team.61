@@ -271,8 +271,9 @@ class EventsController extends Controller
         
         $event->delete();
 
-        if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+        if (request()->header('X-Inertia') === 'false') {
             return response()->json([
+                'success' => true,
                 'message' => __('Подію видалено')
             ]);
         }

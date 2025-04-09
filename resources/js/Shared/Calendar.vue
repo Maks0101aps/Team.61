@@ -478,7 +478,11 @@ export default {
       selectedEvent.value = null;
       
       // Send the delete request - the server will check if the user has permission
-      axios.delete(`/events/${eventId}`)
+      axios.delete(`/events/${eventId}`, {
+        headers: {
+          'X-Inertia': 'false'
+        }
+      })
         .then(response => {
           // Show success message
           const successMsg = props.language === 'uk' ? 'Подію видалено' : 'Event deleted';
