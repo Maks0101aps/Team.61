@@ -32,7 +32,7 @@
             </Link>
           </div>
           <div class="mt-2 py-1">
-            <Link href="#" class="text-blue-700 hover:text-blue-900 text-sm font-medium">
+            <Link href="/forgot-password" class="text-blue-700 hover:text-blue-900 text-sm font-medium">
               {{ language === 'uk' ? 'Забули свій пароль?' : 'Forgot your password?' }}
             </Link>
           </div>

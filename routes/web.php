@@ -16,6 +16,9 @@ use App\Http\Middleware\CheckParentRole;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CitiesController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,6 +51,36 @@ Route::get('register', [RegisterController::class, 'create'])
 
 Route::post('register', [RegisterController::class, 'store'])
     ->name('register.store')
+    ->middleware('guest');
+
+// Email Verification
+Route::get('email/verify', [VerificationController::class, 'show'])
+    ->name('verification.notice')
+    ->middleware('auth');
+
+Route::post('email/verify', [VerificationController::class, 'verify'])
+    ->name('verification.verify')
+    ->middleware('auth');
+
+Route::post('email/resend', [VerificationController::class, 'resend'])
+    ->name('verification.resend')
+    ->middleware('auth');
+
+// Password Reset
+Route::get('forgot-password', [ForgotPasswordController::class, 'create'])
+    ->name('password.request')
+    ->middleware('guest');
+
+Route::post('forgot-password', [ForgotPasswordController::class, 'store'])
+    ->name('password.email')
+    ->middleware('guest');
+
+Route::get('reset-password/{token}', [ResetPasswordController::class, 'create'])
+    ->name('password.reset')
+    ->middleware('guest');
+
+Route::post('reset-password', [ResetPasswordController::class, 'store'])
+    ->name('password.update')
     ->middleware('guest');
 
 // Dashboard
