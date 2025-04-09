@@ -468,15 +468,18 @@ export default {
     // Delete an event
     const deleteEvent = (event) => {
       if (!confirm(props.language === 'uk' ? 'Ви впевнені, що хочете видалити цю подію?' : 'Are you sure you want to delete this event?')) {
-        return
+        return;
       }
       
+      // Store the event ID before sending the delete request
+      const eventId = event.id;
+      
+      // Close the modal first to prevent interaction with a potentially deleted event
+      selectedEvent.value = null;
+      
       // Send the delete request - the server will check if the user has permission
-      axios.delete(`/events/${event.id}`)
+      axios.delete(`/events/${eventId}`)
         .then(response => {
-          // Close the modal
-          selectedEvent.value = null
-          
           // Show success message
           const successMsg = props.language === 'uk' ? 'Подію видалено' : 'Event deleted';
           const flashEvent = new CustomEvent('inertia:flash', {
@@ -487,9 +490,8 @@ export default {
           });
           window.dispatchEvent(flashEvent);
           
-          // Instead of reloading the page, remove the event from the local events array
-          // and let the application handle updates through its reactivity system
-          const eventIndex = props.events.findIndex(e => e.id === event.id);
+          // Remove the event from the local events array
+          const eventIndex = props.events.findIndex(e => e.id === eventId);
           if (eventIndex !== -1) {
             props.events.splice(eventIndex, 1);
           }
@@ -506,7 +508,14 @@ export default {
             }
           }
           
-          alert(errorMsg);
+          // Show error in UI
+          const errorEvent = new CustomEvent('inertia:flash', {
+            detail: {
+              type: 'error',
+              message: errorMsg
+            }
+          });
+          window.dispatchEvent(errorEvent);
         });
     }
 
