@@ -93,7 +93,8 @@
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="currentLanguageLabels.phone" 
-                :help-text="language === 'uk' ? 'Введіть номер телефону для зв\'язку' : 'Enter phone number for contact'"
+                type="phone"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380XXXXXXXXX' : 'Enter phone number in format +380XXXXXXXXX'"
               />
             </div>
           </div>
@@ -115,7 +116,7 @@
               <select-input 
                 v-model="form.region" 
                 :error="form.errors.region" 
-                :label="currentLanguageLabels.region" 
+                :label="currentLanguageLabels.region"
                 @change="loadCities"
                 :help-text="language === 'uk' ? 'Оберіть область проживання' : 'Select region of residence'"
               >
@@ -124,14 +125,27 @@
               </select-input>
               
               <select-input 
+                v-if="!isKyivSelected"
                 v-model="form.city" 
                 :error="form.errors.city" 
-                :label="currentLanguageLabels.city" 
+                :label="currentLanguageLabels.city"
+                @change="handleCityChange"
                 :disabled="!cities.length"
                 :help-text="language === 'uk' ? 'Спочатку оберіть область для завантаження міст' : 'First select a region to load cities'"
               >
                 <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+              </select-input>
+              
+              <select-input 
+                v-if="isKyivSelected"
+                v-model="form.district" 
+                :error="form.errors.district" 
+                :label="currentLanguageLabels.district"
+                :help-text="language === 'uk' ? 'Оберіть район Києва' : 'Select Kyiv district'"
+              >
+                <option :value="null">{{ language === 'uk' ? 'Оберіть район' : 'Select district' }}</option>
+                <option v-for="district in kyivDistricts" :key="district" :value="district">{{ district }}</option>
               </select-input>
               
               <div class="form-group">
@@ -216,25 +230,39 @@ export default {
     regions: {
       type: Array,
       default: () => []
-    }
+    },
   },
   data() {
     return {
       form: this.$inertia.form({
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        region: '',
-        country: 'UA',
-        postal_code: '',
+        first_name: null,
+        middle_name: null,
+        last_name: null,
+        email: null,
+        phone: null,
+        address: null,
+        city: null,
+        district: null,
+        region: null,
+        country: "UA",
+        postal_code: null,
         children: [],
       }),
       cities: [],
       language: localStorage.getItem('language') || 'uk',
+      isKyivSelected: false,
+      kyivDistricts: [
+        'Голосіївський',
+        'Дарницький',
+        'Деснянський',
+        'Дніпровський',
+        'Оболонський',
+        'Печерський',
+        'Подільський',
+        'Святошинський',
+        'Солом\'янський',
+        'Шевченківський'
+      ],
     }
   },
   mounted() {
@@ -249,12 +277,24 @@ export default {
     },
     loadCities() {
       this.form.city = null;
+      this.form.district = null;
       this.cities = [];
+      this.isKyivSelected = false;
       
       if (this.form.region) {
         axios.get(`/cities/${encodeURIComponent(this.form.region)}`)
           .then(response => {
             this.cities = response.data.cities;
+            
+            // If any of the cities is Kyiv, check and handle it
+            const kyivCity = this.cities.find(city => 
+              ['Київ', 'Киев', 'Kyiv'].includes(city)
+            );
+            
+            if (kyivCity) {
+              this.form.city = kyivCity;
+              this.isKyivSelected = true;
+            }
           })
           .catch(error => {
             console.error('Error loading cities:', error);
@@ -263,6 +303,10 @@ export default {
     },
     updateLanguage(event) {
       this.language = event.detail.language;
+    },
+    handleCityChange() {
+      this.form.district = null;
+      this.isKyivSelected = ['Київ', 'Киев', 'Kyiv'].includes(this.form.city);
     }
   },
   computed: {
@@ -280,6 +324,7 @@ export default {
           country: 'Country',
           postal_code: 'Postal Code',
           children: 'Children',
+          district: 'District',
         },
         uk: {
           first_name: 'Ім\'я',
@@ -293,6 +338,7 @@ export default {
           country: 'Країна',
           postal_code: 'Поштовий індекс',
           children: 'Діти',
+          district: 'Район',
         },
       }[this.language || 'uk']
     },

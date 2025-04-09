@@ -73,6 +73,8 @@
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="currentLanguageLabels.phone" 
+                type="phone"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380 (XX) XXX XX XX' : 'Enter phone number in format +380 (XX) XXX XX XX'"
               />
             </div>
           </div>

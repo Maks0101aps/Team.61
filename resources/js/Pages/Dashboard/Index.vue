@@ -195,6 +195,9 @@ export default {
       this.showWelcomeBanner = false
     }
     
+    // Get current language from localStorage when component mounts
+    this.localLanguage = localStorage.getItem('language') || 'uk'
+    
     // Listen for language changes using the event bus
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {

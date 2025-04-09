@@ -131,17 +131,17 @@ export default {
       localStorage.setItem('language', lang)
       
       // Set a cookie for server-side language detection
-      const date = new Date();
-      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+      const date = new Date()
+      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) // Expires in one year
       document.cookie = `language=${lang}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
       
-      // Use the event bus to notify all components
+      // Broadcast the language change
       if (this.$languageEventBus) {
         this.$languageEventBus.emit('language-changed', lang)
       }
       
-      // Don't reload the page, let the event bus handle the changes
-      // window.location.reload()
+      // Also dispatch a custom event for components that might not have access to the event bus
+      window.dispatchEvent(new CustomEvent('language-changed', { detail: { language: lang } }))
     }
   },
   mounted() {

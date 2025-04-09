@@ -73,6 +73,8 @@
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="currentLanguageLabels.phone" 
+                type="phone"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380 (XX) XXX XX XX' : 'Enter phone number in format +380 (XX) XXX XX XX'"
               />
             </div>
           </div>
@@ -130,14 +132,27 @@
               </select-input>
               
               <select-input 
+                v-if="!isKyivSelected"
                 v-model="form.city" 
                 :error="form.errors.city" 
                 :label="currentLanguageLabels.city"
                 :disabled="!cities.length"
+                @change="handleCityChange"
                 :help-text="language === 'uk' ? 'Спочатку оберіть область для завантаження міст' : 'First select a region to load cities'"
               >
                 <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+              </select-input>
+              
+              <select-input 
+                v-if="isKyivSelected"
+                v-model="form.district" 
+                :error="form.errors.district" 
+                :label="currentLanguageLabels.district"
+                :help-text="language === 'uk' ? 'Оберіть район Києва' : 'Select Kyiv district'"
+              >
+                <option :value="null">{{ language === 'uk' ? 'Оберіть район' : 'Select district' }}</option>
+                <option v-for="district in kyivDistricts" :key="district" :value="district">{{ district }}</option>
               </select-input>
               
               <div class="form-group">
@@ -207,7 +222,7 @@ export default {
     regions: {
       type: Array,
       default: () => []
-    }
+    },
   },
   remember: 'form',
   data() {
@@ -222,12 +237,26 @@ export default {
         qualification: null,
         address: null,
         city: null,
+        district: null,
         region: null,
         country: "UA",
         postal_code: null,
       }),
       cities: [],
       language: localStorage.getItem('language') || 'uk',
+      isKyivSelected: false,
+      kyivDistricts: [
+        'Голосіївський',
+        'Дарницький',
+        'Деснянський',
+        'Дніпровський',
+        'Оболонський',
+        'Печерський',
+        'Подільський',
+        'Святошинський',
+        'Солом\'янський',
+        'Шевченківський'
+      ],
     }
   },
   mounted() {
@@ -242,17 +271,33 @@ export default {
     },
     loadCities() {
       this.form.city = null;
+      this.form.district = null;
       this.cities = [];
+      this.isKyivSelected = false;
       
       if (this.form.region) {
-        axios.get(`/cities/${encodeURIComponent(this.form.region)}`)
+        axios.get(`/teachers/cities/${encodeURIComponent(this.form.region)}`)
           .then(response => {
             this.cities = response.data.cities;
+            
+            // If any of the cities is Kyiv, check and handle it
+            const kyivCity = this.cities.find(city => 
+              ['Київ', 'Киев', 'Kyiv'].includes(city)
+            );
+            
+            if (kyivCity) {
+              this.form.city = kyivCity;
+              this.isKyivSelected = true;
+            }
           })
           .catch(error => {
             console.error('Error loading cities:', error);
           });
       }
+    },
+    handleCityChange() {
+      this.form.district = null;
+      this.isKyivSelected = ['Київ', 'Киев', 'Kyiv'].includes(this.form.city);
     },
     updateLanguage(event) {
       this.language = event.detail.language;
@@ -271,6 +316,7 @@ export default {
           qualification: 'Qualification',
           address: 'Address',
           city: 'City',
+          district: 'District',
           region: 'Region',
           country: 'Country',
           postal_code: 'Postal Code',
@@ -285,6 +331,7 @@ export default {
           qualification: 'Кваліфікація',
           address: 'Адреса',
           city: 'Місто',
+          district: 'Район',
           region: 'Область',
           country: 'Країна',
           postal_code: 'Поштовий індекс',

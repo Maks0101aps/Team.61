@@ -144,7 +144,7 @@
       <div class="grid grid-cols-1 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
         <div class="bg-white p-6">
           <div class="text-xl font-bold mb-6 text-blue-900">
-            {{ currentDate.format('DD MMMM YYYY') }}
+            {{ formatFullDate(currentDate) }}
           </div>
           <div class="space-y-4">
             <div v-for="event in getEventsForDay(currentDate.format('YYYY-MM-DD'))" :key="event.id"
@@ -265,19 +265,42 @@ export default {
     }
   },
   setup(props) {
+    // Create reactive refs first before using them
+    const currentDate = ref(dayjs())
+    const selectedEvent = ref(null)
+    const currentView = ref('month')
+    
     const updateLocale = () => {
+      // Set dayjs locale based on current language
       if (props.language === 'uk') {
         dayjs.locale('uk')
       } else {
         dayjs.locale('en')
       }
+      
+      // Force a refresh of the localized data
+      if (currentView.value === 'year') {
+        // For year view, we need to update all month names
+        // This is a hacky way to force Vue to re-render
+        const temp = currentView.value
+        currentView.value = 'temp'
+        setTimeout(() => {
+          currentView.value = temp
+        }, 10)
+      }
     }
     
-    watch(() => props.language, updateLocale, { immediate: true })
-
-    const currentDate = ref(dayjs())
-    const selectedEvent = ref(null)
-    const currentView = ref('month')
+    // Watch for language changes and update locale
+    watch(() => props.language, (newLanguage) => {
+      updateLocale()
+      
+      // Force a refresh of the view to update all translated elements
+      const temp = currentView.value
+      currentView.value = 'temp'
+      setTimeout(() => {
+        currentView.value = temp
+      }, 10)
+    }, { immediate: true })
 
     const viewModes = computed(() => [
       { value: 'month', label: props.language === 'uk' ? 'Місяць' : 'Month' },
@@ -290,10 +313,17 @@ export default {
       updateLocale()
       const month = currentDate.value.format('MMMM')
       const year = currentDate.value.format('YYYY')
+      
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
+      // Get the month name in the current locale
+      const localizedMonth = currentDate.value.format('MMMM')
+      
       if (props.language === 'uk') {
-        return `${month.charAt(0).toUpperCase()}${month.slice(1)} ${year}`
+        return `${localizedMonth.charAt(0).toUpperCase()}${localizedMonth.slice(1)} ${year}`
       }
-      return `${month} ${year}`
+      return `${localizedMonth} ${year}`
     })
 
     const weekDays = computed(() => {
@@ -334,7 +364,9 @@ export default {
     }
 
     const getWeekDayDate = (weekDay) => {
-      updateLocale()
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
       const dayIndex = weekDays.value.indexOf(weekDay)
       const date = currentDate.value.startOf('week').add(dayIndex, 'day')
       const formatted = date.format('DD MMMM')
@@ -346,8 +378,13 @@ export default {
     }
 
     const getMonthName = (monthIndex) => {
-      updateLocale()
-      const month = dayjs().month(monthIndex).format('MMMM')
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
+      // Create a date object for the first day of the specified month
+      const date = dayjs().month(monthIndex).date(1)
+      const month = date.format('MMMM')
+      
       if (props.language === 'uk') {
         return `${month.charAt(0).toUpperCase()}${month.slice(1)}`
       }
@@ -411,7 +448,9 @@ export default {
     }
 
     const formatDateTime = (date) => {
-      updateLocale()
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
       return dayjs(date).format('DD.MM.YYYY HH:mm')
     }
 
@@ -568,6 +607,13 @@ export default {
       })
     }
 
+    const formatFullDate = (date) => {
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
+      return date.format('DD MMMM YYYY')
+    }
+
     return {
       currentDate,
       selectedEvent,
@@ -590,7 +636,8 @@ export default {
       createEventOnDate,
       checkEventAccess,
       canDeleteEvent,
-      deleteEvent
+      deleteEvent,
+      formatFullDate
     }
   }
 }
