@@ -479,16 +479,20 @@ export default {
           
           // Show success message
           const successMsg = props.language === 'uk' ? 'Подію видалено' : 'Event deleted';
-          const event = new CustomEvent('inertia:flash', {
+          const flashEvent = new CustomEvent('inertia:flash', {
             detail: {
               type: 'success',
               message: successMsg
             }
           });
-          window.dispatchEvent(event);
+          window.dispatchEvent(flashEvent);
           
-          // Reload the page to update the calendar
-          window.location.reload();
+          // Instead of reloading the page, remove the event from the local events array
+          // and let the application handle updates through its reactivity system
+          const eventIndex = props.events.findIndex(e => e.id === event.id);
+          if (eventIndex !== -1) {
+            props.events.splice(eventIndex, 1);
+          }
         })
         .catch(error => {
           // Show error message
