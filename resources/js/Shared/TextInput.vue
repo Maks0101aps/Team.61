@@ -9,20 +9,20 @@
         :value="value"
         :disabled="disabled"
         @input="$emit('update:modelValue', $event.target.value)"
-        class="form-input w-full px-4 py-2.5 rounded-lg border-gray-300 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
+        class="form-input w-full px-4 py-2.5 rounded-lg border-gray-400 border-2 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
         :class="{ 'border-red-400 focus:border-red-500 focus:ring-red-200': error, 'pr-10': type === 'email' || type === 'password' || type === 'search' }"
         :placeholder="placeholder"
       >
 
       <input
-        v-else
+        v-if="type === 'phone'"
         :id="id"
         type="tel"
         :value="formattedPhoneValue"
         :disabled="disabled"
         @input="handlePhoneInput"
         @blur="validatePhone"
-        class="form-input w-full px-4 py-2.5 rounded-lg border-gray-300 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
+        class="form-input w-full px-4 py-2.5 rounded-lg border-gray-400 border-2 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
         :class="{ 'border-red-400 focus:border-red-500 focus:ring-red-200': error }"
         placeholder="+380 (XX) XXX XX XX"
         maxlength="18"
