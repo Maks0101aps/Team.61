@@ -507,6 +507,9 @@ export default {
     }
 
     const previousPeriod = () => {
+      // Ensure we're using the right locale before changing date
+      dayjs.locale(props.language)
+      
       switch (currentView.value) {
         case 'month':
           currentDate.value = currentDate.value.subtract(1, 'month')
@@ -521,9 +524,15 @@ export default {
           currentDate.value = currentDate.value.subtract(1, 'year')
           break
       }
+      
+      // Force refresh of locale-sensitive computed properties
+      updateLocale()
     }
 
     const nextPeriod = () => {
+      // Ensure we're using the right locale before changing date
+      dayjs.locale(props.language)
+      
       switch (currentView.value) {
         case 'month':
           currentDate.value = currentDate.value.add(1, 'month')
@@ -538,6 +547,9 @@ export default {
           currentDate.value = currentDate.value.add(1, 'year')
           break
       }
+      
+      // Force refresh of locale-sensitive computed properties
+      updateLocale()
     }
 
     const createEventOnDate = (date) => {
