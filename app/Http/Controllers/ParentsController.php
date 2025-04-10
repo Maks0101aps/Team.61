@@ -28,6 +28,8 @@ class ParentsController extends Controller
                     'name' => $parent->name,
                     'phone' => $parent->phone,
                     'city' => $parent->city,
+                    'parent_type' => $parent->parent_type,
+                    'parent_type_name' => $parent->parent_type_name,
                     'deleted_at' => $parent->deleted_at,
                 ]),
         ]);
@@ -48,6 +50,7 @@ class ParentsController extends Controller
             'middle_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['nullable', 'max:50', 'email'],
+            'parent_type' => ['required', 'in:mother,father'],
             'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
             'address' => ['nullable', 'max:150'],
             'city' => ['nullable', 'max:50'],
@@ -67,7 +70,7 @@ class ParentsController extends Controller
             $parent->children()->attach($childrenIds);
         }
 
-        return Redirect::route('parents')->with('success', 'Батька створено.');
+        return Redirect::route('parents')->with('success', 'Батьків створено.');
     }
 
     public function edit(ParentModel $parent): Response
@@ -80,6 +83,7 @@ class ParentsController extends Controller
                 'last_name' => $parent->last_name,
                 'email' => $parent->email,
                 'phone' => $parent->phone,
+                'parent_type' => $parent->parent_type,
                 'address' => $parent->address,
                 'city' => $parent->city,
                 'region' => $parent->region,
@@ -100,6 +104,7 @@ class ParentsController extends Controller
             'middle_name' => ['required', 'max:50'],
             'last_name' => ['required', 'max:50'],
             'email' => ['nullable', 'max:50', 'email'],
+            'parent_type' => ['required', 'in:mother,father'],
             'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
             'address' => ['nullable', 'max:150'],
             'city' => ['nullable', 'max:50'],
@@ -123,21 +128,21 @@ class ParentsController extends Controller
         // Sync the children relationships
         $parent->children()->sync($childrenIds);
 
-        return Redirect::back()->with('success', 'Батька оновлено.');
+        return Redirect::back()->with('success', 'Батьків оновлено.');
     }
 
     public function destroy(ParentModel $parent): RedirectResponse
     {
         $parent->delete();
 
-        return Redirect::back()->with('success', 'Батька видалено.');
+        return Redirect::back()->with('success', 'Батьків видалено.');
     }
 
     public function restore(ParentModel $parent): RedirectResponse
     {
         $parent->restore();
 
-        return Redirect::back()->with('success', 'Батька відновлено.');
+        return Redirect::back()->with('success', 'Батьків відновлено.');
     }
 
     /**
