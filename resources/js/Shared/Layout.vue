@@ -96,7 +96,7 @@
           </div>
         </div>
         <div class="md:flex md:grow md:overflow-hidden">
-          <div class="hidden shrink-0 p-6 w-64 bg-gradient-to-b from-[#4A90E2] to-[#357ABD] overflow-y-auto md:block">
+          <div class="hidden shrink-0 p-6 w-64 bg-gradient-to-b from-[#4A90E2] to-[#357ABD] overflow-y-auto md:block menu-sidebar" :class="{ 'slide-in': !hasVisitedBefore }">
             <main-menu />
           </div>
           <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto bg-gradient-to-br from-blue-50 to-gray-100" scroll-region>
@@ -137,6 +137,7 @@ export default {
     return {
       language: localStorage.getItem('language') || 'uk', // Default to Ukrainian
       parentType: 'mother', // Default value
+      hasVisitedBefore: localStorage.getItem('hasVisitedBefore') === 'true'
     }
   },
   methods: {
@@ -164,6 +165,11 @@ export default {
       localStorage.setItem('language', 'uk')
     }
     
+    // Check if user has visited before and set flag
+    if (!localStorage.getItem('hasVisitedBefore')) {
+      localStorage.setItem('hasVisitedBefore', 'true')
+    }
+    
     // Fetch parent type if the user is a parent
     if (this.auth.user.role === 'parent') {
       fetch(`/api/parent-type/${this.auth.user.id}`)
@@ -187,6 +193,27 @@ export default {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+/* Анимация выдвижения меню */
+.menu-sidebar {
+  transform: translateX(0);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.menu-sidebar.slide-in {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* Улучшаем внешний вид скроллбара */

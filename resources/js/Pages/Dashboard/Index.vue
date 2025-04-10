@@ -43,13 +43,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Calendar Section -->
-        <div class="lg:col-span-2 transform transition-all duration-300 hover:scale-[1.02]">
+        <div class="lg:col-span-2 transform transition-all duration-300 hover:scale-[1.02] dashboard-calendar">
           <Calendar :events="events" :language="localLanguage" />
         </div>
 
         <!-- Today's Tasks Section -->
         <div class="lg:col-span-1">
-          <div class="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:scale-[1.02]">
+          <div class="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:scale-[1.02] dashboard-tasks">
             <div class="flex justify-between items-center mb-6">
               <h3 class="text-lg font-bold text-blue-900">
                 {{ localLanguage === 'uk' ? 'Завдання на сьогодні' : 'Today\'s Tasks' }}
@@ -66,8 +66,9 @@
 
             <div class="space-y-4">
               <!-- Tasks for today -->
-              <div v-for="task in todayTasks" :key="`task-${task.id}`" 
-                   class="bg-blue-50 rounded-lg p-4 transition-all duration-300 hover:bg-blue-100 hover:shadow-md">
+              <div v-for="(task, index) in todayTasks" :key="`task-${task.id}`" 
+                   class="bg-blue-50 rounded-lg p-4 transition-all duration-300 hover:bg-blue-100 hover:shadow-md task-item"
+                   :style="{ animationDelay: `${0.3 + index * 0.1}s` }">
                 <div class="flex items-start justify-between">
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-blue-900">{{ task.title }}</p>
@@ -85,8 +86,9 @@
               </div>
               
               <!-- Events for today -->
-              <div v-for="event in todayEvents" :key="`event-${event.id}`" 
-                   class="bg-purple-50 rounded-lg p-4 transition-all duration-300 hover:bg-purple-100 hover:shadow-md">
+              <div v-for="(event, index) in todayEvents" :key="`event-${event.id}`" 
+                   class="bg-purple-50 rounded-lg p-4 transition-all duration-300 hover:bg-purple-100 hover:shadow-md task-item"
+                   :style="{ animationDelay: `${0.3 + (todayTasks.length + index) * 0.1}s` }">
                 <div class="flex items-start justify-between">
                   <div class="flex-1 min-w-0">
                     <p class="text-sm font-bold text-purple-900">{{ event.title }}</p>
@@ -104,7 +106,8 @@
               </div>
 
               <div v-if="todayTasks.length === 0 && todayEvents.length === 0" 
-                   class="text-center text-blue-600 py-8 bg-blue-50 rounded-lg">
+                   class="text-center text-blue-600 py-8 bg-blue-50 rounded-lg task-item"
+                   :style="{ animationDelay: '0.3s' }">
                 {{ localLanguage === 'uk' ? 'Немає завдань на сьогодні' : 'No tasks for today' }}
               </div>
             </div>
@@ -145,7 +148,8 @@ export default {
   data() {
     return {
       localLanguage: this.language,
-      showWelcomeBanner: true
+      showWelcomeBanner: true,
+      hasVisitedBefore: localStorage.getItem('hasVisitedBefore') === 'true'
     }
   },
   computed: {
@@ -195,6 +199,11 @@ export default {
       this.showWelcomeBanner = false
     }
     
+    // Check if user has visited before and set flag
+    if (!localStorage.getItem('hasVisitedBefore')) {
+      localStorage.setItem('hasVisitedBefore', 'true')
+    }
+    
     // Get current language from localStorage when component mounts
     this.localLanguage = localStorage.getItem('language') || 'uk'
     
@@ -230,5 +239,59 @@ export default {
 /* Добавляем эффект подсветки при наведении */
 .hover\:shadow-lg:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Анимация для календаря */
+.dashboard-calendar {
+  animation: fadeInFromLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+  opacity: 0;
+  transform: translateX(-50px) scale(0.95);
+}
+
+@keyframes fadeInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Анимация для блока задач */
+.dashboard-tasks {
+  animation: fadeInFromRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
+  opacity: 0;
+  transform: translateX(50px) scale(0.95);
+}
+
+@keyframes fadeInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Анимация для задач */
+.task-item {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

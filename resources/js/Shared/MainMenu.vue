@@ -1,6 +1,6 @@
 <template>
   <div class="py-4">
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.1s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/">
@@ -11,7 +11,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.2s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('students') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/students">
@@ -22,7 +22,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.3s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('parents') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/parents">
@@ -33,7 +33,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.4s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('teachers') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/teachers">
@@ -44,7 +44,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.5s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('events') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/events">
@@ -55,7 +55,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.6s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('tasks') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/tasks">
@@ -66,7 +66,7 @@
       </Link>
     </div>
     
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.7s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('reports') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/reports">
@@ -78,7 +78,7 @@
     </div>
     
     <!-- Mobile Language Switcher -->
-    <div class="md:hidden mt-12">
+    <div class="md:hidden mt-12 menu-item" :style="{ animationDelay: '0.8s' }">
       <div class="px-4">
         <p class="text-blue-200 text-xs uppercase font-bold tracking-wider mb-4">
           {{ language === 'uk' ? 'Мова' : 'Language' }}
@@ -161,3 +161,38 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.menu-item {
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: fadeInRight 0.5s ease forwards;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.menu-item:hover svg {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>
