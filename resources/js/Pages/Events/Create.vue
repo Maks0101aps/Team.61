@@ -343,13 +343,14 @@ export default {
     teachers: Array,
     students: Array,
     parents: Array,
+    selectedDate: String,
   },
   data() {
     return {
       form: this.$inertia.form({
         title: '',
         type: this.$page.props.auth.user.role === 'student' ? 'personal' : '',
-        start_date: '',
+        start_date: this.formatDateTimeForInput(this.selectedDate || new Date()),
         duration: 60,
         content: '',
         location: '',
@@ -413,6 +414,25 @@ export default {
     },
     removeFile(index) {
       this.form.attachments.splice(index, 1);
+    },
+    formatDateTimeForInput(date) {
+      // Format date as YYYY-MM-DDThh:mm
+      if (typeof date === 'string' && !date.includes('T')) {
+        // If it's just a date (YYYY-MM-DD), add the current time
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return `${date}T${hours}:${minutes}`;
+      }
+      
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
     }
   },
   computed: {

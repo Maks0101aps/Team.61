@@ -9,12 +9,12 @@
         </h1>
         
         <Link 
-          href="/calendar" 
+          :href="'/'" 
           class="flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-md text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L9.414 11H13a1 1 0 100-2H9.414l1.293-1.293z" clip-rule="evenodd" />
           </svg>
-          <span>{{ localLanguage === 'uk' ? 'Назад до календаря' : 'Back to Calendar' }}</span>
+          <span>{{ localLanguage === 'uk' ? 'Назад на головну' : 'Back to Home' }}</span>
         </Link>
       </div>
       
@@ -144,7 +144,7 @@ export default {
     },
     language: {
       type: String,
-      default: () => localStorage.getItem('language') || 'uk'
+      default: 'uk'
     }
   },
   data() {

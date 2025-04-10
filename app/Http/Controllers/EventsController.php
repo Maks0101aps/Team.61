@@ -146,8 +146,12 @@ class EventsController extends Controller
             $types = [Event::TYPE_PERSONAL => $types[Event::TYPE_PERSONAL]];
         }
         
+        // Get selected date from calendar if available
+        $selectedDate = request()->query('date') ? request()->query('date') : now()->format('Y-m-d');
+        
         return Inertia::render('Events/Create', [
             'types' => $types,
+            'selectedDate' => $selectedDate,
             'students' => Auth::user()->account->students()
                 ->orderByName()
                 ->get()
@@ -530,6 +534,76 @@ class EventsController extends Controller
                 }),
             ],
             'canViewContent' => $canViewContent,
+        ]);
+    }
+
+    /**
+     * Check if current user has permissions to create events
+     * Used by the calendar UI to determine if the create button should work
+     */
+    public function checkCreatePermissions()
+    {
+        $user = Auth::user();
+        
+        // Parents can't create events
+        if ($user->isParent()) {
+            return response()->json([
+                'message' => __('Батьки не можуть створювати або змінювати події')
+            ], 403);
+        }
+        
+        // Students have limited permissions (handled in other methods)
+        
+        // All other users (teachers, admins) can create events
+        return response()->json([
+            'success' => true,
+            'can_create' => true
+        ]);
+    }
+    
+    /**
+     * Display calendar view for events
+     */
+    public function calendar()
+    {
+        $user = Auth::user();
+        
+        // Get current date for default view
+        $currentDate = now()->format('Y-m-d');
+        
+        // Get events for the calendar
+        $events = Event::where(function($query) use ($user) {
+                // Get events where the user is a participant
+                $query->whereHas('students', function($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                })
+                ->orWhereHas('teachers', function($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                })
+                ->orWhereHas('parents', function($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+            })
+            ->where('start_date', '>=', now()->subDays(30))
+            ->where('start_date', '<=', now()->addDays(60))
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'start' => $event->start_date->format('Y-m-d H:i:s'),
+                    'end' => $event->start_date->addMinutes($event->duration)->format('Y-m-d H:i:s'),
+                    'type' => $event->type,
+                    'location' => $event->location,
+                    'online_link' => $event->online_link,
+                    'description' => $event->description,
+                ];
+            });
+        
+        return Inertia::render('Calendar/Index', [
+            'currentDate' => $currentDate,
+            'language' => session('language', 'uk'),
+            'events' => $events
         ]);
     }
 } 

@@ -43,22 +43,28 @@
             </div>
             <div class="flex items-center space-x-6">
               <div class="hidden md:flex items-center">
-                <div class="inline-flex rounded-lg shadow-sm" role="group">
+                <div class="inline-flex rounded-full shadow-md overflow-hidden">
                   <button @click="setLanguage('uk')" 
                           type="button" 
-                          class="px-4 py-2 text-sm font-medium transition-all duration-200"
+                          class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'uk' 
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                            : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200'">
-                    UA
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                            : 'bg-white text-gray-700 hover:bg-blue-50'">
+                    <span class="relative z-10">UA</span>
+                    <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
+                    <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                          :class="language === 'uk' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                   <button @click="setLanguage('en')" 
                           type="button" 
-                          class="px-4 py-2 text-sm font-medium transition-all duration-200"
+                          class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'en' 
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                            : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200'">
-                    EN
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                            : 'bg-white text-gray-700 hover:bg-blue-50'">
+                    <span class="relative z-10">EN</span>
+                    <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
+                    <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                          :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                 </div>
               </div>

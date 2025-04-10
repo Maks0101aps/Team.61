@@ -194,6 +194,10 @@ Route::middleware('auth')->group(function () {
     // Index route - all authenticated users can view events
     Route::get('events', [EventsController::class, 'index'])->name('events.index');
     
+    // Add create permissions check endpoint
+    Route::get('events/create-permissions', [EventsController::class, 'checkCreatePermissions'])
+        ->name('events.create.permissions');
+    
     // Routes that students can access but with restrictions on what they can do
     Route::middleware([\App\Http\Middleware\CheckStudentEventAccess::class])->group(function () {
         // Routes that parents should not access at all
@@ -304,24 +308,15 @@ Route::middleware(['auth', CheckStudentRole::class, CheckParentRole::class])->gr
     Route::get('reports/events/summary', [ReportsController::class, 'eventSummary'])->name('reports.events.summary');
 });
 
-// Calendar Routes
+// Calendar routes
 Route::middleware('auth')->group(function () {
-    Route::get('/calendar', [EventsController::class, 'calendar'])
-        ->name('calendar');
-        
-    // Google Calendar Integration
-    Route::get('/calendar/settings', [GoogleCalendarController::class, 'settings'])
-        ->name('calendar.settings');
-    Route::get('/google-calendar/auth', [GoogleCalendarController::class, 'redirectToGoogle'])
-        ->name('google.auth');
-    Route::get('/google-calendar/callback', [GoogleCalendarController::class, 'handleGoogleCallback'])
-        ->name('google.callback');
-    Route::get('/google-calendar/sync-to', [GoogleCalendarController::class, 'syncToGoogle'])
-        ->name('google.sync-to');
-    Route::get('/google-calendar/sync-from', [GoogleCalendarController::class, 'syncFromGoogle'])
-        ->name('google.sync-from');
-    Route::get('/google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])
-        ->name('google.disconnect');
+    Route::get('calendar', [EventsController::class, 'calendar'])->name('calendar');
+    Route::get('calendar/settings', [GoogleCalendarController::class, 'settings'])->name('calendar.settings');
+    Route::get('google-calendar/auth', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.calendar.auth');
+    Route::get('google-calendar/callback', [GoogleCalendarController::class, 'handleGoogleCallback'])->name('google.calendar.callback');
+    Route::get('google-calendar/sync-to', [GoogleCalendarController::class, 'syncToGoogle'])->name('google.calendar.sync.to');
+    Route::get('google-calendar/sync-from', [GoogleCalendarController::class, 'syncFromGoogle'])->name('google.calendar.sync.from');
+    Route::get('google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])->name('google.calendar.disconnect');
 });
 
 

@@ -80,23 +80,28 @@
     <!-- Mobile Language Switcher -->
     <div class="md:hidden mt-12 menu-item" :style="{ animationDelay: '0.8s' }">
       <div class="px-4">
-        <p class="text-blue-200 text-xs uppercase font-bold tracking-wider mb-4">
+        <p class="text-blue-100 text-xs uppercase font-bold tracking-wider mb-4 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+          </svg>
           {{ language === 'uk' ? 'Мова' : 'Language' }}
         </p>
-        <div class="flex space-x-3">
+        <div class="inline-flex rounded-full bg-blue-800/50 p-1 shadow-inner">
           <button @click="setLanguage('uk')" 
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105" 
+                  class="relative px-6 py-2 text-sm font-medium rounded-full transition-all duration-300 overflow-hidden" 
                   :class="language === 'uk' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
-                    : 'bg-blue-700/50 text-blue-200 hover:bg-blue-600/50 hover:text-white'">
-            UA
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
+                    : 'text-blue-100 hover:text-white hover:bg-blue-700/30'">
+            <span class="relative z-10">UA</span>
+            <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
           </button>
           <button @click="setLanguage('en')" 
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105" 
+                  class="relative px-6 py-2 text-sm font-medium rounded-full transition-all duration-300 overflow-hidden" 
                   :class="language === 'en' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
-                    : 'bg-blue-700/50 text-blue-200 hover:bg-blue-600/50 hover:text-white'">
-            EN
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
+                    : 'text-blue-100 hover:text-white hover:bg-blue-700/30'">
+            <span class="relative z-10">EN</span>
+            <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
           </button>
         </div>
       </div>

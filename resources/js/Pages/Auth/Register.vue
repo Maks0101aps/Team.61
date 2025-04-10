@@ -3,12 +3,28 @@
   <div class="flex items-center justify-center p-6 min-h-screen bg-gradient-to-br from-blue-50 to-gray-100">
     <div class="w-full max-w-xl">
       <div class="flex justify-end mb-4">
-        <div class="inline-flex rounded-md shadow-sm" role="group">
-          <button @click="setLanguage('uk')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-l-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-500" :class="{ 'bg-blue-100 text-blue-700': language === 'uk' }">
-            Українська
+        <div class="inline-flex rounded-full shadow-md overflow-hidden">
+          <button @click="setLanguage('uk')" 
+                  type="button" 
+                  class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
+                  :class="language === 'uk' 
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                    : 'bg-white text-gray-700 hover:bg-blue-50'">
+            <span class="relative z-10">Українська</span>
+            <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
+            <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                  :class="language === 'uk' ? 'bg-white' : 'bg-blue-500'"></span>
           </button>
-          <button @click="setLanguage('en')" type="button" class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-r-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-500" :class="{ 'bg-blue-100 text-blue-700': language === 'en' }">
-            English
+          <button @click="setLanguage('en')" 
+                  type="button" 
+                  class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
+                  :class="language === 'en' 
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                    : 'bg-white text-gray-700 hover:bg-blue-50'">
+            <span class="relative z-10">English</span>
+            <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
+            <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                  :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
           </button>
         </div>
       </div>

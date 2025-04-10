@@ -250,9 +250,11 @@ class GoogleCalendarController extends Controller
     {
         $user = Auth::user();
         $isConnected = !empty($user->google_calendar_token);
+        $language = session('language', 'uk');
         
         return Inertia::render('Calendar/Settings', [
-            'isGoogleConnected' => $isConnected
+            'isGoogleConnected' => $isConnected,
+            'language' => $language
         ]);
     }
 
