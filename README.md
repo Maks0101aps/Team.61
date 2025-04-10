@@ -61,14 +61,16 @@ New-Item -Path "database\database.sqlite" -ItemType File -Force
 php artisan migrate --seed
 ```
 
-If you encounter a unique constraint violation when seeding, you can run:
-```bash
-php artisan db:seed
-```
-
 #### 8. Start the development servers
 
 In one terminal, start the Laravel server:
+
+**Linux/Mac:**
+```bash
+php artisan serve
+```
+
+**Windows:**
 ```bash
 php -S 127.0.0.1:8000 -t public
 ```
@@ -79,18 +81,34 @@ npm run dev
 ```
 
 #### 9. Access the application
-- PHP backend: php -S 127.0.0.1:8000 -t public
-- Vite development server: http://localhost:5173
+Open your browser and navigate to:
+```
+http://localhost:8000
+```
 
-### Default Login Credentials
-- **Email:** johndoe@example.com
-- **Password:** secret
+#### 10. Google Calendar Integration Setup
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable Google Calendar API
+4. Create OAuth 2.0 credentials
+5. Add your email to test users
+6. Update .env file with your credentials:
+```
+GOOGLE_CALENDAR_CLIENT_ID=your_client_id
+GOOGLE_CALENDAR_CLIENT_SECRET=your_client_secret
+GOOGLE_CALENDAR_REDIRECT_URI=http://localhost/google-calendar/callback
+GOOGLE_CALENDAR_ORIGIN=http://localhost
+```
 
 ### Build for Production
 When you're ready to deploy:
 ```bash
 npm run build
 ```
+
+### Default Login Credentials
+- **Email:** johndoe@example.com
+- **Password:** secret
 
 ### Common Issues and Solutions
 
