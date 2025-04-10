@@ -197,6 +197,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware([\App\Http\Middleware\CheckStudentEventAccess::class])->group(function () {
         // Routes that parents should not access at all
         Route::middleware([\App\Http\Middleware\CheckParentEventAccess::class])->group(function () {
+            // Define create route before show route to prevent conflicts
             Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
             Route::post('events', [EventsController::class, 'store'])->name('events.store');
             Route::get('events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
@@ -205,6 +206,15 @@ Route::middleware('auth')->group(function () {
             Route::put('events/{event}/restore', [EventsController::class, 'restore'])->name('events.restore');
         });
     });
+    
+    // Place this AFTER the create route to avoid conflicts
+    Route::get('events/{event}', [EventsController::class, 'show'])->name('events.show');
+    
+    // Event attachment routes
+    Route::get('events/{event}/attachments/{attachment}/download', [EventsController::class, 'downloadAttachment'])
+        ->name('events.attachments.download');
+    Route::delete('events/{event}/attachments/{attachment}', [EventsController::class, 'removeAttachment'])
+        ->name('events.attachments.destroy');
 });
 
 // Tasks

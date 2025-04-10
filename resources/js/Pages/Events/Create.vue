@@ -155,6 +155,79 @@
             </div>
           </div>
           
+          <!-- Attachments Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              Файли та посилання
+            </h3>
+            <div class="mb-6">
+              <label class="form-label">Прикріплені файли:</label>
+              <div class="mt-2">
+                <input 
+                  type="file" 
+                  id="attachments" 
+                  name="attachments[]" 
+                  multiple 
+                  @change="handleFileUpload"
+                  ref="fileInput"
+                  class="hidden"
+                  accept="*/*"
+                />
+                <div 
+                  class="py-4 px-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50"
+                  @click="$refs.fileInput.click()"
+                  @dragover.prevent="dragover = true"
+                  @dragleave.prevent="dragover = false"
+                  @drop.prevent="handleFileDrop"
+                  :class="{'bg-blue-50 border-blue-300': dragover}"
+                >
+                  <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-600">
+                      Перетягніть файли сюди або клікніть для вибору
+                    </p>
+                    <p class="mt-1 text-xs text-gray-500">
+                      Максимальний розмір файлу: 100MB
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- File List -->
+              <div v-if="form.attachments.length > 0" class="mt-4">
+                <h4 class="text-sm font-medium text-gray-700 mb-2">Обрані файли:</h4>
+                <ul class="space-y-2">
+                  <li v-for="(file, index) in form.attachments" :key="index" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      <div>
+                        <p class="text-sm font-medium text-gray-800">{{ file.name }}</p>
+                        <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
+                      </div>
+                    </div>
+                    <button 
+                      type="button" 
+                      @click="removeFile(index)" 
+                      class="p-1 text-red-600 hover:text-red-800 rounded-full hover:bg-red-100"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              
+              <div v-if="form.errors.attachments" class="form-error">
+                {{ form.errors.attachments }}
+              </div>
+            </div>
+          </div>
+          
           <!-- Participants Section -->
           <div class="mb-4">
             <h3 class="text-base font-medium text-gray-900 mb-4">
@@ -286,7 +359,9 @@ export default {
         students: [],
         parents: [],
         notify_participants: false,
+        attachments: [],
       }),
+      dragover: false,
     }
   },
   methods: {
@@ -299,6 +374,46 @@ export default {
       
       this.form.post('/events')
     },
+    formatFileSize(size) {
+      if (size < 1024) {
+        return size + ' bytes';
+      } else if (size < 1024 * 1024) {
+        return (size / 1024).toFixed(2) + ' KB';
+      } else if (size < 1024 * 1024 * 1024) {
+        return (size / (1024 * 1024)).toFixed(2) + ' MB';
+      } else {
+        return (size / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+      }
+    },
+    handleFileUpload(event) {
+      const files = event.target.files;
+      if (!files.length) return;
+      
+      this.addFiles(files);
+    },
+    handleFileDrop(event) {
+      this.dragover = false;
+      const files = event.dataTransfer.files;
+      if (!files.length) return;
+      
+      this.addFiles(files);
+    },
+    addFiles(files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Check file size (100MB limit)
+        if (file.size > 100 * 1024 * 1024) {
+          alert(`Файл "${file.name}" перевищує ліміт 100MB`);
+          continue;
+        }
+        
+        this.form.attachments.push(file);
+      }
+    },
+    removeFile(index) {
+      this.form.attachments.splice(index, 1);
+    }
   },
   computed: {
     isStudent() {

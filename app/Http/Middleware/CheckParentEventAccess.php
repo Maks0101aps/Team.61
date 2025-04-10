@@ -20,15 +20,18 @@ class CheckParentEventAccess
         // Only check for parent role
         if ($request->user() && $request->user()->role === User::ROLE_PARENT) {
             // If the request is for creating an event (GET/POST) or Ajax request for calendar
-            if ($request->is('events/create') || $request->is('events') || $request->ajax()) {
-                // For AJAX requests (like when clicking on calendar)
-                if ($request->ajax()) {
+            if ($request->is('events/create') && $request->isMethod('get')) {
+                // For regular GET requests for the create form
+                return redirect()->route('events.index')
+                    ->with('error', 'Батьки не можуть створювати або змінювати події');
+            } elseif ($request->is('events') && $request->isMethod('post')) {
+                // For POST requests to create an event
+                if ($request->ajax() || $request->wantsJson() || $request->header('X-Requested-With') === 'XMLHttpRequest') {
                     return response()->json([
                         'message' => 'Батьки не можуть створювати або змінювати події'
                     ], 403);
                 }
                 
-                // For regular requests
                 return redirect()->route('events.index')
                     ->with('error', 'Батьки не можуть створювати або змінювати події');
             }
