@@ -19,6 +19,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\GoogleCalendarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -301,6 +302,26 @@ Route::middleware(['auth', CheckStudentRole::class, CheckParentRole::class])->gr
     Route::get('reports/events/calendar', [ReportsController::class, 'eventCalendar'])->name('reports.events.calendar');
     Route::get('reports/events/attendance', [ReportsController::class, 'eventAttendance'])->name('reports.events.attendance');
     Route::get('reports/events/summary', [ReportsController::class, 'eventSummary'])->name('reports.events.summary');
+});
+
+// Calendar Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/calendar', [EventsController::class, 'calendar'])
+        ->name('calendar');
+        
+    // Google Calendar Integration
+    Route::get('/calendar/settings', [GoogleCalendarController::class, 'settings'])
+        ->name('calendar.settings');
+    Route::get('/google-calendar/auth', [GoogleCalendarController::class, 'redirectToGoogle'])
+        ->name('google.auth');
+    Route::get('/google-calendar/callback', [GoogleCalendarController::class, 'handleGoogleCallback'])
+        ->name('google.callback');
+    Route::get('/google-calendar/sync-to', [GoogleCalendarController::class, 'syncToGoogle'])
+        ->name('google.sync-to');
+    Route::get('/google-calendar/sync-from', [GoogleCalendarController::class, 'syncFromGoogle'])
+        ->name('google.sync-from');
+    Route::get('/google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])
+        ->name('google.disconnect');
 });
 
 
