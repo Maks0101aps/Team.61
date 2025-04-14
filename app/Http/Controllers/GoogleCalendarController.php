@@ -12,6 +12,7 @@ use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 use App\Models\Event;
 use Carbon\Carbon;
+use App\Models\User;
 
 class GoogleCalendarController extends Controller
 {
@@ -108,21 +109,43 @@ class GoogleCalendarController extends Controller
         // Get Google Calendar service
         $service = new Google_Service_Calendar($client);
         
-        // Get school events for the user
-        $events = Event::where(function($query) use ($user) {
-                // Get events where the user is a participant (based on your app's logic)
-                $query->whereHas('students', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                })
-                ->orWhereHas('teachers', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                })
-                ->orWhereHas('parents', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                });
+        // Get events associated with the user based on their role
+        $userRole = $user->role;
+        
+        // Query to get events based on user's role or created by the user
+        $eventsQuery = Event::where(function($query) use ($user, $userRole) {
+                // Include events created by this user
+                $query->where('created_by', $user->id);
+                
+                // Include events based on role
+                if ($userRole == User::ROLE_STUDENT) {
+                    // For students
+                    $query->orWhereHas('students', function($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    });
+                } elseif ($userRole == User::ROLE_TEACHER) {
+                    // For teachers
+                    $query->orWhereHas('teachers', function($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    });
+                } elseif ($userRole == User::ROLE_PARENT) {
+                    // For parents
+                    $query->orWhereHas('parents', function($q) use ($user) {
+                        $q->where('user_id', $user->id);
+                    });
+                }
             })
-            ->where('start_date', '>=', now()->subDays(30))
-            ->get();
+            ->where('start_date', '>=', now()->subDays(30));
+            
+        // Debug log of the query
+        \Log::info('Events query: ' . $eventsQuery->toSql());
+        \Log::info('User role: ' . $userRole);
+        \Log::info('User ID: ' . $user->id);
+        
+        $events = $eventsQuery->get();
+        
+        // Log the count of events found
+        \Log::info('Found ' . $events->count() . ' events to sync');
         
         $syncedCount = 0;
         
@@ -131,7 +154,7 @@ class GoogleCalendarController extends Controller
             $googleEvent = new Google_Service_Calendar_Event([
                 'summary' => $event->title,
                 'location' => $event->location,
-                'description' => $event->description,
+                'description' => $event->content ?? '',
                 'start' => [
                     'dateTime' => Carbon::parse($event->start_date)->toIso8601String(),
                     'timeZone' => config('app.timezone'),
@@ -150,7 +173,7 @@ class GoogleCalendarController extends Controller
                 $syncedCount++;
             } catch (\Exception $e) {
                 // Log error
-                \Log::error('Google Calendar sync error: ' . $e->getMessage());
+                \Log::error('Google Calendar sync error for event ID ' . $event->id . ': ' . $e->getMessage());
             }
         }
         
@@ -199,48 +222,86 @@ class GoogleCalendarController extends Controller
             'timeMax' => Carbon::now()->addDays(30)->toIso8601String(),
         ];
         
-        $results = $service->events->listEvents('primary', $optParams);
-        $googleEvents = $results->getItems();
-        
-        $importedCount = 0;
-        
-        foreach ($googleEvents as $googleEvent) {
-            // Skip events without start time (all-day events)
-            if (!$googleEvent->getStart()->getDateTime()) {
-                continue;
+        try {
+            // Get up-to-date user info from database to ensure we have account_id
+            $freshUser = \DB::table('users')->where('id', $user->id)->first();
+            if (!$freshUser || !$freshUser->account_id) {
+                return redirect()->route('calendar.settings')
+                    ->with('error', 'Could not determine your account. Please contact administrator.');
             }
             
-            // Check if this event was already imported (by event ID or similar logic)
-            $existingEvent = Event::where('google_calendar_id', $googleEvent->getId())->first();
+            $results = $service->events->listEvents('primary', $optParams);
+            $googleEvents = $results->getItems();
             
-            if (!$existingEvent) {
-                // Create a new school event
-                $newEvent = new Event();
-                $newEvent->title = $googleEvent->getSummary();
-                $newEvent->description = $googleEvent->getDescription();
-                $newEvent->location = $googleEvent->getLocation();
-                $newEvent->start_date = Carbon::parse($googleEvent->getStart()->getDateTime());
+            $importedCount = 0;
+            
+            foreach ($googleEvents as $googleEvent) {
+                // Skip events without start time (all-day events)
+                if (!$googleEvent->getStart()->getDateTime()) {
+                    continue;
+                }
                 
-                // Calculate duration in minutes
-                $startTime = Carbon::parse($googleEvent->getStart()->getDateTime());
-                $endTime = Carbon::parse($googleEvent->getEnd()->getDateTime());
-                $newEvent->duration = $startTime->diffInMinutes($endTime);
+                // Check if this event was already imported (by event ID or similar logic)
+                $existingEvent = Event::where('google_calendar_id', $googleEvent->getId())->first();
                 
-                $newEvent->type = 'personal'; // Default type for imported events
-                $newEvent->user_id = $user->id; // Creator ID
-                $newEvent->google_calendar_id = $googleEvent->getId(); // Store Google Calendar ID
-                
-                $newEvent->save();
-                
-                // Attach user to the event based on your app's structure
-                // Example: $newEvent->teachers()->attach($user->id);
-                
-                $importedCount++;
+                if (!$existingEvent) {
+                    try {
+                        // Create a new school event
+                        $newEvent = new Event();
+                        $newEvent->title = $googleEvent->getSummary() ?: 'Untitled Event';
+                        $newEvent->content = $googleEvent->getDescription();
+                        $newEvent->location = $googleEvent->getLocation();
+                        $newEvent->start_date = Carbon::parse($googleEvent->getStart()->getDateTime());
+                        
+                        // Calculate duration in minutes
+                        $startTime = Carbon::parse($googleEvent->getStart()->getDateTime());
+                        $endTime = Carbon::parse($googleEvent->getEnd()->getDateTime());
+                        $newEvent->duration = $startTime->diffInMinutes($endTime);
+                        
+                        $newEvent->type = 'personal'; // Default type for imported events
+                        $newEvent->created_by = $user->id; // Creator ID
+                        $newEvent->account_id = $freshUser->account_id; // Required account ID field
+                        $newEvent->google_calendar_id = $googleEvent->getId(); // Store Google Calendar ID
+                        
+                        // Debug information for the Event model
+                        \Log::info('Event model fillable: ' . implode(', ', $newEvent->getFillable()));
+                        \Log::info('Creating new event with data: ' . json_encode([
+                            'title' => $newEvent->title,
+                            'content' => $newEvent->content,
+                            'location' => $newEvent->location,
+                            'start_date' => $newEvent->start_date,
+                            'duration' => $newEvent->duration,
+                            'type' => $newEvent->type,
+                            'created_by' => $newEvent->created_by,
+                            'account_id' => $newEvent->account_id,
+                            'google_calendar_id' => $newEvent->google_calendar_id
+                        ]));
+                        
+                        $newEvent->save();
+                        
+                        // Attach user to the event based on your app's structure
+                        // Example: $newEvent->teachers()->attach($user->id);
+                        
+                        $importedCount++;
+                    } catch (\Exception $e) {
+                        \Log::error('Error creating event from Google Calendar: ' . $e->getMessage());
+                        \Log::error('Event data: ' . json_encode([
+                            'title' => $googleEvent->getSummary(),
+                            'start' => $googleEvent->getStart()->getDateTime(),
+                            'end' => $googleEvent->getEnd()->getDateTime()
+                        ]));
+                    }
+                }
             }
+            
+            return redirect()->route('calendar.settings')
+                ->with('success', "Successfully imported {$importedCount} events from Google Calendar");
+                
+        } catch (\Exception $e) {
+            \Log::error('Google Calendar sync error: ' . $e->getMessage());
+            return redirect()->route('calendar.settings')
+                ->with('error', 'Error syncing from Google Calendar: ' . $e->getMessage());
         }
-        
-        return redirect()->route('calendar.settings')
-            ->with('success', "Successfully imported {$importedCount} events from Google Calendar");
     }
 
     /**
@@ -280,14 +341,22 @@ class GoogleCalendarController extends Controller
         $client->setApplicationName(config('app.name'));
         $client->setScopes([Google_Service_Calendar::CALENDAR]);
         
-        // Check if credentials file exists
-        $credentialsPath = storage_path('app/google-calendar/credentials.json');
-        if (file_exists($credentialsPath)) {
-            $client->setAuthConfig($credentialsPath);
+        // Set client credentials directly from environment variables
+        $clientId = env('GOOGLE_CALENDAR_CLIENT_ID');
+        $clientSecret = env('GOOGLE_CALENDAR_CLIENT_SECRET');
+        
+        if (!empty($clientId) && !empty($clientSecret)) {
+            $client->setClientId($clientId);
+            $client->setClientSecret($clientSecret);
         } else {
-            // Fallback to environment variables if file doesn't exist
-            $client->setClientId(env('GOOGLE_CALENDAR_CLIENT_ID'));
-            $client->setClientSecret(env('GOOGLE_CALENDAR_CLIENT_SECRET'));
+            // Check if credentials file exists as fallback
+            $credentialsPath = storage_path('app/google-calendar/credentials.json');
+            if (file_exists($credentialsPath)) {
+                $client->setAuthConfig($credentialsPath);
+            } else {
+                \Log::error('Google Calendar credentials not found: Neither environment variables nor credentials file exists');
+                throw new \Exception('Google Calendar credentials not configured correctly');
+            }
         }
         
         $client->setAccessType('offline');

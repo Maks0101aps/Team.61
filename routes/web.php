@@ -21,18 +21,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\GoogleCalendarController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
-// Auth
 
 Route::get('login', [AuthenticatedSessionController::class, 'create'])
     ->name('login')
@@ -45,7 +34,6 @@ Route::post('login', [AuthenticatedSessionController::class, 'store'])
 Route::delete('logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
-// Registration
 Route::get('register', [RegisterController::class, 'create'])
     ->name('register')
     ->middleware('guest');
@@ -54,269 +42,147 @@ Route::post('register', [RegisterController::class, 'store'])
     ->name('register.store')
     ->middleware('guest');
 
-// Email Verification
 Route::get('email/verify', [VerificationController::class, 'show'])
     ->name('verification.notice')
     ->middleware('auth');
 
-Route::post('email/verify', [VerificationController::class, 'verify'])
+Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
     ->name('verification.verify')
-    ->middleware('auth');
+    ->middleware(['auth', 'signed']);
 
 Route::post('email/resend', [VerificationController::class, 'resend'])
     ->name('verification.resend')
-    ->middleware('auth');
+    ->middleware(['auth', 'throttle:6,1']);
 
-// Password Reset
-Route::get('forgot-password', [ForgotPasswordController::class, 'create'])
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])
     ->name('password.request')
     ->middleware('guest');
 
-Route::post('forgot-password', [ForgotPasswordController::class, 'store'])
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
     ->name('password.email')
     ->middleware('guest');
 
-Route::get('reset-password/{token}', [ResetPasswordController::class, 'create'])
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
     ->name('password.reset')
     ->middleware('guest');
 
-Route::post('reset-password', [ResetPasswordController::class, 'store'])
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])
     ->name('password.update')
     ->middleware('guest');
 
-// Dashboard
 
 Route::get('/', [DashboardController::class, 'index'])
     ->name('dashboard')
-    ->middleware('auth');
+    ->middleware(['auth', 'verified']);
 
-// Users
 
-Route::get('users', [UsersController::class, 'index'])
-    ->name('users')
-    ->middleware('auth');
-
-Route::middleware(['auth', 'App\Http\Middleware\CheckRole:teacher'])->group(function () {
-    Route::get('users/create', [UsersController::class, 'create'])
-        ->name('users.create');
-
-    Route::post('users', [UsersController::class, 'store'])
-        ->name('users.store');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+    Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');
+    Route::post('/users', [UsersController::class, 'store'])->name('users.store');
+    Route::get('/users/{user}', [UsersController::class, 'show'])->name('users.show');
+    Route::get('/users/{user}/edit', [UsersController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{user}', [UsersController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UsersController::class, 'destroy'])->name('users.destroy');
+    Route::post('/users/{user}/restore', [UsersController::class, 'restore'])->name('users.restore');
 });
 
-Route::get('users/{user}/edit', [UsersController::class, 'edit'])
-    ->name('users.edit')
-    ->middleware(['auth']);
-
-Route::put('users/{user}', [UsersController::class, 'update'])
-    ->name('users.update')
-    ->middleware(['auth']);
-
-Route::delete('users/{user}', [UsersController::class, 'destroy'])
-    ->name('users.destroy')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::put('users/{user}/restore', [UsersController::class, 'restore'])
-    ->name('users.restore')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-// Parents
-Route::get('parents', [ParentsController::class, 'index'])
-    ->name('parents')
-    ->middleware('auth');
-
-Route::get('parents/create', [ParentsController::class, 'create'])
-    ->name('parents.create')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::post('parents', [ParentsController::class, 'store'])
-    ->name('parents.store')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::get('parents/{parent}/edit', [ParentsController::class, 'edit'])
-    ->name('parents.edit')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::put('parents/{parent}', [ParentsController::class, 'update'])
-    ->name('parents.update')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::delete('parents/{parent}', [ParentsController::class, 'destroy'])
-    ->name('parents.destroy')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::get('parents/{parent}/restore', [ParentsController::class, 'restore'])
-    ->name('parents.restore')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-// Teachers
-
-Route::get('teachers', [TeachersController::class, 'index'])
-    ->name('teachers')
-    ->middleware('auth');
-
-Route::get('teachers/cities/{region}', [TeachersController::class, 'getCitiesByRegion'])
-    ->name('teachers.cities')
-    ->middleware('auth');
-
-Route::get('teachers/create', [TeachersController::class, 'create'])
-    ->name('teachers.create')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::post('teachers', [TeachersController::class, 'store'])
-    ->name('teachers.store')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::get('teachers/{teacher}/edit', [TeachersController::class, 'edit'])
-    ->name('teachers.edit')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::put('teachers/{teacher}', [TeachersController::class, 'update'])
-    ->name('teachers.update')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::delete('teachers/{teacher}', [TeachersController::class, 'destroy'])
-    ->name('teachers.destroy')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::put('teachers/{teacher}/restore', [TeachersController::class, 'restore'])
-    ->name('teachers.restore')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-// Images
-
-Route::get('/img/{path}', [ImagesController::class, 'show'])
-    ->where('path', '.*')
-    ->name('image');
-
-// Events
-Route::middleware('auth')->group(function () {
-    // Index route - all authenticated users can view events
-    Route::get('events', [EventsController::class, 'index'])->name('events.index');
-    
-    // Add create permissions check endpoint
-    Route::get('events/create-permissions', [EventsController::class, 'checkCreatePermissions'])
-        ->name('events.create.permissions');
-    
-    // Routes that students can access but with restrictions on what they can do
-    Route::middleware([\App\Http\Middleware\CheckStudentEventAccess::class])->group(function () {
-        // Routes that parents should not access at all
-        Route::middleware([\App\Http\Middleware\CheckParentEventAccess::class])->group(function () {
-            // Define create route before show route to prevent conflicts
-            Route::get('events/create', [EventsController::class, 'create'])->name('events.create');
-            Route::post('events', [EventsController::class, 'store'])->name('events.store');
-            Route::get('events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
-            Route::put('events/{event}', [EventsController::class, 'update'])->name('events.update');
-            Route::delete('events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
-            Route::put('events/{event}/restore', [EventsController::class, 'restore'])->name('events.restore');
-        });
-    });
-    
-    // Place this AFTER the create route to avoid conflicts
-    Route::get('events/{event}', [EventsController::class, 'show'])->name('events.show');
-    
-    // Event attachment routes
-    Route::get('events/{event}/attachments/{attachment}/download', [EventsController::class, 'downloadAttachment'])
-        ->name('events.attachments.download');
-    Route::delete('events/{event}/attachments/{attachment}', [EventsController::class, 'removeAttachment'])
-        ->name('events.attachments.destroy');
+Route::middleware(['auth', 'verified', 'role:parent'])->group(function () {
+    Route::get('/parents', [ParentsController::class, 'index'])->name('parents.index');
+    Route::get('/parents/create', [ParentsController::class, 'create'])->name('parents.create');
+    Route::post('/parents', [ParentsController::class, 'store'])->name('parents.store');
+    Route::get('/parents/{parent}', [ParentsController::class, 'show'])->name('parents.show');
+    Route::get('/parents/{parent}/edit', [ParentsController::class, 'edit'])->name('parents.edit');
+    Route::put('/parents/{parent}', [ParentsController::class, 'update'])->name('parents.update');
+    Route::delete('/parents/{parent}', [ParentsController::class, 'destroy'])->name('parents.destroy');
+    Route::post('/parents/{parent}/restore', [ParentsController::class, 'restore'])->name('parents.restore');
 });
 
-// Tasks
-Route::middleware('auth')->group(function () {
-    // Index route - all authenticated users can view tasks
-    Route::get('tasks', [TasksController::class, 'index'])->name('tasks.index');
-    
-    // Routes that students and parents should not access
-    Route::middleware([CheckStudentRole::class, CheckParentRole::class])->group(function () {
-        Route::get('tasks/create', [TasksController::class, 'create'])->name('tasks.create');
-        Route::post('tasks', [TasksController::class, 'store'])->name('tasks.store');
-        Route::get('tasks/{task}/edit', [TasksController::class, 'edit'])->name('tasks.edit');
-        Route::put('tasks/{task}', [TasksController::class, 'update'])->name('tasks.update');
-        Route::delete('tasks/{task}', [TasksController::class, 'destroy'])->name('tasks.destroy');
-        Route::put('tasks/{task}/restore', [TasksController::class, 'restore'])->name('tasks.restore');
-    });
+
+Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
+    Route::get('/teachers', [TeachersController::class, 'index'])->name('teachers.index');
+    Route::get('/teachers/create', [TeachersController::class, 'create'])->name('teachers.create');
+    Route::post('/teachers', [TeachersController::class, 'store'])->name('teachers.store');
+    Route::get('/teachers/{teacher}', [TeachersController::class, 'show'])->name('teachers.show');
+    Route::get('/teachers/{teacher}/edit', [TeachersController::class, 'edit'])->name('teachers.edit');
+    Route::put('/teachers/{teacher}', [TeachersController::class, 'update'])->name('teachers.update');
+    Route::delete('/teachers/{teacher}', [TeachersController::class, 'destroy'])->name('teachers.destroy');
+    Route::post('/teachers/{teacher}/restore', [TeachersController::class, 'restore'])->name('teachers.restore');
 });
 
-// Students
 
-Route::get('students', [StudentsController::class, 'index'])
-    ->name('students')
-    ->middleware('auth');
-
-Route::get('students/create', [StudentsController::class, 'create'])
-    ->name('students.create')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::post('students', [StudentsController::class, 'store'])
-    ->name('students.store')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::get('students/{student}/edit', [StudentsController::class, 'edit'])
-    ->name('students.edit')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::put('students/{student}', [StudentsController::class, 'update'])
-    ->name('students.update')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::delete('students/{student}', [StudentsController::class, 'destroy'])
-    ->name('students.destroy')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-Route::put('students/{student}/restore', [StudentsController::class, 'restore'])
-    ->name('students.restore')
-    ->middleware(['auth', CheckStudentRole::class, CheckParentRole::class]);
-
-// Cities lookup - usable by any form requiring city selection
-Route::get('cities/{region}', function ($region) {
-    return response()->json([
-        'cities' => \App\Models\Teacher::getCitiesByRegion($region)
-    ]);
-})->middleware('auth')->name('cities.by_region');
-
-// Public cities lookup for registration
-Route::get('public/cities/{region}', function ($region) {
-    return response()->json([
-        'cities' => \App\Models\Teacher::getCitiesByRegion($region)
-    ]);
-})->name('public.cities.by_region');
-
-// Helpers для формы регистрации
-Route::get('public/cities/{region}', [CitiesController::class, 'getCitiesByRegion']);
-
-// Получение информации о родителе по ID для формы регистрации студента
-Route::get('public/parent/{id}', [ParentsController::class, 'getParentById']);
-
-// Reports
-Route::middleware(['auth', CheckStudentRole::class, CheckParentRole::class])->group(function () {
-    // Main reports page
-    Route::get('reports', [ReportsController::class, 'index'])->name('reports.index');
-    
-    // Student reports
-    Route::get('reports/students/attendance', [ReportsController::class, 'studentAttendance'])->name('reports.students.attendance');
-    Route::get('reports/students/performance', [ReportsController::class, 'studentPerformance'])->name('reports.students.performance');
-    Route::get('reports/students/list', [ReportsController::class, 'studentList'])->name('reports.students.list');
-    
-    // Teacher reports
-    Route::get('reports/teachers/schedule', [ReportsController::class, 'teacherSchedule'])->name('reports.teachers.schedule');
-    Route::get('reports/teachers/list', [ReportsController::class, 'teacherList'])->name('reports.teachers.list');
-    
-    // Event reports
-    Route::get('reports/events/calendar', [ReportsController::class, 'eventCalendar'])->name('reports.events.calendar');
-    Route::get('reports/events/attendance', [ReportsController::class, 'eventAttendance'])->name('reports.events.attendance');
-    Route::get('reports/events/summary', [ReportsController::class, 'eventSummary'])->name('reports.events.summary');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/images/{path}', [ImagesController::class, 'show'])->name('images.show')->where('path', '.*');
 });
 
-// Calendar routes
-Route::middleware('auth')->group(function () {
-    Route::get('calendar', [EventsController::class, 'calendar'])->name('calendar');
-    Route::get('calendar/settings', [GoogleCalendarController::class, 'settings'])->name('calendar.settings');
-    Route::get('google-calendar/auth', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.calendar.auth');
-    Route::get('google-calendar/callback', [GoogleCalendarController::class, 'handleGoogleCallback'])->name('google.calendar.callback');
-    Route::get('google-calendar/sync-to', [GoogleCalendarController::class, 'syncToGoogle'])->name('google.calendar.sync.to');
-    Route::get('google-calendar/sync-from', [GoogleCalendarController::class, 'syncFromGoogle'])->name('google.calendar.sync.from');
-    Route::get('google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])->name('google.calendar.disconnect');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/events', [EventsController::class, 'index'])->name('events.index');
+    Route::get('/events/create-permissions', [EventsController::class, 'checkCreatePermissions'])->name('events.create.permissions');
+    Route::get('/events/create', [EventsController::class, 'create'])->name('events.create');
+    Route::post('/events', [EventsController::class, 'store'])->name('events.store');
+    Route::get('/events/{event}', [EventsController::class, 'show'])->name('events.show');
+    Route::get('/events/{event}/edit', [EventsController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EventsController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event}', [EventsController::class, 'destroy'])->name('events.destroy');
+    Route::post('/events/{event}/restore', [EventsController::class, 'restore'])->name('events.restore');
+    Route::post('/events/{event}/attach', [EventsController::class, 'attach'])->name('events.attach');
+    Route::delete('/events/{event}/detach/{attachment}', [EventsController::class, 'detach'])->name('events.detach');
+    Route::get('/calendar', [EventsController::class, 'calendar'])->name('events.calendar');
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/tasks', [TasksController::class, 'index'])->name('tasks.index');
+    Route::get('/tasks/create', [TasksController::class, 'create'])->name('tasks.create');
+    Route::post('/tasks', [TasksController::class, 'store'])->name('tasks.store');
+    Route::get('/tasks/{task}', [TasksController::class, 'show'])->name('tasks.show');
+    Route::get('/tasks/{task}/edit', [TasksController::class, 'edit'])->name('tasks.edit');
+    Route::put('/tasks/{task}', [TasksController::class, 'update'])->name('tasks.update');
+    Route::delete('/tasks/{task}', [TasksController::class, 'destroy'])->name('tasks.destroy');
+    Route::post('/tasks/{task}/restore', [TasksController::class, 'restore'])->name('tasks.restore');
+});
+
+
+Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
+    Route::get('/students', [StudentsController::class, 'index'])->name('students.index');
+    Route::get('/students/create', [StudentsController::class, 'create'])->name('students.create');
+    Route::post('/students', [StudentsController::class, 'store'])->name('students.store');
+    Route::get('/students/{student}', [StudentsController::class, 'show'])->name('students.show');
+    Route::get('/students/{student}/edit', [StudentsController::class, 'edit'])->name('students.edit');
+    Route::put('/students/{student}', [StudentsController::class, 'update'])->name('students.update');
+    Route::delete('/students/{student}', [StudentsController::class, 'destroy'])->name('students.destroy');
+    Route::post('/students/{student}/restore', [StudentsController::class, 'restore'])->name('students.restore');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/cities', [CitiesController::class, 'index'])->name('cities.index');
+});
+
+Route::middleware(['guest'])->group(function () {
+    Route::get('/cities/public', [CitiesController::class, 'publicIndex'])->name('cities.public.index');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/api/registration/helpers', [RegisterController::class, 'getHelpers'])->name('registration.helpers');
+    Route::get('/api/registration/parent/{id}', [RegisterController::class, 'getParentInfo'])->name('registration.parent.info');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::get('/reports/students', [ReportsController::class, 'students'])->name('reports.students');
+    Route::get('/reports/teachers', [ReportsController::class, 'teachers'])->name('reports.teachers');
+    Route::get('/reports/events', [ReportsController::class, 'events'])->name('reports.events');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/calendar/settings', [GoogleCalendarController::class, 'settings'])->name('calendar.settings');
+    Route::get('/google-calendar/redirect', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.calendar.redirect');
+    Route::get('/google-calendar/callback', [GoogleCalendarController::class, 'handleGoogleCallback'])->name('google.calendar.callback');
+    Route::post('/calendar/sync-to-google', [GoogleCalendarController::class, 'syncToGoogle'])->name('calendar.sync.to.google');
+    Route::post('/calendar/sync-from-google', [GoogleCalendarController::class, 'syncFromGoogle'])->name('calendar.sync.from.google');
+    Route::delete('/google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])->name('google.calendar.disconnect');
+});
+
+// API Endpoint for events (temporary fix)
+Route::get('/api/events/{event}', [EventsController::class, 'apiGetEvent'])->name('api.events.show')->middleware(['auth', 'verified']);
 
 
