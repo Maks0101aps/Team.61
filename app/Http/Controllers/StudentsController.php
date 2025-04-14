@@ -28,6 +28,7 @@ class StudentsController extends Controller
                     'name' => $student->name,
                     'phone' => $student->phone,
                     'city' => $student->city,
+                    'class' => $student->class,
                     'deleted_at' => $student->deleted_at,
                 ]),
         ]);
@@ -54,10 +55,11 @@ class StudentsController extends Controller
                 'region' => ['nullable', 'max:50'],
                 'country' => ['nullable', 'max:2'],
                 'postal_code' => ['nullable', 'max:25'],
+                'class' => ['nullable', 'max:10'],
             ])
         );
 
-        return Redirect::route('students')->with('success', 'Student created.');
+        return Redirect::route('students.index')->with('success', 'Student created.');
     }
 
     public function edit(Student $student): Response
@@ -74,6 +76,7 @@ class StudentsController extends Controller
                 'city' => $student->city,
                 'region' => $student->region,
                 'postal_code' => $student->postal_code,
+                'class' => $student->class,
                 'deleted_at' => $student->deleted_at,
             ],
             'regions' => Teacher::getRegions(),
@@ -94,6 +97,7 @@ class StudentsController extends Controller
                 'region' => ['nullable', 'max:50'],
                 'country' => ['nullable', 'max:2'],
                 'postal_code' => ['nullable', 'max:25'],
+                'class' => ['nullable', 'max:10'],
             ])
         );
 

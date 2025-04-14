@@ -70,7 +70,7 @@ class ParentsController extends Controller
             $parent->children()->attach($childrenIds);
         }
 
-        return Redirect::route('parents')->with('success', 'Батьків створено.');
+        return Redirect::route('parents.index')->with('success', 'Батьків створено.');
     }
 
     public function edit(ParentModel $parent): Response

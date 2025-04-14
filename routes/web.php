@@ -87,7 +87,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/{user}/restore', [UsersController::class, 'restore'])->name('users.restore');
 });
 
-Route::middleware(['auth', 'verified', 'role:parent'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/parents', [ParentsController::class, 'index'])->name('parents.index');
     Route::get('/parents/create', [ParentsController::class, 'create'])->name('parents.create');
     Route::post('/parents', [ParentsController::class, 'store'])->name('parents.store');
@@ -99,9 +99,10 @@ Route::middleware(['auth', 'verified', 'role:parent'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified', 'role:teacher'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/teachers', [TeachersController::class, 'index'])->name('teachers.index');
     Route::get('/teachers/create', [TeachersController::class, 'create'])->name('teachers.create');
+    Route::get('/teachers/cities/{region}', [TeachersController::class, 'getCitiesByRegion'])->name('teachers.cities.by_region');
     Route::post('/teachers', [TeachersController::class, 'store'])->name('teachers.store');
     Route::get('/teachers/{teacher}', [TeachersController::class, 'show'])->name('teachers.show');
     Route::get('/teachers/{teacher}/edit', [TeachersController::class, 'edit'])->name('teachers.edit');
@@ -142,7 +143,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/students', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/students/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentsController::class, 'store'])->name('students.store');
@@ -155,10 +156,12 @@ Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/cities', [CitiesController::class, 'index'])->name('cities.index');
+    Route::get('/cities/{region}', [CitiesController::class, 'getCitiesByRegion'])->name('cities.by_region');
 });
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/cities/public', [CitiesController::class, 'publicIndex'])->name('cities.public.index');
+    Route::get('/public/cities/{region}', [CitiesController::class, 'getCitiesByRegion'])->name('cities.public.by_region');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

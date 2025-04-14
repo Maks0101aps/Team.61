@@ -29,7 +29,9 @@
           <div class="ml-3">
             <p class="text-sm font-medium text-red-800" v-if="$page.props.flash.error">{{ $page.props.flash.error }}</p>
             <p class="text-sm font-medium text-red-800" v-else>
-              <span v-if="Object.keys($page.props.errors).length === 1">{{ __('one_error') }}</span>
+              <span v-if="Object.keys($page.props.errors).length === 1">
+                {{ translateErrorMessage(Object.values($page.props.errors)[0]) }}
+              </span>
               <span v-else>{{ __('multiple_errors', '', { count: Object.keys($page.props.errors).length }) }}</span>
             </p>
           </div>
@@ -50,6 +52,29 @@ export default {
     return {
       show: true,
       language: localStorage.getItem('language') || 'uk',
+    }
+  },
+  methods: {
+    translateErrorMessage(message) {
+      // Словарь для перевода стандартных ошибок
+      const translations = {
+        uk: {
+          'The phone field format is invalid.': 'Формат телефону некоректний.',
+          'The first name field is required.': 'Поле "Ім\'я" обов\'язкове для заповнення.',
+          'The middle name field is required.': 'Поле "По батькові" обов\'язкове для заповнення.',
+          'The last name field is required.': 'Поле "Прізвище" обов\'язкове для заповнення.',
+          'The parent type field is required.': 'Поле "Тип батьків" обов\'язкове для заповнення.',
+          'The email field must be a valid email address.': 'Поле "Email" повинно містити дійсну електронну адресу.',
+        }
+      };
+      
+      // Если есть перевод для текущего языка и сообщения - возвращаем его
+      if (this.language === 'uk' && translations.uk[message]) {
+        return translations.uk[message];
+      }
+      
+      // Если перевода нет - возвращаем оригинальное сообщение
+      return message;
     }
   },
   watch: {

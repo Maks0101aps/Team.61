@@ -24,8 +24,8 @@
         @blur="validatePhone"
         class="form-input w-full px-4 py-2.5 rounded-lg border-gray-400 border-2 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
         :class="{ 'border-red-400 focus:border-red-500 focus:ring-red-200': error }"
-        placeholder="+380 (XX) XXX XX XX"
-        maxlength="18"
+        placeholder="+380 (XX) XXX-XX-XX"
+        maxlength="19"
       >
       
       <!-- Email icon -->
@@ -142,10 +142,10 @@ export default {
           formatted += ') ' + digits.substring(5, 8);
           
           if (digits.length > 8) {
-            formatted += ' ' + digits.substring(8, 10);
+            formatted += '-' + digits.substring(8, 10);
             
             if (digits.length > 10) {
-              formatted += ' ' + digits.substring(10, 12);
+              formatted += '-' + digits.substring(10, 12);
             }
           }
         }
@@ -159,49 +159,81 @@ export default {
       this.showPassword = !this.showPassword
     },
     handlePhoneInput(event) {
-      // Prevent input if it would exceed the maximum formatted length
-      if (event.target.value.length > 18) {
-        event.preventDefault();
-        return;
+      // Get current input value
+      const inputValue = event.target.value;
+      
+      // Extract only digits and + symbol
+      let cleanedValue = inputValue.replace(/[^\d+]/g, '');
+      
+      // If user entered just digits without +, handle special cases
+      if (!cleanedValue.startsWith('+')) {
+        if (cleanedValue.startsWith('380')) {
+          // If user typed 380, add the +
+          cleanedValue = '+' + cleanedValue;
+        } else if (cleanedValue.startsWith('80')) {
+          // If user typed 80, add +3
+          cleanedValue = '+3' + cleanedValue;
+        } else if (cleanedValue.startsWith('0')) {
+          // If user starts with 0 (Ukrainian number), replace with +380
+          cleanedValue = '+380' + cleanedValue.substring(1);
+        } else if (cleanedValue.length > 0) {
+          // For any other digit start, assume it's after +380
+          cleanedValue = '+380' + cleanedValue;
+        }
       }
       
-      // Get only digits from the current input
-      const inputDigits = event.target.value.replace(/\D/g, '');
-      
-      // Ensure it always starts with +380
-      let digits = inputDigits;
-      if (digits.startsWith('380')) {
-        // If user manually typed 380, keep only what comes after
-        digits = digits.substring(3);
-      } else if (digits.startsWith('80')) {
-        // If user manually typed 80, keep only what comes after
-        digits = digits.substring(2);
-      } else if (digits.startsWith('0')) {
-        // If user starts with 0, assume it's a local Ukrainian number
-        digits = digits.substring(1);
+      // Ensure it doesn't exceed the expected length
+      if (cleanedValue.startsWith('+380')) {
+        // Extract the part after +380
+        const nationalNumber = cleanedValue.substring(4);
+        if (nationalNumber.length > 9) {
+          // Limit to 9 digits after +380
+          cleanedValue = '+380' + nationalNumber.substring(0, 9);
+        }
       }
-      
-      // Limit to exactly 9 digits after the +380
-      if (digits.length > 9) {
-        digits = digits.substring(0, 9);
-      }
-      
-      // The value we store is just +380 followed by the digits
-      const phoneValue = '+380' + digits;
       
       // Update the model value
-      this.$emit('update:modelValue', phoneValue);
+      this.$emit('update:modelValue', cleanedValue);
     },
     validatePhone() {
       if (this.value) {
-        // Phone should contain exactly 13 characters (+380 followed by 9 digits)
+        // Clean the phone number for validation (remove all non-digits except the leading +)
+        const cleanPhone = this.value.replace(/[^\d+]/g, '');
+        
+        // Phone should start with +380 followed by 9 digits
         const phoneRegex = /^\+380\d{9}$/;
-        if (!phoneRegex.test(this.value)) {
-          this.phoneError = this.value.length < 13 
-            ? 'Номер телефону неповний. Має бути у форматі +380 (XX) XXX XX XX' 
-            : 'Номер телефону занадто довгий. Має бути у форматі +380 (XX) XXX XX XX';
-          this.$emit('update:error', this.phoneError);
+        if (!phoneRegex.test(cleanPhone)) {
+          // If the number doesn't start with +380, automatically format it
+          let formattedNumber = cleanPhone;
+          
+          // If it starts with 0, assume it's a Ukrainian number without country code
+          if (cleanPhone.startsWith('0')) {
+            formattedNumber = '+380' + cleanPhone.substring(1);
+          } 
+          // If it doesn't have a + but starts with 380
+          else if (!cleanPhone.startsWith('+') && cleanPhone.startsWith('380')) {
+            formattedNumber = '+' + cleanPhone;
+          }
+          // If it starts with 80, add +3 prefix
+          else if (cleanPhone.startsWith('80')) {
+            formattedNumber = '+380' + cleanPhone.substring(2);
+          }
+          // If it doesn't start with +380, and has 9 digits, assume it needs the +380 prefix
+          else if (!cleanPhone.startsWith('+380') && /^\d{9}$/.test(cleanPhone)) {
+            formattedNumber = '+380' + cleanPhone;
+          }
+          
+          // Check if our auto-formatting fixed the issue
+          if (phoneRegex.test(formattedNumber)) {
+            this.$emit('update:modelValue', formattedNumber);
+            this.phoneError = '';
+          } else {
+            // Still invalid, show error
+            this.phoneError = 'Номер телефону має бути у форматі +380 XX XXX-XX-XX. Ви можете ввести номер в формате 0XXXXXXXXX и он будет автоматически преобразован.';
+            this.$emit('update:error', this.phoneError);
+          }
         } else {
+          // Valid phone number
           this.phoneError = '';
         }
       }

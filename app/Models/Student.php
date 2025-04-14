@@ -28,6 +28,7 @@ class Student extends Model
         'region',
         'country',
         'postal_code',
+        'class',
     ];
 
     public function resolveRouteBinding($value, $field = null)
