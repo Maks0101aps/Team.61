@@ -3,7 +3,6 @@ import { createApp, h } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { __ } from './Helpers/translate'
 
-// Create a simple event bus for language changes
 const languageEventBus = {
   install: (app) => {
     app.config.globalProperties.$languageEventBus = {
@@ -20,7 +19,6 @@ const languageEventBus = {
   }
 }
 
-// Global mixin for language
 const languageMixin = {
   data() {
     return {
@@ -28,13 +26,13 @@ const languageMixin = {
     }
   },
   methods: {
-    // Add translation helper method
+    
     __(key, fallback = '', replacements = {}) {
       return __(key, fallback, replacements);
     }
   },
   mounted() {
-    // Listen for language changes
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue
@@ -48,7 +46,7 @@ createInertiaApp({
     const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
     return pages[`./Pages/${name}.vue`]
   },
-  title: title => title ? `${title} - Ping CRM` : 'Ping CRM',
+  title: title => title ? `${title} - School Calendar` : 'School Calendar',
   setup({ el, App, props, plugin }) {
     const app = createApp({ render: () => h(App, props) })
     app.use(plugin)
@@ -56,14 +54,14 @@ createInertiaApp({
     app.mixin(languageMixin)
     app.mount(el)
     
-    // Listen for custom flash messages from components
+    
     window.addEventListener('inertia:flash', (event) => {
       const { type, message } = event.detail;
       if (type && message) {
-        // Use Inertia's flash message system
+        
         if (window.Inertia) {
           window.Inertia.shared.flash[type] = message;
-          // Trigger a re-render
+          
           window.dispatchEvent(new Event('inertia:success'));
         }
       }
