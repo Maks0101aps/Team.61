@@ -79,9 +79,6 @@ class Event extends Model
         return $this->morphedByMany(ParentModel::class, 'participant', 'event_participants');
     }
 
-    /**
-     * Get the attachments for the event.
-     */
     public function attachments()
     {
         return $this->hasMany(EventAttachment::class);

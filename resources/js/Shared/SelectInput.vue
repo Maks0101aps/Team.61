@@ -60,14 +60,6 @@ export default {
   outline: none;
 }
 
-/* For Firefox - customize the scrollbar for multi-select */
-.form-select[multiple] {
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #4299e1 #f7fafc;
-}
-
-/* For Webkit browsers (Chrome, Safari) - customize the scrollbar for multi-select */
 .form-select[multiple]::-webkit-scrollbar {
   width: 8px;
 }

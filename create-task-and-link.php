@@ -9,7 +9,6 @@ use App\Models\Contact;
 use App\Models\Task;
 use App\Models\Event;
 
-// Set up the database connection
 $capsule = new Capsule;
 $capsule->addConnection([
     'driver'    => 'sqlite',
@@ -17,13 +16,10 @@ $capsule->addConnection([
     'prefix'    => '',
 ]);
 
-// Make this Capsule instance available globally
 $capsule->setAsGlobal();
 
-// Setup the Eloquent ORM
 $capsule->bootEloquent();
 
-// Enable error reporting
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);

@@ -42,7 +42,7 @@
         
         <div v-if="!isGoogleConnected" class="mb-6">
           <a 
-            :href="'/google-calendar/auth'"
+            :href="'/google-calendar/redirect'"
             class="inline-flex items-center px-5 py-3 text-sm font-medium rounded-lg shadow-md text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:scale-105">
             <svg class="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12 0C5.372 0 0 5.373 0 12s5.372 12 12 12c6.627 0 12-5.373 12-12S18.627 0 12 0zm.14 19.018c-3.868 0-7-3.14-7-7.018 0-3.878 3.132-7.018 7-7.018 1.89 0 3.47.697 4.682 1.829l-1.974 1.978v-.004c-.735-.702-1.667-1.062-2.708-1.062-2.31 0-4.187 1.956-4.187 4.273 0 2.315 1.877 4.277 4.187 4.277 2.096 0 3.522-1.202 3.816-2.852H12.14v-2.737h6.585c.088.47.125.96.125 1.497 0 4.007-2.747 6.837-6.71 6.837z" />
@@ -61,7 +61,8 @@
           
           <div class="flex flex-wrap gap-3">
             <a 
-              :href="'/google-calendar/sync-to'"
+              href="#"
+              @click.prevent="$inertia.post('/calendar/sync-to-google')"
               class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-md text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:scale-105">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -70,7 +71,8 @@
             </a>
             
             <a 
-              :href="'/google-calendar/sync-from'"
+              href="#"
+              @click.prevent="$inertia.post('/calendar/sync-from-google')"
               class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-md text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
@@ -79,7 +81,8 @@
             </a>
             
             <a 
-              :href="'/google-calendar/disconnect'"
+              href="#"
+              @click.prevent="$inertia.delete('/google-calendar/disconnect')"
               class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg shadow-md text-gray-700 bg-gray-100 hover:bg-gray-200 transition-all duration-200 transform hover:scale-105">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />

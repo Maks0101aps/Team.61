@@ -11,5 +11,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/events/{event}', [EventsController::class, 'apiGetEvent']);
 });
 
-// Retrieve parent type by user ID
 Route::get('/parent-type/{user}', [ParentTypeController::class, 'getParentType']); 

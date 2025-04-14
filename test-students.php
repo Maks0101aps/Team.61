@@ -9,7 +9,6 @@ use App\Models\Task;
 use App\Models\Contact;
 use Illuminate\Support\Facades\DB;
 
-// Create a simple test to query the relationship directly
 echo "Testing Task-Students relationship directly...\n";
 
 try {

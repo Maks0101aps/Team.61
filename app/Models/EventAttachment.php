@@ -14,9 +14,6 @@ class EventAttachment extends Model
         'size',
     ];
 
-    /**
-     * Get the event that owns the attachment.
-     */
     public function event()
     {
         return $this->belongsTo(Event::class);
