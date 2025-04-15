@@ -29,6 +29,11 @@
         "vue": "^3.2.27"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.17",
+        "@fullcalendar/daygrid": "^6.1.17",
+        "@fullcalendar/interaction": "^6.1.17",
+        "@fullcalendar/timegrid": "^6.1.17",
+        "@fullcalendar/vue3": "^6.1.17",
         "@vuepic/vue-datepicker": "^11.0.1",
         "dayjs": "^1.11.13",
         "vue-multiselect": "^3.0.0-beta.3"

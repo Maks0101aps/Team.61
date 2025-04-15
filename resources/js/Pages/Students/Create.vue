@@ -73,6 +73,52 @@
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="language === 'uk' ? 'Телефон' : 'Phone'" 
+                type="phone"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380 XX XXX-XX-XX' : 'Enter phone number in format +380 XX XXX-XX-XX'"
+              />
+            </div>
+          </div>
+          
+          <!-- Class Info Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              {{ language === 'uk' ? 'Інформація про клас' : 'Class Information' }}
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div class="flex space-x-4">
+                <select-input 
+                  v-model="selectedGrade" 
+                  :error="form.errors.class" 
+                  :label="language === 'uk' ? 'Номер класу' : 'Grade Number'"
+                  @change="updateClass"
+                  class="w-1/2"
+                >
+                  <option :value="null">{{ language === 'uk' ? 'Виберіть' : 'Select' }}</option>
+                  <option v-for="num in 12" :key="num" :value="num">{{ num }}</option>
+                </select-input>
+                
+                <select-input 
+                  v-model="selectedLetter" 
+                  :error="form.errors.class" 
+                  :label="language === 'uk' ? 'Літера класу' : 'Grade Letter'"
+                  @change="updateClass"
+                  class="w-1/2"
+                >
+                  <option :value="null">{{ language === 'uk' ? 'Виберіть' : 'Select' }}</option>
+                  <option value="A">А</option>
+                  <option value="B">Б</option>
+                  <option value="C">В</option>
+                  <option value="D">Г</option>
+                  <option value="E">Д</option>
+                </select-input>
+              </div>
+              
+              <text-input 
+                v-model="form.class" 
+                :error="form.errors.class" 
+                :label="language === 'uk' ? 'Повний клас' : 'Full Class'" 
+                disabled
+                :help-text="language === 'uk' ? 'Автоматично заповнюється на основі вибраних значень' : 'Automatically filled based on selected values'"
               />
             </div>
           </div>
@@ -93,23 +139,36 @@
               <select-input 
                 v-model="form.region" 
                 :error="form.errors.region" 
-                :label="language === 'uk' ? 'Область' : 'Region'" 
+                :label="currentLanguageLabels.region"
                 @change="loadCities"
-                :help-text="language === 'uk' ? 'Оберіть область проживання' : 'Select your region'"
+                :help-text="language === 'uk' ? 'Оберіть область проживання' : 'Select region of residence'"
               >
                 <option :value="null">{{ language === 'uk' ? 'Оберіть область' : 'Select region' }}</option>
                 <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
               </select-input>
               
               <select-input 
+                v-if="!isKyivSelected"
                 v-model="form.city" 
                 :error="form.errors.city" 
-                :label="language === 'uk' ? 'Місто' : 'City'" 
+                :label="currentLanguageLabels.city"
+                @change="handleCityChange"
                 :disabled="!cities.length"
                 :help-text="language === 'uk' ? 'Спочатку оберіть область для завантаження міст' : 'First select a region to load cities'"
               >
                 <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+              </select-input>
+              
+              <select-input 
+                v-if="isKyivSelected"
+                v-model="form.district" 
+                :error="form.errors.district" 
+                :label="currentLanguageLabels.district"
+                :help-text="language === 'uk' ? 'Оберіть район Києва' : 'Select Kyiv district'"
+              >
+                <option :value="null">{{ language === 'uk' ? 'Оберіть район' : 'Select district' }}</option>
+                <option v-for="district in kyivDistricts" :key="district" :value="district">{{ district }}</option>
               </select-input>
               
               <div class="form-group">
@@ -177,19 +236,41 @@ export default {
   data() {
     return {
       form: this.$inertia.form({
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        region: '',
-        country: 'UA',
-        postal_code: '',
+        first_name: null,
+        middle_name: null,
+        last_name: null,
+        email: null,
+        phone: null,
+        date_of_birth: null,
+        address: null,
+        city: null,
+        district: null,
+        region: null,
+        country: "UA",
+        postal_code: null,
+        gender: null,
+        course: null,
+        grade: null,
+        class: null,
       }),
       language: localStorage.getItem('language') || 'uk',
       cities: [],
+      isKyivSelected: false,
+      kyivDistricts: [
+        'Голосіївський',
+        'Дарницький',
+        'Деснянський',
+        'Дніпровський',
+        'Оболонський',
+        'Печерський',
+        'Подільський',
+        'Святошинський',
+        'Солом\'янський',
+        'Шевченківський'
+      ],
+      selectedGrade: null,
+      selectedLetter: null,
+      classLetters: ['A', 'B', 'C', 'D', 'E'],
     }
   },
   mounted() {
@@ -207,18 +288,77 @@ export default {
     },
     loadCities() {
       this.form.city = null;
+      this.form.district = null;
       this.cities = [];
+      this.isKyivSelected = false;
       
       if (this.form.region) {
         axios.get(`/cities/${encodeURIComponent(this.form.region)}`)
           .then(response => {
             this.cities = response.data.cities;
+            
+            // If any of the cities is Kyiv, check and handle it
+            const kyivCity = this.cities.find(city => 
+              ['Київ', 'Киев', 'Kyiv'].includes(city)
+            );
+            
+            if (kyivCity) {
+              this.form.city = kyivCity;
+              this.isKyivSelected = true;
+            }
           })
           .catch(error => {
             console.error('Error loading cities:', error);
           });
       }
+    },
+    handleCityChange() {
+      this.form.district = null;
+      this.isKyivSelected = ['Київ', 'Киев', 'Kyiv'].includes(this.form.city);
+    },
+    updateClass() {
+      this.form.class = `${this.selectedGrade}${this.selectedLetter}`;
     }
+  },
+  computed: {
+    currentLanguageLabels() {
+      return {
+        en: {
+          first_name: 'First Name',
+          middle_name: 'Middle Name',
+          last_name: 'Last Name',
+          email: 'Email',
+          phone: 'Phone',
+          date_of_birth: 'Date of Birth',
+          address: 'Address',
+          city: 'City',
+          district: 'District',
+          region: 'Region',
+          country: 'Country',
+          postal_code: 'Postal Code',
+          gender: 'Gender',
+          course: 'Course',
+          grade: 'Grade',
+        },
+        uk: {
+          first_name: 'Ім\'я',
+          middle_name: 'По батькові',
+          last_name: 'Прізвище',
+          email: 'Email',
+          phone: 'Телефон',
+          date_of_birth: 'Дата народження',
+          address: 'Адреса',
+          city: 'Місто',
+          district: 'Район',
+          region: 'Область',
+          country: 'Країна',
+          postal_code: 'Поштовий індекс',
+          gender: 'Стать',
+          course: 'Курс',
+          grade: 'Клас',
+        },
+      }[this.language || 'uk']
+    },
   },
 }
 </script>

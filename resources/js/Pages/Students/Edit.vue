@@ -73,6 +73,52 @@
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="language === 'uk' ? 'Телефон' : 'Phone'" 
+                type="phone"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380 XX XXX-XX-XX' : 'Enter phone number in format +380 XX XXX-XX-XX'"
+              />
+            </div>
+          </div>
+          
+          <!-- Class Info Section -->
+          <div class="mb-8">
+            <h3 class="text-base font-medium text-gray-900 mb-4">
+              {{ language === 'uk' ? 'Інформація про клас' : 'Class Information' }}
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div class="flex space-x-4">
+                <select-input 
+                  v-model="selectedGrade" 
+                  :error="form.errors.class" 
+                  :label="language === 'uk' ? 'Номер класу' : 'Grade Number'"
+                  @change="updateClass"
+                  class="w-1/2"
+                >
+                  <option :value="null">{{ language === 'uk' ? 'Виберіть' : 'Select' }}</option>
+                  <option v-for="num in 12" :key="num" :value="num">{{ num }}</option>
+                </select-input>
+                
+                <select-input 
+                  v-model="selectedLetter" 
+                  :error="form.errors.class" 
+                  :label="language === 'uk' ? 'Літера класу' : 'Grade Letter'"
+                  @change="updateClass"
+                  class="w-1/2"
+                >
+                  <option :value="null">{{ language === 'uk' ? 'Виберіть' : 'Select' }}</option>
+                  <option value="A">А</option>
+                  <option value="B">Б</option>
+                  <option value="C">В</option>
+                  <option value="D">Г</option>
+                  <option value="E">Д</option>
+                </select-input>
+              </div>
+              
+              <text-input 
+                v-model="form.class" 
+                :error="form.errors.class" 
+                :label="language === 'uk' ? 'Повний клас' : 'Full Class'" 
+                disabled
+                :help-text="language === 'uk' ? 'Автоматично заповнюється на основі вибраних значень' : 'Automatically filled based on selected values'"
               />
             </div>
           </div>
@@ -199,15 +245,28 @@ export default {
         region: this.student.region,
         country: "UA",
         postal_code: this.student.postal_code,
+        class: this.student.class,
       }),
       language: localStorage.getItem('language') || 'uk',
       cities: [],
+      selectedGrade: null,
+      selectedLetter: null,
+      classLetters: ['A', 'B', 'C', 'D', 'E'],
     }
   },
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     if (this.form.region) {
       this.loadCities();
+    }
+    
+    // Разбор существующего значения класса
+    if (this.form.class) {
+      const match = this.form.class.match(/^(\d+)([A-E])$/);
+      if (match) {
+        this.selectedGrade = parseInt(match[1]);
+        this.selectedLetter = match[2];
+      }
     }
   },
   beforeUnmount() {
@@ -241,6 +300,9 @@ export default {
             console.error('Error loading cities:', error);
           });
       }
+    },
+    updateClass() {
+      this.form.class = `${this.selectedGrade}${this.selectedLetter}`;
     }
   },
 }

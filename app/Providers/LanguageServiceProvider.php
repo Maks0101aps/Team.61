@@ -7,21 +7,10 @@ use Inertia\Inertia;
 
 class LanguageServiceProvider extends ServiceProvider
 {
-    /**
-     * Register services.
-     *
-     * @return void
-     */
     public function register()
     {
-        //
     }
 
-    /**
-     * Bootstrap services.
-     *
-     * @return void
-     */
     public function boot()
     {
         Inertia::share('translations', function () {
@@ -29,11 +18,6 @@ class LanguageServiceProvider extends ServiceProvider
         });
     }
     
-    /**
-     * Get translations for common UI elements.
-     *
-     * @return array
-     */
     private function getTranslations()
     {
         return [

@@ -26,7 +26,7 @@ class DashboardController extends Controller
             });
 
         $events = Auth::user()->account->events()
-            ->with('creator')
+            ->with(['creator', 'attachments'])
             ->get()
             ->map(function ($event) {
                 return [
@@ -40,6 +40,15 @@ class DashboardController extends Controller
                     'created_by' => $event->creator->name,
                     'created_by_id' => $event->created_by,
                     'is_content_hidden' => $event->is_content_hidden,
+                    'attachments' => $event->attachments->map(function ($attachment) {
+                        return [
+                            'id' => $attachment->id,
+                            'original_filename' => $attachment->original_filename,
+                            'mime_type' => $attachment->mime_type,
+                            'size' => $attachment->size,
+                            'download_url' => route('events.attachments.download', [$attachment->event_id, $attachment->id]),
+                        ];
+                    }),
                 ];
             });
 

@@ -67,7 +67,7 @@ class TeachersController extends Controller
 
         Auth::user()->account->teachers()->create($validatedData);
 
-        return Redirect::route('teachers')->with('success', 'Teacher created.');
+        return Redirect::route('teachers.index')->with('success', 'Teacher created.');
     }
 
     public function edit(Teacher $teacher): Response

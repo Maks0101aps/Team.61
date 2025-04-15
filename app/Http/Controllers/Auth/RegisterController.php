@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\Account;
+use App\Models\EmailVerification;
 use App\Models\ParentModel;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Notifications\VerifyEmail;
 use App\Providers\AppServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -119,6 +121,7 @@ class RegisterController extends Controller
             'email' => $request->email,
             'password' => $request->password,
             'role' => $request->role,
+            'email_verified_at' => null, // Не подтверждаем email сразу
         ]);
 
         // If user is a student, create a student record and link it with the parent
@@ -180,9 +183,17 @@ class RegisterController extends Controller
             Log::info('Created teacher: ' . json_encode($teacher));
         }
 
+        // Генерируем код верификации и отправляем его на почту
+        $code = EmailVerification::generateCode($user->email);
+        $user->notify(new VerifyEmail($code, $user->first_name));
+
+        // Сохраняем email в сессии для страницы верификации
+        $request->session()->put('verification_email', $user->email);
+
         // Log the user in
         Auth::login($user);
 
-        return redirect()->intended(AppServiceProvider::HOME);
+        // Перенаправляем на страницу верификации
+        return redirect()->route('verification.notice');
     }
 }

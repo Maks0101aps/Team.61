@@ -15,8 +15,8 @@
           <span class="text-gray-700">{{ language === 'uk' ? 'Редагування' : 'Edit' }}</span>
         </div>
         <h1 class="mt-1 text-3xl font-bold text-gray-900">
-          {{ language === 'uk' ? 'Редагування батька' : 'Edit Parent' }}: {{ parent.first_name }} {{ parent.last_name }}
-  </h1>
+          {{ language === 'uk' ? 'Редагування батьків' : 'Edit Parent' }}: {{ parent.first_name }} {{ parent.last_name }}
+        </h1>
       </div>
       <div class="mt-4 sm:mt-0">
         <Link 
@@ -36,10 +36,10 @@
         <!-- Form header -->
         <div class="px-6 sm:px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
           <h2 class="text-lg font-medium text-gray-900">
-            {{ language === 'uk' ? 'Інформація про батька' : 'Parent Information' }}
+            {{ language === 'uk' ? 'Інформація про батьків' : 'Parent Information' }}
           </h2>
           <p class="mt-1 text-sm text-gray-600">
-            {{ language === 'uk' ? 'Оновіть дані батька в системі' : 'Update parent information in the system' }}
+            {{ language === 'uk' ? 'Оновіть дані батьків в системі' : 'Update parent information in the system' }}
           </p>
         </div>
         
@@ -51,11 +51,23 @@
               {{ language === 'uk' ? 'Особисті дані' : 'Personal Information' }}
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <select-input 
+                v-model="form.parent_type" 
+                :error="form.errors.parent_type" 
+                :label="language === 'uk' ? 'Тип батьків' : 'Parent Type'"
+                :help-text="language === 'uk' ? 'Виберіть тип батьків' : 'Select parent type'"
+                class="md:col-span-2"
+              >
+                <option :value="null">{{ language === 'uk' ? 'Виберіть тип' : 'Select type' }}</option>
+                <option value="mother">{{ language === 'uk' ? 'Мати' : 'Mother' }}</option>
+                <option value="father">{{ language === 'uk' ? 'Батько' : 'Father' }}</option>
+              </select-input>
+              
               <text-input 
                 v-model="form.first_name" 
                 :error="form.errors.first_name" 
                 :label="currentLanguageLabels.first_name" 
-                :help-text="language === 'uk' ? 'Введіть ім\'я батька' : 'Enter parent\'s first name'"
+                :help-text="language === 'uk' ? 'Введіть ім\'я' : 'Enter parent\'s first name'"
               />
               
               <text-input 
@@ -69,7 +81,7 @@
                 v-model="form.last_name" 
                 :error="form.errors.last_name" 
                 :label="currentLanguageLabels.last_name" 
-                :help-text="language === 'uk' ? 'Введіть прізвище батька' : 'Enter parent\'s last name'"
+                :help-text="language === 'uk' ? 'Введіть прізвище' : 'Enter parent\'s last name'"
                 class="md:col-span-2"
               />
             </div>
@@ -93,7 +105,8 @@
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="currentLanguageLabels.phone" 
-                :help-text="language === 'uk' ? 'Введіть номер телефону для зв\'язку' : 'Enter phone number for contact'"
+                type="phone"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380XXXXXXXXX' : 'Enter phone number in format +380XXXXXXXXX'"
               />
             </div>
           </div>
@@ -165,8 +178,8 @@
                 :label="currentLanguageLabels.children"
                 option-label="full_name"
                 option-value="id"
-                :placeholder="language === 'uk' ? 'Оберіть учнів, які є дітьми цього батька' : 'Select students who are children of this parent'"
-                :help-text="language === 'uk' ? 'Оберіть учнів зі списку, які пов\'язані з цим батьком' : 'Select students from the list who are related to this parent'"
+                :placeholder="language === 'uk' ? 'Оберіть учнів, які є дітьми цих батьків' : 'Select students who are children of this parent'"
+                :help-text="language === 'uk' ? 'Оберіть учнів зі списку, які пов\'язані з цими батьками' : 'Select students from the list who are related to this parent'"
               />
             </div>
           </div>
@@ -179,7 +192,7 @@
             class="w-full sm:w-auto px-4 py-2 rounded-lg border border-red-300 text-red-700 bg-white hover:bg-red-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             @click="destroy"
           >
-            <span>{{ language === 'uk' ? 'Видалити батька' : 'Delete Parent' }}</span>
+            <span>{{ language === 'uk' ? 'Видалити батьків' : 'Delete Parent' }}</span>
         </button>
           <div class="flex-grow"></div>
           <Link 
@@ -192,7 +205,7 @@
             type="primary" 
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
-            {{ language === 'uk' ? 'Оновити батька' : 'Update Parent' }}
+            {{ language === 'uk' ? 'Оновити батьків' : 'Update Parent' }}
         </loading-button>
       </div>
     </form>
@@ -239,6 +252,7 @@ export default {
         last_name: this.parent.last_name,
         email: this.parent.email,
         phone: this.parent.phone,
+        parent_type: this.parent.parent_type,
         address: this.parent.address,
         city: this.parent.city,
         region: this.parent.region,
@@ -264,7 +278,7 @@ export default {
       this.form.put(`/parents/${this.parent.id}`);
     },
     destroy() {
-      if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити цього батька?' : 'Are you sure you want to delete this parent?')) {
+      if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити ціх батьків?' : 'Are you sure you want to delete this parent?')) {
         this.$inertia.delete(`/parents/${this.parent.id}`);
       }
     },

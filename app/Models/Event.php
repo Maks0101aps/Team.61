@@ -79,6 +79,11 @@ class Event extends Model
         return $this->morphedByMany(ParentModel::class, 'participant', 'event_participants');
     }
 
+    public function attachments()
+    {
+        return $this->hasMany(EventAttachment::class);
+    }
+
     public function scopeFilter(Builder $query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {

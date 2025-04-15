@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Head :title="language === 'uk' ? 'Створити батька' : 'Create Parent'" />
+    <Head :title="language === 'uk' ? 'Створити батьків' : 'Create Parent'" />
     
     <!-- Header with breadcrumbs and title -->
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -15,7 +15,7 @@
           <span class="text-gray-700">{{ language === 'uk' ? 'Створення' : 'Create' }}</span>
         </div>
         <h1 class="mt-1 text-3xl font-bold text-gray-900">
-          {{ language === 'uk' ? 'Створення батька' : 'Create Parent' }}
+          {{ language === 'uk' ? 'Створення батьків' : 'Create Parent' }}
   </h1>
       </div>
       <div class="mt-4 sm:mt-0">
@@ -36,10 +36,10 @@
         <!-- Form header -->
         <div class="px-6 sm:px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
           <h2 class="text-lg font-medium text-gray-900">
-            {{ language === 'uk' ? 'Інформація про батька' : 'Parent Information' }}
+            {{ language === 'uk' ? 'Інформація про батьків' : 'Parent Information' }}
           </h2>
           <p class="mt-1 text-sm text-gray-600">
-            {{ language === 'uk' ? 'Заповніть дані для створення нового запису про батька в системі' : 'Fill out the data to create a new parent record in the system' }}
+            {{ language === 'uk' ? 'Заповніть дані для створення нового запису про батьків в системі' : 'Fill out the data to create a new parent record in the system' }}
           </p>
         </div>
         
@@ -51,11 +51,23 @@
               {{ language === 'uk' ? 'Особисті дані' : 'Personal Information' }}
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <select-input 
+                v-model="form.parent_type" 
+                :error="form.errors.parent_type" 
+                :label="language === 'uk' ? 'Тип батьків' : 'Parent Type'"
+                :help-text="language === 'uk' ? 'Виберіть тип батьків' : 'Select parent type'"
+                class="md:col-span-2"
+              >
+                <option :value="null">{{ language === 'uk' ? 'Виберіть тип' : 'Select type' }}</option>
+                <option value="mother">{{ language === 'uk' ? 'Мати' : 'Mother' }}</option>
+                <option value="father">{{ language === 'uk' ? 'Батько' : 'Father' }}</option>
+              </select-input>
+              
               <text-input 
                 v-model="form.first_name" 
                 :error="form.errors.first_name" 
                 :label="currentLanguageLabels.first_name" 
-                :help-text="language === 'uk' ? 'Введіть ім\'я батька' : 'Enter parent\'s first name'"
+                :help-text="language === 'uk' ? 'Введіть ім\'я' : 'Enter parent\'s first name'"
               />
               
               <text-input 
@@ -69,7 +81,7 @@
                 v-model="form.last_name" 
                 :error="form.errors.last_name" 
                 :label="currentLanguageLabels.last_name" 
-                :help-text="language === 'uk' ? 'Введіть прізвище батька' : 'Enter parent\'s last name'"
+                :help-text="language === 'uk' ? 'Введіть прізвище' : 'Enter parent\'s last name'"
                 class="md:col-span-2"
               />
             </div>
@@ -93,7 +105,8 @@
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="currentLanguageLabels.phone" 
-                :help-text="language === 'uk' ? 'Введіть номер телефону для зв\'язку' : 'Enter phone number for contact'"
+                type="phone"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380XXXXXXXXX' : 'Enter phone number in format +380XXXXXXXXX'"
               />
             </div>
           </div>
@@ -115,7 +128,7 @@
               <select-input 
                 v-model="form.region" 
                 :error="form.errors.region" 
-                :label="currentLanguageLabels.region" 
+                :label="currentLanguageLabels.region"
                 @change="loadCities"
                 :help-text="language === 'uk' ? 'Оберіть область проживання' : 'Select region of residence'"
               >
@@ -124,14 +137,27 @@
               </select-input>
               
               <select-input 
+                v-if="!isKyivSelected"
                 v-model="form.city" 
                 :error="form.errors.city" 
-                :label="currentLanguageLabels.city" 
+                :label="currentLanguageLabels.city"
+                @change="handleCityChange"
                 :disabled="!cities.length"
                 :help-text="language === 'uk' ? 'Спочатку оберіть область для завантаження міст' : 'First select a region to load cities'"
               >
                 <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+              </select-input>
+              
+              <select-input 
+                v-if="isKyivSelected"
+                v-model="form.district" 
+                :error="form.errors.district" 
+                :label="currentLanguageLabels.district"
+                :help-text="language === 'uk' ? 'Оберіть район Києва' : 'Select Kyiv district'"
+              >
+                <option :value="null">{{ language === 'uk' ? 'Оберіть район' : 'Select district' }}</option>
+                <option v-for="district in kyivDistricts" :key="district" :value="district">{{ district }}</option>
               </select-input>
               
               <div class="form-group">
@@ -165,8 +191,8 @@
                 :label="currentLanguageLabels.children"
                 option-label="full_name"
                 option-value="id"
-                :placeholder="language === 'uk' ? 'Оберіть учнів, які є дітьми цього батька' : 'Select students who are children of this parent'"
-                :help-text="language === 'uk' ? 'Оберіть учнів зі списку, які пов\'язані з цим батьком' : 'Select students from the list who are related to this parent'"
+                :placeholder="language === 'uk' ? 'Оберіть учнів, які є дітьми цих батьків' : 'Select students who are children of this parent'"
+                :help-text="language === 'uk' ? 'Оберіть учнів зі списку, які пов\'язані з цими батьками' : 'Select students from the list who are related to this parent'"
               />
             </div>
           </div>
@@ -184,7 +210,7 @@
             type="primary" 
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
-            {{ language === 'uk' ? 'Створити батька' : 'Create Parent' }}
+            {{ language === 'uk' ? 'Створити батьків' : 'Create Parent' }}
           </loading-button>
       </div>
     </form>
@@ -216,25 +242,40 @@ export default {
     regions: {
       type: Array,
       default: () => []
-    }
+    },
   },
   data() {
     return {
       form: this.$inertia.form({
-        first_name: '',
-        middle_name: '',
-        last_name: '',
-        email: '',
-        phone: '',
-        address: '',
-        city: '',
-        region: '',
-        country: 'UA',
-        postal_code: '',
+        first_name: null,
+        middle_name: null,
+        last_name: null,
+        email: null,
+        phone: null,
+        parent_type: null,
+        address: null,
+        city: null,
+        district: null,
+        region: null,
+        country: "UA",
+        postal_code: null,
         children: [],
       }),
       cities: [],
       language: localStorage.getItem('language') || 'uk',
+      isKyivSelected: false,
+      kyivDistricts: [
+        'Голосіївський',
+        'Дарницький',
+        'Деснянський',
+        'Дніпровський',
+        'Оболонський',
+        'Печерський',
+        'Подільський',
+        'Святошинський',
+        'Солом\'янський',
+        'Шевченківський'
+      ],
     }
   },
   mounted() {
@@ -249,12 +290,24 @@ export default {
     },
     loadCities() {
       this.form.city = null;
+      this.form.district = null;
       this.cities = [];
+      this.isKyivSelected = false;
       
       if (this.form.region) {
         axios.get(`/cities/${encodeURIComponent(this.form.region)}`)
           .then(response => {
             this.cities = response.data.cities;
+            
+            // If any of the cities is Kyiv, check and handle it
+            const kyivCity = this.cities.find(city => 
+              ['Київ', 'Киев', 'Kyiv'].includes(city)
+            );
+            
+            if (kyivCity) {
+              this.form.city = kyivCity;
+              this.isKyivSelected = true;
+            }
           })
           .catch(error => {
             console.error('Error loading cities:', error);
@@ -263,6 +316,10 @@ export default {
     },
     updateLanguage(event) {
       this.language = event.detail.language;
+    },
+    handleCityChange() {
+      this.form.district = null;
+      this.isKyivSelected = ['Київ', 'Киев', 'Kyiv'].includes(this.form.city);
     }
   },
   computed: {
@@ -280,6 +337,7 @@ export default {
           country: 'Country',
           postal_code: 'Postal Code',
           children: 'Children',
+          district: 'District',
         },
         uk: {
           first_name: 'Ім\'я',
@@ -293,6 +351,7 @@ export default {
           country: 'Країна',
           postal_code: 'Поштовий індекс',
           children: 'Діти',
+          district: 'Район',
         },
       }[this.language || 'uk']
     },

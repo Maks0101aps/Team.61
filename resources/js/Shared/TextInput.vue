@@ -3,14 +3,29 @@
     <label v-if="label" class="form-label block mb-2 text-sm font-medium text-gray-700" :for="id">{{ label }}</label>
     <div class="relative">
       <input
+        v-if="type !== 'phone'"
         :id="id"
         :type="actualType"
         :value="value"
         :disabled="disabled"
         @input="$emit('update:modelValue', $event.target.value)"
-        class="form-input w-full px-4 py-2.5 rounded-lg border-gray-300 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
+        class="form-input w-full px-4 py-2.5 rounded-lg border-gray-400 border-2 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
         :class="{ 'border-red-400 focus:border-red-500 focus:ring-red-200': error, 'pr-10': type === 'email' || type === 'password' || type === 'search' }"
         :placeholder="placeholder"
+      >
+
+      <input
+        v-if="type === 'phone'"
+        :id="id"
+        type="tel"
+        :value="formattedPhoneValue"
+        :disabled="disabled"
+        @input="handlePhoneInput"
+        @blur="validatePhone"
+        class="form-input w-full px-4 py-2.5 rounded-lg border-gray-400 border-2 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500"
+        :class="{ 'border-red-400 focus:border-red-500 focus:ring-red-200': error }"
+        placeholder="+380 (XX) XXX-XX-XX"
+        maxlength="19"
       >
       
       <!-- Email icon -->
@@ -18,6 +33,13 @@
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
           <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+        </svg>
+      </div>
+      
+      <!-- Phone icon -->
+      <div v-if="type === 'phone'" class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
         </svg>
       </div>
       
@@ -79,7 +101,9 @@ export default {
   emits: ['update:modelValue'],
   data() {
     return {
-      showPassword: false
+      showPassword: false,
+      phoneError: '',
+      rawPhoneValue: this.modelValue || ''
     }
   },
   computed: {
@@ -91,11 +115,128 @@ export default {
         return 'text'
       }
       return this.type
+    },
+    formattedPhoneValue() {
+      // Format phone number for display
+      if (!this.value) return '';
+      
+      // Extract digits from the phone number
+      let digits = this.value.replace(/\D/g, '');
+      
+      // Ensure we only handle up to 12 digits (including 380)
+      if (digits.length > 12) {
+        digits = digits.substring(0, 12);
+      }
+      
+      if (digits.length <= 3) {
+        return '+' + digits;
+      }
+      
+      // Format the phone number with proper spacing
+      let formatted = '+380';
+      
+      if (digits.length > 3) {
+        formatted = '+380 (' + digits.substring(3, 5);
+        
+        if (digits.length > 5) {
+          formatted += ') ' + digits.substring(5, 8);
+          
+          if (digits.length > 8) {
+            formatted += '-' + digits.substring(8, 10);
+            
+            if (digits.length > 10) {
+              formatted += '-' + digits.substring(10, 12);
+            }
+          }
+        }
+      }
+      
+      return formatted;
     }
   },
   methods: {
     togglePasswordVisibility() {
       this.showPassword = !this.showPassword
+    },
+    handlePhoneInput(event) {
+      // Get current input value
+      const inputValue = event.target.value;
+      
+      // Extract only digits and + symbol
+      let cleanedValue = inputValue.replace(/[^\d+]/g, '');
+      
+      // If user entered just digits without +, handle special cases
+      if (!cleanedValue.startsWith('+')) {
+        if (cleanedValue.startsWith('380')) {
+          // If user typed 380, add the +
+          cleanedValue = '+' + cleanedValue;
+        } else if (cleanedValue.startsWith('80')) {
+          // If user typed 80, add +3
+          cleanedValue = '+3' + cleanedValue;
+        } else if (cleanedValue.startsWith('0')) {
+          // If user starts with 0 (Ukrainian number), replace with +380
+          cleanedValue = '+380' + cleanedValue.substring(1);
+        } else if (cleanedValue.length > 0) {
+          // For any other digit start, assume it's after +380
+          cleanedValue = '+380' + cleanedValue;
+        }
+      }
+      
+      // Ensure it doesn't exceed the expected length
+      if (cleanedValue.startsWith('+380')) {
+        // Extract the part after +380
+        const nationalNumber = cleanedValue.substring(4);
+        if (nationalNumber.length > 9) {
+          // Limit to 9 digits after +380
+          cleanedValue = '+380' + nationalNumber.substring(0, 9);
+        }
+      }
+      
+      // Update the model value
+      this.$emit('update:modelValue', cleanedValue);
+    },
+    validatePhone() {
+      if (this.value) {
+        // Clean the phone number for validation (remove all non-digits except the leading +)
+        const cleanPhone = this.value.replace(/[^\d+]/g, '');
+        
+        // Phone should start with +380 followed by 9 digits
+        const phoneRegex = /^\+380\d{9}$/;
+        if (!phoneRegex.test(cleanPhone)) {
+          // If the number doesn't start with +380, automatically format it
+          let formattedNumber = cleanPhone;
+          
+          // If it starts with 0, assume it's a Ukrainian number without country code
+          if (cleanPhone.startsWith('0')) {
+            formattedNumber = '+380' + cleanPhone.substring(1);
+          } 
+          // If it doesn't have a + but starts with 380
+          else if (!cleanPhone.startsWith('+') && cleanPhone.startsWith('380')) {
+            formattedNumber = '+' + cleanPhone;
+          }
+          // If it starts with 80, add +3 prefix
+          else if (cleanPhone.startsWith('80')) {
+            formattedNumber = '+380' + cleanPhone.substring(2);
+          }
+          // If it doesn't start with +380, and has 9 digits, assume it needs the +380 prefix
+          else if (!cleanPhone.startsWith('+380') && /^\d{9}$/.test(cleanPhone)) {
+            formattedNumber = '+380' + cleanPhone;
+          }
+          
+          // Check if our auto-formatting fixed the issue
+          if (phoneRegex.test(formattedNumber)) {
+            this.$emit('update:modelValue', formattedNumber);
+            this.phoneError = '';
+          } else {
+            // Still invalid, show error
+            this.phoneError = 'Номер телефону має бути у форматі +380 XX XXX-XX-XX. Ви можете ввести номер в формате 0XXXXXXXXX и он будет автоматически преобразован.';
+            this.$emit('update:error', this.phoneError);
+          }
+        } else {
+          // Valid phone number
+          this.phoneError = '';
+        }
+      }
     }
   }
 }

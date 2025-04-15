@@ -8,7 +8,7 @@
         :value="modelValue"
         :disabled="disabled"
         @change="$emit('update:modelValue', multiple ? [...$event.target.selectedOptions].map(o => o.value) : $event.target.value)"
-        class="form-select appearance-none w-full px-4 py-2.5 rounded-lg bg-white border-gray-300 text-gray-700 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
+        class="form-select appearance-none w-full px-4 py-2.5 rounded-lg bg-white border-gray-400 border-2 text-gray-700 shadow-sm transition-all duration-200 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed"
         :class="{ 'border-red-400 focus:border-red-500 focus:ring-red-200': error, 'pr-10': !multiple }"
       >
         <slot />
@@ -60,14 +60,6 @@ export default {
   outline: none;
 }
 
-/* For Firefox - customize the scrollbar for multi-select */
-.form-select[multiple] {
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #4299e1 #f7fafc;
-}
-
-/* For Webkit browsers (Chrome, Safari) - customize the scrollbar for multi-select */
 .form-select[multiple]::-webkit-scrollbar {
   width: 8px;
 }

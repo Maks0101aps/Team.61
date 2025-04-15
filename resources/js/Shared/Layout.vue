@@ -43,22 +43,28 @@
             </div>
             <div class="flex items-center space-x-6">
               <div class="hidden md:flex items-center">
-                <div class="inline-flex rounded-lg shadow-sm" role="group">
+                <div class="inline-flex rounded-full shadow-md overflow-hidden">
                   <button @click="setLanguage('uk')" 
                           type="button" 
-                          class="px-4 py-2 text-sm font-medium transition-all duration-200"
+                          class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'uk' 
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                            : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200'">
-                    UA
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                            : 'bg-white text-gray-700 hover:bg-blue-50'">
+                    <span class="relative z-10">UA</span>
+                    <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
+                    <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                          :class="language === 'uk' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                   <button @click="setLanguage('en')" 
                           type="button" 
-                          class="px-4 py-2 text-sm font-medium transition-all duration-200"
+                          class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'en' 
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md' 
-                            : 'bg-white text-gray-700 hover:bg-blue-50 hover:text-blue-700 border border-gray-200'">
-                    EN
+                            ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                            : 'bg-white text-gray-700 hover:bg-blue-50'">
+                    <span class="relative z-10">EN</span>
+                    <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
+                    <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
+                          :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                 </div>
               </div>
@@ -96,7 +102,7 @@
           </div>
         </div>
         <div class="md:flex md:grow md:overflow-hidden">
-          <div class="hidden shrink-0 p-6 w-64 bg-gradient-to-b from-[#4A90E2] to-[#357ABD] overflow-y-auto md:block">
+          <div class="hidden shrink-0 p-6 w-64 bg-gradient-to-b from-[#4A90E2] to-[#357ABD] overflow-y-auto md:block menu-sidebar" :class="{ 'slide-in': !hasVisitedBefore }">
             <main-menu />
           </div>
           <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto bg-gradient-to-br from-blue-50 to-gray-100" scroll-region>
@@ -137,6 +143,7 @@ export default {
     return {
       language: localStorage.getItem('language') || 'uk', // Default to Ukrainian
       parentType: 'mother', // Default value
+      hasVisitedBefore: localStorage.getItem('hasVisitedBefore') === 'true'
     }
   },
   methods: {
@@ -145,23 +152,28 @@ export default {
       localStorage.setItem('language', lang)
       
       // Set a cookie for server-side language detection
-      const date = new Date();
-      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+      const date = new Date()
+      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) // Expires in one year
       document.cookie = `language=${lang}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
       
-      // Use the event bus to notify all components
+      // Broadcast the language change
       if (this.$languageEventBus) {
         this.$languageEventBus.emit('language-changed', lang)
       }
       
-      // Don't reload the page, let the event bus handle the changes
-      // window.location.reload()
+      // Also dispatch a custom event for components that might not have access to the event bus
+      window.dispatchEvent(new CustomEvent('language-changed', { detail: { language: lang } }))
     }
   },
   mounted() {
     // Ensure we have a language set in localStorage
     if (!localStorage.getItem('language')) {
       localStorage.setItem('language', 'uk')
+    }
+    
+    // Check if user has visited before and set flag
+    if (!localStorage.getItem('hasVisitedBefore')) {
+      localStorage.setItem('hasVisitedBefore', 'true')
     }
     
     // Fetch parent type if the user is a parent
@@ -187,6 +199,27 @@ export default {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
+}
+
+/* Анимация выдвижения меню */
+.menu-sidebar {
+  transform: translateX(0);
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.menu-sidebar.slide-in {
+  animation: slideInFromLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 /* Улучшаем внешний вид скроллбара */

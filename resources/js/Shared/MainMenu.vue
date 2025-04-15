@@ -1,6 +1,6 @@
 <template>
   <div class="py-4">
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.1s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/">
@@ -11,7 +11,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.2s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('students') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/students">
@@ -22,7 +22,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.3s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('parents') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/parents">
@@ -33,7 +33,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.4s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('teachers') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/teachers">
@@ -44,7 +44,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.5s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('events') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/events">
@@ -55,7 +55,7 @@
       </Link>
     </div>
 
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.6s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('tasks') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/tasks">
@@ -66,7 +66,7 @@
       </Link>
     </div>
     
-    <div class="mb-6">
+    <div class="mb-6 menu-item" :style="{ animationDelay: '0.7s' }">
       <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
             :class="isUrl('reports') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/reports">
@@ -78,25 +78,30 @@
     </div>
     
     <!-- Mobile Language Switcher -->
-    <div class="md:hidden mt-12">
+    <div class="md:hidden mt-12 menu-item" :style="{ animationDelay: '0.8s' }">
       <div class="px-4">
-        <p class="text-blue-200 text-xs uppercase font-bold tracking-wider mb-4">
+        <p class="text-blue-100 text-xs uppercase font-bold tracking-wider mb-4 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+          </svg>
           {{ language === 'uk' ? 'Мова' : 'Language' }}
         </p>
-        <div class="flex space-x-3">
+        <div class="inline-flex rounded-full bg-blue-800/50 p-1 shadow-inner">
           <button @click="setLanguage('uk')" 
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105" 
+                  class="relative px-6 py-2 text-sm font-medium rounded-full transition-all duration-300 overflow-hidden" 
                   :class="language === 'uk' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
-                    : 'bg-blue-700/50 text-blue-200 hover:bg-blue-600/50 hover:text-white'">
-            UA
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
+                    : 'text-blue-100 hover:text-white hover:bg-blue-700/30'">
+            <span class="relative z-10">UA</span>
+            <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
           </button>
           <button @click="setLanguage('en')" 
-                  class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 transform hover:scale-105" 
+                  class="relative px-6 py-2 text-sm font-medium rounded-full transition-all duration-300 overflow-hidden" 
                   :class="language === 'en' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' 
-                    : 'bg-blue-700/50 text-blue-200 hover:bg-blue-600/50 hover:text-white'">
-            EN
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
+                    : 'text-blue-100 hover:text-white hover:bg-blue-700/30'">
+            <span class="relative z-10">EN</span>
+            <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
           </button>
         </div>
       </div>
@@ -131,17 +136,17 @@ export default {
       localStorage.setItem('language', lang)
       
       // Set a cookie for server-side language detection
-      const date = new Date();
-      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+      const date = new Date()
+      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) // Expires in one year
       document.cookie = `language=${lang}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
       
-      // Use the event bus to notify all components
+      // Broadcast the language change
       if (this.$languageEventBus) {
         this.$languageEventBus.emit('language-changed', lang)
       }
       
-      // Don't reload the page, let the event bus handle the changes
-      // window.location.reload()
+      // Also dispatch a custom event for components that might not have access to the event bus
+      window.dispatchEvent(new CustomEvent('language-changed', { detail: { language: lang } }))
     }
   },
   mounted() {
@@ -161,3 +166,38 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.menu-item {
+  opacity: 0;
+  transform: translateX(-20px);
+  animation: fadeInRight 0.5s ease forwards;
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.menu-item:hover svg {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+</style>

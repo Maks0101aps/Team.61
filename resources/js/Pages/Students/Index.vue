@@ -70,7 +70,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" />
                 </svg>
-                {{ student.organization.name }}
+                {{ student.class || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
               </div>
               <div class="flex items-center text-sm text-gray-600">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
@@ -117,7 +117,7 @@
         <thead>
           <tr class="bg-gradient-to-r from-blue-50 to-blue-100 text-left">
             <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Повне ім\'я' : 'Full Name' }}</th>
-            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Організація' : 'Organization' }}</th>
+            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Клас' : 'Class' }}</th>
             <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Місто' : 'City' }}</th>
             <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Номер телефону' : 'Phone Number' }}</th>
             <th class="py-4 px-6 font-bold text-blue-900 text-center">{{ language === 'uk' ? 'Дії' : 'Actions' }}</th>
@@ -142,8 +142,8 @@
               </Link>
             </td>
             <td class="py-4 px-6 text-gray-600">
-              <div v-if="student.organization">
-                {{ student.organization.name }}
+              <div v-if="student.class">
+                {{ student.class }}
               </div>
               <div v-else class="text-gray-400">
                 {{ language === 'uk' ? 'Не вказано' : 'Not specified' }}

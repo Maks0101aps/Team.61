@@ -9,6 +9,20 @@ use Illuminate\Http\Request;
 class CitiesController extends Controller
 {
     /**
+     * List all regions and cities
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function index()
+    {
+        $regions = Teacher::getRegions();
+        
+        return response()->json([
+            'regions' => $regions
+        ]);
+    }
+    
+    /**
      * Get cities by region.
      *
      * @param string $region
@@ -24,6 +38,20 @@ class CitiesController extends Controller
         
         return response()->json([
             'cities' => $cities
+        ]);
+    }
+    
+    /**
+     * Public endpoint for getting cities by region
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function publicIndex()
+    {
+        $regions = Teacher::getRegions();
+        
+        return response()->json([
+            'regions' => $regions
         ]);
     }
 } 

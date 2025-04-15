@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\EventAttachment;
 use App\Models\Contact;
 use App\Models\Teacher;
 use App\Models\ParentModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class EventsController extends Controller
@@ -36,6 +38,91 @@ class EventsController extends Controller
         ]);
     }
 
+    /**
+     * Display the specified event.
+     */
+    public function show(Event $event)
+    {
+        $user = Auth::user();
+        
+        // Load all related data
+        $event->load([
+            'creator',
+            'students',
+            'teachers',
+            'parents',
+            'attachments'
+        ]);
+        
+        // Determine if the user can view content (if it's hidden)
+        $canViewContent = !$event->is_content_hidden || 
+                        $event->created_by === $user->id || 
+                        $user->isAdmin() || 
+                        $event->start_date <= now();
+                        
+        // Determine user's participation status
+        $participationStatus = 'pending';
+        if ($user->isStudent() && $event->students->contains('id', $user->contactId())) {
+            $participationStatus = $event->students->where('id', $user->contactId())->first()->pivot->status ?? 'pending';
+        } elseif ($user->isTeacher() && $event->teachers->contains('id', $user->teacherId())) {
+            $participationStatus = $event->teachers->where('id', $user->teacherId())->first()->pivot->status ?? 'pending';
+        } elseif ($user->isParent() && $event->parents->contains('id', $user->parentId())) {
+            $participationStatus = $event->parents->where('id', $user->parentId())->first()->pivot->status ?? 'pending';
+        }
+        
+        return Inertia::render('Events/Show', [
+            'event' => [
+                'id' => $event->id,
+                'title' => $event->title,
+                'type' => Event::getTypes()[$event->type],
+                'start_date' => $event->start_date->format('Y-m-d H:i'),
+                'duration' => $event->duration,
+                'content' => $event->content,
+                'is_content_hidden' => $event->is_content_hidden,
+                'location' => $event->location,
+                'online_link' => $event->online_link,
+                'tasks' => $event->tasks,
+                'creator' => [
+                    'id' => $event->creator->id,
+                    'name' => $event->creator->name,
+                ],
+                'students' => $event->students->map(function ($student) {
+                    return [
+                        'id' => $student->id,
+                        'name' => $student->name,
+                        'participation_status' => $student->pivot->status ?? 'pending',
+                    ];
+                }),
+                'teachers' => $event->teachers->map(function ($teacher) {
+                    return [
+                        'id' => $teacher->id,
+                        'name' => $teacher->name,
+                        'participation_status' => $teacher->pivot->status ?? 'pending',
+                    ];
+                }),
+                'parents' => $event->parents->map(function ($parent) {
+                    return [
+                        'id' => $parent->id,
+                        'name' => $parent->name,
+                        'participation_status' => $parent->pivot->status ?? 'pending',
+                    ];
+                }),
+                'participation_status' => $participationStatus,
+                'attachments' => $event->attachments->map(function ($attachment) {
+                    return [
+                        'id' => $attachment->id,
+                        'original_filename' => $attachment->original_filename,
+                        'mime_type' => $attachment->mime_type,
+                        'size' => $attachment->size,
+                        'download_url' => route('events.attachments.download', [$attachment->event_id, $attachment->id]),
+                        'can_delete' => Auth::user()->id === $event->created_by || Auth::user()->isAdmin(),
+                    ];
+                }),
+            ],
+            'canViewContent' => $canViewContent,
+        ]);
+    }
+
     public function create()
     {
         $user = Auth::user();
@@ -59,8 +146,12 @@ class EventsController extends Controller
             $types = [Event::TYPE_PERSONAL => $types[Event::TYPE_PERSONAL]];
         }
         
+        // Get selected date from calendar if available
+        $selectedDate = request()->query('date') ? request()->query('date') : now()->format('Y-m-d');
+        
         return Inertia::render('Events/Create', [
             'types' => $types,
+            'selectedDate' => $selectedDate,
             'students' => Auth::user()->account->students()
                 ->orderByName()
                 ->get()
@@ -100,6 +191,8 @@ class EventsController extends Controller
             'teacher_ids.*.id' => ['exists:teachers,id'],
             'parent_ids' => ['array'],
             'parent_ids.*.id' => ['exists:parent_models,id'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'max:102400'], // 100MB limit (in KB)
         ]);
 
         // For students, enforce that they can only create personal events and can't invite teachers or parents
@@ -142,6 +235,19 @@ class EventsController extends Controller
             $event->parents()->attach(collect($validated['parent_ids'])->pluck('id'));
         }
 
+        // Upload attachments if any
+        if (request()->hasFile('attachments')) {
+            foreach (request()->file('attachments') as $file) {
+                $path = $file->store('event-attachments');
+                $event->attachments()->create([
+                    'filename' => $path,
+                    'original_filename' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                ]);
+            }
+        }
+
         return Redirect::route('events.index')->with('success', __('Event created.'));
     }
 
@@ -160,6 +266,9 @@ class EventsController extends Controller
             }
         }
         
+        // Load attachments
+        $event->load('attachments');
+        
         return Inertia::render('Events/Edit', [
             'event' => [
                 'id' => $event->id,
@@ -177,6 +286,15 @@ class EventsController extends Controller
                 'teacher_ids' => $event->teachers->map->only('id'),
                 'parent_ids' => $event->parents->map->only('id'),
                 'created_by' => $event->created_by,
+                'attachments' => $event->attachments->map(function ($attachment) {
+                    return [
+                        'id' => $attachment->id,
+                        'original_filename' => $attachment->original_filename,
+                        'mime_type' => $attachment->mime_type,
+                        'size' => $attachment->size,
+                        'download_url' => route('events.attachments.download', [$attachment->event_id, $attachment->id]),
+                    ];
+                }),
             ],
             'types' => $types,
             'students' => Auth::user()->account->students()
@@ -218,6 +336,8 @@ class EventsController extends Controller
             'teacher_ids.*.id' => ['exists:teachers,id'],
             'parent_ids' => ['array'],
             'parent_ids.*.id' => ['exists:parent_models,id'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => ['file', 'max:102400'], // 100MB limit (in KB)
         ]);
 
         // For students, enforce that they can only create personal events and can't invite teachers or parents
@@ -251,6 +371,19 @@ class EventsController extends Controller
         $event->teachers()->sync(collect($validated['teacher_ids'] ?? [])->pluck('id'));
         $event->parents()->sync(collect($validated['parent_ids'] ?? [])->pluck('id'));
 
+        // Upload attachments if any
+        if (request()->hasFile('attachments')) {
+            foreach (request()->file('attachments') as $file) {
+                $path = $file->store('event-attachments');
+                $event->attachments()->create([
+                    'filename' => $path,
+                    'original_filename' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                ]);
+            }
+        }
+
         return Redirect::back()->with('success', __('Event updated.'));
     }
 
@@ -269,10 +402,16 @@ class EventsController extends Controller
             return Redirect::back()->with('error', __('Учні можуть видаляти тільки власні події'));
         }
         
+        // Delete all attachments from storage
+        foreach ($event->attachments as $attachment) {
+            Storage::delete($attachment->filename);
+        }
+        
         $event->delete();
 
-        if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+        if (request()->header('X-Inertia') === 'false') {
             return response()->json([
+                'success' => true,
                 'message' => __('Подію видалено')
             ]);
         }
@@ -285,5 +424,186 @@ class EventsController extends Controller
         $event->restore();
 
         return Redirect::back()->with('success', __('Event restored.'));
+    }
+
+    /**
+     * Download an attachment file.
+     */
+    public function downloadAttachment(Event $event, EventAttachment $attachment)
+    {
+        // Check if the attachment belongs to the event
+        if ($attachment->event_id !== $event->id) {
+            abort(404);
+        }
+
+        // Check if user can access this event
+        $user = Auth::user();
+        
+        // Basic access check (can be extended based on your requirements)
+        if ($user->id !== $event->created_by && 
+            !$event->students->contains('id', $user->contactId()) && 
+            !$event->teachers->contains('id', $user->teacherId()) &&
+            !$event->parents->contains('id', $user->parentId())) {
+            abort(403);
+        }
+
+        return Storage::download(
+            $attachment->filename,
+            $attachment->original_filename
+        );
+    }
+
+    /**
+     * Remove an attachment from an event.
+     */
+    public function removeAttachment(Event $event, EventAttachment $attachment)
+    {
+        // Check if the attachment belongs to the event
+        if ($attachment->event_id !== $event->id) {
+            abort(404);
+        }
+
+        // Check if user can delete this attachment
+        $user = Auth::user();
+        
+        // Only the event creator or admins can delete attachments
+        if ($user->id !== $event->created_by && !$user->isAdmin()) {
+            return Redirect::back()->with('error', __('You cannot delete attachments from this event.'));
+        }
+
+        // Delete the file from storage
+        Storage::delete($attachment->filename);
+        
+        // Delete the record
+        $attachment->delete();
+
+        return Redirect::back()->with('success', __('Attachment removed.'));
+    }
+
+    /**
+     * API endpoint to get event details including attachments.
+     */
+    public function apiGetEvent(Event $event)
+    {
+        $user = Auth::user();
+        
+        // Load all related data including attachments
+        $event->load([
+            'creator',
+            'students',
+            'teachers',
+            'parents',
+            'attachments'
+        ]);
+        
+        // Determine if the user can view content (if it's hidden)
+        $canViewContent = !$event->is_content_hidden || 
+                        $event->created_by === $user->id || 
+                        $user->isAdmin() || 
+                        $event->start_date <= now();
+                        
+        // Return JSON response with event data
+        return response()->json([
+            'event' => [
+                'id' => $event->id,
+                'title' => $event->title,
+                'type' => $event->type,
+                'type_label' => Event::getTypes()[$event->type] ?? $event->type,
+                'start_date' => $event->start_date->format('Y-m-d H:i:s'),
+                'duration' => $event->duration,
+                'content' => $canViewContent ? $event->content : null,
+                'is_content_hidden' => $event->is_content_hidden,
+                'location' => $event->location,
+                'online_link' => $event->online_link,
+                'tasks' => $canViewContent ? $event->tasks : null,
+                'creator' => [
+                    'id' => $event->creator->id,
+                    'name' => $event->creator->name,
+                ],
+                'created_by' => $event->creator->name,
+                'created_by_id' => $event->created_by,
+                'attachments' => $event->attachments->map(function ($attachment) {
+                    return [
+                        'id' => $attachment->id,
+                        'original_filename' => $attachment->original_filename,
+                        'mime_type' => $attachment->mime_type,
+                        'size' => $attachment->size,
+                        'download_url' => route('events.attachments.download', [$attachment->event_id, $attachment->id]),
+                        'can_delete' => Auth::user()->id === $event->created_by || Auth::user()->isAdmin(),
+                    ];
+                }),
+            ],
+            'canViewContent' => $canViewContent,
+        ]);
+    }
+
+    /**
+     * Check if current user has permissions to create events
+     * Used by the calendar UI to determine if the create button should work
+     */
+    public function checkCreatePermissions()
+    {
+        $user = Auth::user();
+        
+        // Parents can't create events
+        if ($user->isParent()) {
+            return response()->json([
+                'message' => __('Батьки не можуть створювати або змінювати події')
+            ], 403);
+        }
+        
+        // Students have limited permissions (handled in other methods)
+        
+        // All other users (teachers, admins) can create events
+        return response()->json([
+            'success' => true,
+            'can_create' => true
+        ]);
+    }
+    
+    /**
+     * Display calendar view for events
+     */
+    public function calendar()
+    {
+        $user = Auth::user();
+        
+        // Get current date for default view
+        $currentDate = now()->format('Y-m-d');
+        
+        // Get events for the calendar
+        $events = Event::where(function($query) use ($user) {
+                // Get events where the user is a participant
+                $query->whereHas('students', function($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                })
+                ->orWhereHas('teachers', function($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                })
+                ->orWhereHas('parents', function($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+            })
+            ->where('start_date', '>=', now()->subDays(30))
+            ->where('start_date', '<=', now()->addDays(60))
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'start' => $event->start_date->format('Y-m-d H:i:s'),
+                    'end' => $event->start_date->addMinutes($event->duration)->format('Y-m-d H:i:s'),
+                    'type' => $event->type,
+                    'location' => $event->location,
+                    'online_link' => $event->online_link,
+                    'description' => $event->description,
+                ];
+            });
+        
+        return Inertia::render('Calendar/Index', [
+            'currentDate' => $currentDate,
+            'language' => session('language', 'uk'),
+            'events' => $events
+        ]);
     }
 } 

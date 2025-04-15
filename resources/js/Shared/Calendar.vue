@@ -10,7 +10,7 @@
         <div class="flex flex-wrap gap-1">
           <button v-for="mode in viewModes" 
                   :key="mode.value"
-                  @click="currentView = mode.value"
+                  @click="switchView(mode.value)"
                   class="inline-flex items-center justify-center px-2 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200"
                   :class="currentView === mode.value 
                     ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' 
@@ -64,6 +64,15 @@
             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
           </svg>
           <span class="hidden sm:inline ml-1">{{ language === 'uk' ? 'Створити' : 'Create' }}</span>
+        </Link>
+        
+        <!-- Sync Settings button -->
+        <Link href="/calendar/settings"
+              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-white border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+          </svg>
+          <span class="hidden sm:inline ml-1">{{ language === 'uk' ? 'Синхронізація' : 'Sync' }}</span>
         </Link>
       </div>
     </div>
@@ -144,7 +153,7 @@
       <div class="grid grid-cols-1 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
         <div class="bg-white p-6">
           <div class="text-xl font-bold mb-6 text-blue-900">
-            {{ currentDate.format('DD MMMM YYYY') }}
+            {{ formatFullDate(currentDate) }}
           </div>
           <div class="space-y-4">
             <div v-for="event in getEventsForDay(currentDate.format('YYYY-MM-DD'))" :key="event.id"
@@ -161,24 +170,64 @@
 
     <!-- Annual View -->
     <div v-else-if="currentView === 'year'" class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="grid grid-cols-4 gap-4 p-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
         <div v-for="month in 12" :key="month" 
-             class="border rounded-lg p-4 transition-all duration-200 hover:bg-blue-50">
-          <div class="text-sm font-bold mb-3 text-blue-900">
+             class="month-card border rounded-lg p-2 sm:p-3 transition-all duration-200 hover:bg-blue-50">
+          <div class="text-sm font-medium mb-2 text-blue-900 cursor-pointer hover:text-blue-600 hover:underline text-center"
+               @click="switchToMonth(month - 1)">
             {{ getMonthName(month - 1) }}
           </div>
-          <div class="grid grid-cols-7 gap-1">
-            <div v-for="day in getMonthDays(month - 1)" :key="day.date"
-                 class="text-xs p-1.5 rounded-lg transition-all duration-200 hover:bg-blue-100"
-                 :class="{
-                   'bg-red-50': hasConflicts(day.date),
-                   'text-gray-400': !day.isCurrentMonth,
-                   'text-blue-900': day.isCurrentMonth
-                 }">
-              {{ day.dayNumber }}
+          <!-- Add weekday headers for better orientation -->
+          <div class="year-month-headers">
+            <div v-for="(day, index) in weekDays" :key="index" class="text-xs text-gray-500">
+              {{ day.charAt(0) }}
             </div>
           </div>
+          <div class="year-month-grid">
+            <button v-for="day in getMonthDays(month - 1)" :key="day.date"
+                 class="year-day-cell"
+                 :class="{
+                   'year-day-inactive': !day.isCurrentMonth,
+                   'year-day-active': day.isCurrentMonth,
+                   'year-day-with-events': getEventsForDay(day.date).length > 0
+                 }"
+                 :disabled="!day.isCurrentMonth"
+                 @click="day.isCurrentMonth && goToDay(day.date)">
+              {{ day.dayNumber }}
+              
+              <!-- Event indicator dot -->
+              <div v-if="getEventsForDay(day.date).length > 0" 
+                   class="year-day-indicator"></div>
+              
+              <!-- Event tooltip on hover -->
+              <div v-if="getEventsForDay(day.date).length > 0 && day.isCurrentMonth" 
+                   class="year-day-tooltip">
+                <p class="text-xs font-semibold text-gray-700 border-b pb-1 mb-2">
+                  {{ formatShortDate(day.date) }}
+                </p>
+                <div v-for="event in getEventsForDay(day.date).slice(0, 3)" :key="event.id" 
+                     class="mb-1.5 last:mb-0 text-left">
+                  <span class="block truncate text-xs font-medium">{{ event.title }}</span>
+                  <span class="block text-xs text-gray-500">{{ formatTime(event.start_date) }}</span>
+                </div>
+                <div v-if="getEventsForDay(day.date).length > 3" class="text-blue-600 text-right mt-1 text-xs">
+                  {{ language === 'uk' ? 'Ще ' : '+ ' }}{{ getEventsForDay(day.date).length - 3 }}
+                </div>
+              </div>
+            </button>
+          </div>
         </div>
+      </div>
+    </div>
+    
+    <!-- Fallback View (during refresh) -->
+    <div v-else class="bg-white rounded-xl shadow-lg overflow-hidden min-h-[400px] flex items-center justify-center">
+      <div class="text-blue-500">
+        <svg class="animate-spin h-10 w-10 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <p class="mt-3 text-center text-sm">{{ language === 'uk' ? 'Оновлення календаря...' : 'Updating calendar...' }}</p>
       </div>
     </div>
 
@@ -223,6 +272,27 @@
               {{ selectedEvent.online_link }}
             </a>
           </div>
+
+          <!-- Display attachments if available -->
+          <div v-if="selectedEvent.attachments && selectedEvent.attachments.length > 0">
+            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Файли' : 'Attachments' }}</h4>
+            <ul class="mt-2 space-y-2">
+              <li v-for="attachment in selectedEvent.attachments" :key="attachment.id" 
+                  class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                <div class="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span class="text-sm text-gray-700 truncate">{{ attachment.original_filename }}</span>
+                </div>
+                <a :href="attachment.download_url" 
+                   class="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200" 
+                   download>
+                  {{ language === 'uk' ? 'Завантажити' : 'Download' }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         
         <div class="mt-8 flex justify-end space-x-3">
@@ -232,6 +302,10 @@
                   class="px-4 py-2 bg-red-500 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-red-600 transition-all duration-200">
             {{ language === 'uk' ? 'Видалити' : 'Delete' }}
           </button>
+          <a :href="`/events/${selectedEvent.id}`" 
+             class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow-sm text-sm font-medium hover:bg-blue-600 transition-all duration-200">
+            {{ language === 'uk' ? 'Детальніше' : 'View Details' }}
+          </a>
           <button @click="selectedEvent = null" 
                   class="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
             {{ language === 'uk' ? 'Закрити' : 'Close' }}
@@ -265,19 +339,32 @@ export default {
     }
   },
   setup(props) {
+    // Create reactive refs first before using them
+    const currentDate = ref(dayjs())
+    const selectedEvent = ref(null)
+    const currentView = ref('month')
+    
     const updateLocale = () => {
+      // Set dayjs locale based on current language
       if (props.language === 'uk') {
         dayjs.locale('uk')
       } else {
         dayjs.locale('en')
       }
+      
+      // No need to force a refresh by changing view mode
+      // Just update the date object to trigger reactivity
+      currentDate.value = dayjs(currentDate.value)
     }
     
-    watch(() => props.language, updateLocale, { immediate: true })
-
-    const currentDate = ref(dayjs())
-    const selectedEvent = ref(null)
-    const currentView = ref('month')
+    // Watch for language changes and update locale
+    watch(() => props.language, (newLanguage) => {
+      updateLocale()
+      
+      // No need to force a refresh by changing view mode
+      // Just update the date object to trigger reactivity
+      currentDate.value = dayjs(currentDate.value)
+    }, { immediate: true })
 
     const viewModes = computed(() => [
       { value: 'month', label: props.language === 'uk' ? 'Місяць' : 'Month' },
@@ -290,10 +377,17 @@ export default {
       updateLocale()
       const month = currentDate.value.format('MMMM')
       const year = currentDate.value.format('YYYY')
+      
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
+      // Get the month name in the current locale
+      const localizedMonth = currentDate.value.format('MMMM')
+      
       if (props.language === 'uk') {
-        return `${month.charAt(0).toUpperCase()}${month.slice(1)} ${year}`
+        return `${localizedMonth.charAt(0).toUpperCase()}${localizedMonth.slice(1)} ${year}`
       }
-      return `${month} ${year}`
+      return `${localizedMonth} ${year}`
     })
 
     const weekDays = computed(() => {
@@ -334,7 +428,9 @@ export default {
     }
 
     const getWeekDayDate = (weekDay) => {
-      updateLocale()
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
       const dayIndex = weekDays.value.indexOf(weekDay)
       const date = currentDate.value.startOf('week').add(dayIndex, 'day')
       const formatted = date.format('DD MMMM')
@@ -346,8 +442,13 @@ export default {
     }
 
     const getMonthName = (monthIndex) => {
-      updateLocale()
-      const month = dayjs().month(monthIndex).format('MMMM')
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
+      // Create a date object for the first day of the specified month
+      const date = dayjs().month(monthIndex).date(1)
+      const month = date.format('MMMM')
+      
       if (props.language === 'uk') {
         return `${month.charAt(0).toUpperCase()}${month.slice(1)}`
       }
@@ -407,11 +508,26 @@ export default {
     }
 
     const showEventDetails = (event) => {
+      // First set the basic event details we already have
       selectedEvent.value = event
+      
+      // Then fetch the complete event details including attachments
+      axios.get(`/api/events/${event.id}`)
+        .then(response => {
+          // Update the selected event with complete data including attachments
+          if (response.data && response.data.event) {
+            selectedEvent.value = response.data.event
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching event details:', error)
+        })
     }
 
     const formatDateTime = (date) => {
-      updateLocale()
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
       return dayjs(date).format('DD.MM.YYYY HH:mm')
     }
 
@@ -429,27 +545,37 @@ export default {
     // Delete an event
     const deleteEvent = (event) => {
       if (!confirm(props.language === 'uk' ? 'Ви впевнені, що хочете видалити цю подію?' : 'Are you sure you want to delete this event?')) {
-        return
+        return;
       }
       
+      // Store the event ID before sending the delete request
+      const eventId = event.id;
+      
+      // Close the modal first to prevent interaction with a potentially deleted event
+      selectedEvent.value = null;
+      
       // Send the delete request - the server will check if the user has permission
-      axios.delete(`/events/${event.id}`)
+      axios.delete(`/events/${eventId}`, {
+        headers: {
+          'X-Inertia': 'false'
+        }
+      })
         .then(response => {
-          // Close the modal
-          selectedEvent.value = null
-          
           // Show success message
           const successMsg = props.language === 'uk' ? 'Подію видалено' : 'Event deleted';
-          const event = new CustomEvent('inertia:flash', {
+          const flashEvent = new CustomEvent('inertia:flash', {
             detail: {
               type: 'success',
               message: successMsg
             }
           });
-          window.dispatchEvent(event);
+          window.dispatchEvent(flashEvent);
           
-          // Reload the page to update the calendar
-          window.location.reload();
+          // Remove the event from the local events array
+          const eventIndex = props.events.findIndex(e => e.id === eventId);
+          if (eventIndex !== -1) {
+            props.events.splice(eventIndex, 1);
+          }
         })
         .catch(error => {
           // Show error message
@@ -463,41 +589,50 @@ export default {
             }
           }
           
-          alert(errorMsg);
+          // Show error in UI
+          const errorEvent = new CustomEvent('inertia:flash', {
+            detail: {
+              type: 'error',
+              message: errorMsg
+            }
+          });
+          window.dispatchEvent(errorEvent);
         });
     }
 
     const previousPeriod = () => {
-      switch (currentView.value) {
-        case 'month':
-          currentDate.value = currentDate.value.subtract(1, 'month')
-          break
-        case 'week':
-          currentDate.value = currentDate.value.subtract(1, 'week')
-          break
-        case 'day':
-          currentDate.value = currentDate.value.subtract(1, 'day')
-          break
-        case 'year':
-          currentDate.value = currentDate.value.subtract(1, 'year')
-          break
+      // Ensure we're using the right locale before changing date
+      dayjs.locale(props.language)
+      
+      if (currentView.value === 'year') {
+        currentDate.value = dayjs(currentDate.value).subtract(1, 'year')
+      } else {
+        // Update the date directly without temporary view change
+        if (currentView.value === 'month') {
+          currentDate.value = dayjs(currentDate.value).subtract(1, 'month')
+        } else if (currentView.value === 'week') {
+          currentDate.value = dayjs(currentDate.value).subtract(1, 'week')
+        } else if (currentView.value === 'day') {
+          currentDate.value = dayjs(currentDate.value).subtract(1, 'day')
+        }
       }
     }
 
     const nextPeriod = () => {
-      switch (currentView.value) {
-        case 'month':
-          currentDate.value = currentDate.value.add(1, 'month')
-          break
-        case 'week':
-          currentDate.value = currentDate.value.add(1, 'week')
-          break
-        case 'day':
-          currentDate.value = currentDate.value.add(1, 'day')
-          break
-        case 'year':
-          currentDate.value = currentDate.value.add(1, 'year')
-          break
+      // Ensure we're using the right locale before changing date
+      dayjs.locale(props.language)
+      
+      if (currentView.value === 'year') {
+        currentDate.value = dayjs(currentDate.value).add(1, 'year')
+      } else {
+        // Update the date directly without temporary view change
+        if (currentView.value === 'month') {
+          currentDate.value = dayjs(currentDate.value).add(1, 'month')
+        } else if (currentView.value === 'week') {
+          currentDate.value = dayjs(currentDate.value).add(1, 'week')
+        } else if (currentView.value === 'day') {
+          currentDate.value = dayjs(currentDate.value).add(1, 'day')
+        }
       }
     }
 
@@ -505,67 +640,80 @@ export default {
       window.location.href = `/events/create?date=${date}`
     }
     
-    const checkEventAccess = (date = null) => {
+    const checkEventAccess = (date) => {
+      // Default to current date if none provided
+      const selectedDate = date ? date : currentDate.value.format('YYYY-MM-DD')
+
       // Make an axios request to check if the user can access event creation
-      axios.get('/events/create', { 
+      axios.get('/events/create-permissions', { 
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => {
-        if (date) {
-          createEventOnDate(date)
-        } else {
-          window.location.href = '/events/create'
-        }
+        // Redirect to event creation with the selected date pre-filled
+        window.location.href = `/events/create?date=${selectedDate}`
       })
       .catch(error => {
+        // Handle permission errors
         if (error.response && error.response.status === 403) {
           // If we have a specific error message from the server
-          if (error.response.data && error.response.data.message) {
-            // Use Inertia's method to set a flash message
-            const event = new CustomEvent('inertia:flash', {
-              detail: {
-                type: 'error',
-                message: error.response.data.message
-              }
-            })
-            window.dispatchEvent(event)
-            
-            // Display an alert to make sure the message is visible immediately
-            alert(error.response.data.message);
-          } else if (error.response.data && error.response.data.error) {
-            // Backward compatibility with 'error' property
-            const event = new CustomEvent('inertia:flash', {
-              detail: {
-                type: 'error',
-                message: error.response.data.error
-              }
-            })
-            window.dispatchEvent(event)
-            
-            // Display an alert to make sure the message is visible immediately
-            alert(error.response.data.error);
-          } else {
-            // Use a default message
-            const defaultMsg = props.language === 'uk' 
-              ? 'Ви не маєте права створювати події'
-              : 'You do not have permission to create events';
-              
-            const event = new CustomEvent('inertia:flash', {
-              detail: {
-                type: 'error',
-                message: defaultMsg
-              }
-            })
-            window.dispatchEvent(event)
-            
-            // Display an alert to make sure the message is visible immediately
-            alert(defaultMsg);
-          }
+          alert(error.response.data?.message || 
+               (props.language === 'uk' ? 'Ви не маєте права створювати події' : 'You do not have permission to create events'))
         } else {
-          // For other errors, redirect to events page with error
-          window.location.href = '/events'
+          // For other errors, show generic message
+          alert(props.language === 'uk' ? 'Виникла помилка' : 'An error occurred')
         }
       })
+    }
+
+    const formatFullDate = (date) => {
+      // Force dayjs to use the current language setting
+      dayjs.locale(props.language)
+      
+      return date.format('DD MMMM YYYY')
+    }
+
+    // Add new function to handle view switching
+    const switchView = (viewMode) => {
+      // Directly change to the new view without setting to '_refresh'
+      currentView.value = viewMode;
+    }
+
+    // Add method to switch to a specific month
+    const switchToMonth = (monthIndex) => {
+      // Set the current date to the selected month
+      currentDate.value = dayjs(currentDate.value).month(monthIndex);
+      // Switch to month view
+      currentView.value = 'month';
+    }
+
+    // Add new method to go to specific day
+    const goToDay = (date) => {
+      // First check if we can create events, if so, open the create form
+      axios.get('/events/create-permissions', { 
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => {
+        // User has permissions, redirect to create event page
+        window.location.href = `/events/create?date=${date}`
+      })
+      .catch(error => {
+        // User doesn't have permissions, switch to day view for that date
+        currentDate.value = dayjs(date);
+        currentView.value = 'day';
+      });
+    }
+
+    // Add a computed helper for the language
+    const language = computed(() => props.language)
+
+    // Add new formatting helper methods
+    const formatShortDate = (date) => {
+      dayjs.locale(props.language);
+      return dayjs(date).format('DD MMM');
+    }
+
+    const formatTime = (datetime) => {
+      return dayjs(datetime).format('HH:mm');
     }
 
     return {
@@ -590,7 +738,14 @@ export default {
       createEventOnDate,
       checkEventAccess,
       canDeleteEvent,
-      deleteEvent
+      deleteEvent,
+      formatFullDate,
+      switchView,
+      switchToMonth,
+      goToDay,
+      language,
+      formatShortDate,
+      formatTime
     }
   }
 }
@@ -621,6 +776,199 @@ export default {
   to {
     opacity: 1;
     transform: scale(1);
+  }
+}
+
+/* Year view improvements */
+.month-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.year-month-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.year-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 0;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.year-day-cell {
+  position: relative;
+  width: 100%;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: normal;
+  transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  padding: 0;
+  line-height: 1;
+  border-radius: 4px;
+  user-select: none;
+  margin: 1px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  overflow: visible;
+}
+
+.year-day-active {
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.year-day-inactive {
+  color: #9ca3af;
+  cursor: default;
+  pointer-events: none;
+}
+
+.year-day-with-events {
+  background-color: #eff6ff;
+  font-weight: 600;
+}
+
+.year-day-cell:hover:not(:disabled) {
+  background-color: #dbeafe;
+  transform: scale(1.15);
+  z-index: 10;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.year-day-indicator {
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 3px;
+  width: 3px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+}
+
+.year-day-tooltip {
+  position: absolute;
+  visibility: hidden;
+  z-index: 20;
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 8px;
+  min-width: 180px;
+  max-width: 220px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.year-day-cell:hover .year-day-tooltip {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Add a tooltip arrow */
+.year-day-tooltip:after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
+}
+
+/* Adjust tooltip position for edge cells to keep it visible */
+.year-month-grid > div:nth-child(7n) .year-day-tooltip,
+.year-month-grid > div:nth-child(7n-1) .year-day-tooltip {
+  transform: translateX(-90%);
+}
+
+.year-month-grid > div:nth-child(7n) .year-day-tooltip:after,
+.year-month-grid > div:nth-child(7n-1) .year-day-tooltip:after {
+  left: 90%;
+}
+
+.year-month-grid > div:nth-child(7n-6) .year-day-tooltip,
+.year-month-grid > div:nth-child(7n-5) .year-day-tooltip {
+  transform: translateX(-10%);
+}
+
+.year-month-grid > div:nth-child(7n-6) .year-day-tooltip:after,
+.year-month-grid > div:nth-child(7n-5) .year-day-tooltip:after {
+  left: 10%;
+}
+
+.year-month-grid > div:nth-child(7n) .year-day-tooltip,
+.year-month-grid > div:nth-child(7n-1) .year-day-tooltip {
+  transform: translateX(-90%);
+}
+
+.year-month-grid > div:nth-child(7n) .year-day-tooltip:after,
+.year-month-grid > div:nth-child(7n-1) .year-day-tooltip:after {
+  left: 90%;
+}
+
+.year-month-grid > div:nth-child(7n-6) .year-day-tooltip,
+.year-month-grid > div:nth-child(7n-5) .year-day-tooltip {
+  transform: translateX(-10%);
+}
+
+.year-month-grid > div:nth-child(7n-6) .year-day-tooltip:after,
+.year-month-grid > div:nth-child(7n-5) .year-day-tooltip:after {
+  left: 10%;
+}
+
+.year-month-grid > div:hover .year-day-tooltip {
+  transform: translateX(-50%) translateY(0);
+}
+
+.year-month-grid > div:nth-child(7n):hover .year-day-tooltip,
+.year-month-grid > div:nth-child(7n-1):hover .year-day-tooltip {
+  transform: translateX(-90%) translateY(0);
+}
+
+.year-month-grid > div:nth-child(7n-6):hover .year-day-tooltip,
+.year-month-grid > div:nth-child(7n-5):hover .year-day-tooltip {
+  transform: translateX(-10%) translateY(0);
+}
+
+/* Adjust grid dimensions for smaller screens */
+@media (max-width: 640px) {
+  .year-day-cell {
+    height: 20px;
+    font-size: 11px;
+  }
+  
+  .year-day-indicator {
+    height: 2px;
+    width: 2px;
+  }
+}
+
+/* Further reduce for very small screens */
+@media (max-width: 375px) {
+  .year-day-cell {
+    height: 16px;
+    font-size: 10px;
   }
 }
 </style> 
