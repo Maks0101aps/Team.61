@@ -38,7 +38,6 @@ class RegisterController extends Controller
         return Inertia::render('Auth/Register', [
             'roles' => [
                 User::ROLE_TEACHER => 'Teacher',
-                User::ROLE_STUDENT => 'Student',
                 User::ROLE_PARENT => 'Parent',
             ],
             'parentTypes' => ParentModel::getParentTypes(),
@@ -63,15 +62,9 @@ class RegisterController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string|in:' . implode(',', [
                 User::ROLE_TEACHER,
-                User::ROLE_STUDENT,
                 User::ROLE_PARENT,
             ]),
         ];
-        
-        // Add parent_id validation only for student role
-        if ($request->role === User::ROLE_STUDENT) {
-            $rules['parent_id'] = 'required|exists:parent_models,id';
-        }
         
         // Add parent_type validation only for parent role
         if ($request->role === User::ROLE_PARENT) {
@@ -96,6 +89,7 @@ class RegisterController extends Controller
             $rules['phone'] = 'nullable|string|regex:/^\+380[0-9]{9}$/|max:13';
             $rules['region'] = 'nullable|string|max:50';
             $rules['city'] = 'nullable|string|max:50';
+            $rules['district'] = 'nullable|string|max:50';
             $rules['street'] = 'nullable|string|max:100';
             $rules['house_number'] = 'nullable|string|max:20';
             $rules['postal_code'] = 'nullable|string|max:25';
@@ -124,23 +118,6 @@ class RegisterController extends Controller
             'email_verified_at' => null, // Не подтверждаем email сразу
         ]);
 
-        // If user is a student, create a student record and link it with the parent
-        if ($request->role === User::ROLE_STUDENT && $request->has('parent_id')) {
-            $student = Student::create([
-                'account_id' => $account->id,
-                'first_name' => $request->first_name,
-                'middle_name' => $request->middle_name ?? '',
-                'last_name' => $request->last_name,
-                'email' => $request->email,
-            ]);
-            
-            // Attach the student to the selected parent
-            $parent = ParentModel::find($request->parent_id);
-            if ($parent) {
-                $parent->children()->attach($student->id);
-            }
-        }
-        
         // If user is a parent, create a parent record
         if ($request->role === User::ROLE_PARENT) {
             $parent = ParentModel::create([
@@ -153,6 +130,7 @@ class RegisterController extends Controller
                 'phone' => $request->phone,
                 'region' => $request->region,
                 'city' => $request->city,
+                'district' => $request->district,
                 'street' => $request->street,
                 'house_number' => $request->house_number,
                 'postal_code' => $request->postal_code,

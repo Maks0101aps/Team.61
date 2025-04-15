@@ -16,7 +16,6 @@ class User extends Authenticatable
 
     // User roles
     const ROLE_TEACHER = 'teacher';
-    const ROLE_STUDENT = 'student';
     const ROLE_PARENT = 'parent';
 
     /**
@@ -87,11 +86,6 @@ class User extends Authenticatable
         return $this->role === self::ROLE_TEACHER;
     }
 
-    public function isStudent()
-    {
-        return $this->role === self::ROLE_STUDENT;
-    }
-
     public function isParent()
     {
         return $this->role === self::ROLE_PARENT;
@@ -108,7 +102,6 @@ class User extends Authenticatable
             case 'user': return $query->where('owner', false);
             case 'owner': return $query->where('owner', true);
             case self::ROLE_TEACHER: return $query->where('role', self::ROLE_TEACHER);
-            case self::ROLE_STUDENT: return $query->where('role', self::ROLE_STUDENT);
             case self::ROLE_PARENT: return $query->where('role', self::ROLE_PARENT);
         }
     }

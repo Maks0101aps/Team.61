@@ -19,7 +19,8 @@ class VerificationController extends Controller
     public function show(Request $request): Response
     {
         return Inertia::render('Auth/Verify', [
-            'email' => $request->session()->get('verification_email')
+            'email' => $request->session()->get('verification_email'),
+            'userRole' => auth()->user()->role,
         ]);
     }
 

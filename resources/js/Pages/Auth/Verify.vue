@@ -15,6 +15,16 @@
           <p class="mt-8 text-gray-600">
             {{ language === 'uk' ? 'Ми надіслали код підтвердження на вашу електронну пошту. Будь ласка, введіть його нижче для підтвердження вашого облікового запису.' : 'We have sent a verification code to your email. Please enter it below to verify your account.' }}
           </p>
+
+          <!-- Parent banner message -->
+          <div v-if="isParent" class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-800 rounded-md flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>
+              {{ language === 'uk' ? 'Після підтвердження електронної пошти, ви зможете додати інформацію про своїх дітей у розділі "Учні".' : 'After verifying your email, you will be able to add information about your children in the "Students" section.' }}
+            </span>
+          </div>
           
           <text-input v-model="form.email" :error="form.errors.email" class="mt-8 text-lg" :label="language === 'uk' ? 'Електронна пошта' : 'Email'" type="email" readonly />
           
@@ -54,6 +64,7 @@ export default {
   props: {
     email: String,
     status: String,
+    userRole: String,
   },
   data() {
     return {
@@ -65,6 +76,11 @@ export default {
       resendForm: this.$inertia.form({
         email: this.email || '',
       }),
+    }
+  },
+  computed: {
+    isParent() {
+      return this.userRole === 'parent';
     }
   },
   methods: {

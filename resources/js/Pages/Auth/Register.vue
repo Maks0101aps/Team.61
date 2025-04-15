@@ -55,7 +55,7 @@
               
               <select-input v-model="form.role" :error="form.errors.role" class="mt-8 text-lg register-form-item" :style="{ animationDelay: '0.6s' }" :label="language === 'uk' ? 'Роль' : 'Role'" @update:modelValue="onRoleChange">
                 <option value="" disabled>{{ language === 'uk' ? 'Оберіть роль' : 'Select a role' }}</option>
-                <option v-for="(label, value) in getLocalizedRoles" :key="value" :value="value">{{ label }}</option>
+                <option v-for="(label, value) in getLocalizedRoles" :key="value" :value="value" v-if="value !== 'student'">{{ label }}</option>
               </select-input>
               
               <!-- Teacher fields (only visible for teacher role) -->
@@ -194,14 +194,16 @@
                     :error="form.errors.region" 
                     class="mt-4 text-lg"
                     :label="language === 'uk' ? 'Область' : 'Region'" 
-                    @change="loadCities"
+                    @change="onRegionChange"
                     :help-text="language === 'uk' ? 'Оберіть область проживання' : 'Select region of residence'"
                   >
                     <option value="" disabled>{{ language === 'uk' ? 'Оберіть область' : 'Select region' }}</option>
                     <option v-for="region in regions" :key="region" :value="region">{{ region }}</option>
                   </select-input>
                   
+                  <!-- City selector (only show if region is not м. Київ) -->
                   <select-input 
+                    v-if="form.region && form.region !== 'м. Київ'"
                     v-model="form.city" 
                     :error="form.errors.city" 
                     class="mt-4 text-lg"
@@ -211,6 +213,19 @@
                   >
                     <option value="" disabled>{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                     <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
+                  </select-input>
+                  
+                  <!-- Kyiv districts selector (only show if region is м. Київ) -->
+                  <select-input 
+                    v-if="form.region === 'м. Київ'"
+                    v-model="form.district" 
+                    :error="form.errors.district" 
+                    class="mt-4 text-lg"
+                    :label="language === 'uk' ? 'Район Києва' : 'Kyiv District'" 
+                    :help-text="language === 'uk' ? 'Оберіть район Києва' : 'Select Kyiv district'"
+                  >
+                    <option value="" disabled>{{ language === 'uk' ? 'Оберіть район' : 'Select district' }}</option>
+                    <option v-for="district in kyivDistricts" :key="district" :value="district">{{ district }}</option>
                   </select-input>
 
                   <text-input 
@@ -249,66 +264,6 @@
                     @input="formatPhoneNumber"
                     @keypress="validatePhoneInput"
                   />
-                </div>
-              </div>
-              
-              <!-- Parent selection (only visible for student role) -->
-              <select-input 
-                v-if="form.role === 'student'" 
-                v-model="form.parent_id" 
-                :error="form.errors.parent_id" 
-                class="mt-8 text-lg" 
-                :label="language === 'uk' ? 'Виберіть батька/матір' : 'Select Parent'"
-                :disabled="!form.last_name || filteredParents.length === 0"
-                @change="onParentChange"
-              >
-                <option value="" disabled>
-                  <template v-if="!form.last_name">
-                    {{ language === 'uk' ? 'Спочатку введіть прізвище' : 'Enter last name first' }}
-                  </template>
-                  <template v-else-if="filteredParents.length === 0">
-                    {{ language === 'uk' ? 'Немає батьків з таким прізвищем' : 'No parents with this last name' }}
-                  </template>
-                  <template v-else>
-                    {{ language === 'uk' ? 'Оберіть батька/матір' : 'Select parent' }}
-                  </template>
-                </option>
-                <option v-for="parent in filteredParents" :key="parent.id" :value="parent.id">
-                  {{ parent.first_name }} {{ parent.middle_name }} {{ parent.last_name }}
-                </option>
-              </select-input>
-              
-              <!-- Display parent address for student (non-editable) -->
-              <div v-if="form.role === 'student' && form.parent_id && parentAddress" class="mt-6 border-t border-gray-200 pt-6">
-                <h3 class="text-lg font-medium text-gray-800 mb-4">
-                  {{ language === 'uk' ? 'Адресна інформація (від батька/матері)' : 'Address Information (from parent)' }}
-                </h3>
-                
-                <div class="mb-4 grid grid-cols-2 gap-6">
-                  <div class="col-span-1">
-                    <p class="text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'Область' : 'Region' }}</p>
-                    <p class="text-base border p-2 rounded-md bg-gray-50">{{ parentAddress.region }}</p>
-                  </div>
-                  <div class="col-span-1">
-                    <p class="text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'Місто' : 'City' }}</p>
-                    <p class="text-base border p-2 rounded-md bg-gray-50">{{ parentAddress.city }}</p>
-                  </div>
-                  <div class="col-span-1">
-                    <p class="text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'Вулиця' : 'Street' }}</p>
-                    <p class="text-base border p-2 rounded-md bg-gray-50">{{ parentAddress.street }}</p>
-                  </div>
-                  <div class="col-span-1">
-                    <p class="text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'Номер будинку' : 'House number' }}</p>
-                    <p class="text-base border p-2 rounded-md bg-gray-50">{{ parentAddress.house_number }}</p>
-                  </div>
-                  <div class="col-span-1">
-                    <p class="text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'Поштовий індекс' : 'Postal Code' }}</p>
-                    <p class="text-base border p-2 rounded-md bg-gray-50">{{ parentAddress.postal_code }}</p>
-                  </div>
-                  <div class="col-span-1">
-                    <p class="text-sm font-medium text-gray-700 mb-1">{{ language === 'uk' ? 'Телефон' : 'Phone' }}</p>
-                    <p class="text-base border p-2 rounded-md bg-gray-50">{{ parentAddress.phone }}</p>
-                  </div>
                 </div>
               </div>
               
@@ -394,6 +349,7 @@ export default {
         role: '',
         parent_id: '',
         parent_type: '',
+        invitation_code: '',
         subject: '',
         qualification: '',
         phone: '',
@@ -441,11 +397,8 @@ export default {
       return this.parentTypes;
     },
     filteredParents() {
-      if (!this.form.last_name || !this.parents) return [];
-      
-      return this.parents.filter(parent => 
-        parent.last_name.toLowerCase() === this.form.last_name.toLowerCase()
-      );
+      if (!this.parents) return [];
+      return this.parents;
     }
   },
   methods: {
@@ -504,8 +457,8 @@ export default {
         return;
       }
       
-      if (this.form.role === 'student' && !this.form.parent_id) {
-        this.form.errors.parent_id = this.language === 'uk' ? 'Оберіть батька/матір' : 'Please select a parent';
+      if (this.form.role === 'student' && !this.form.invitation_code) {
+        this.form.errors.invitation_code = this.language === 'uk' ? 'Введіть код запрошення' : 'Please enter invitation code';
         return;
       }
       
@@ -544,9 +497,10 @@ export default {
     },
     onRoleChange(role) {
       console.log('Role changed to:', role);
-      // Reset parent_id and parent_type when changing roles
+      // Reset parent_id, parent_type, and invitation_code when changing roles
       this.form.parent_id = '';
       this.form.parent_type = '';
+      this.form.invitation_code = '';
       this.parentAddress = null;
       
       // Reset teacher fields when changing roles
@@ -568,11 +522,8 @@ export default {
       }
     },
     onLastNameChange(value) {
-      this.form.parent_id = '';
-      
       if (this.form.role === 'student') {
         console.log('Last name changed to:', value);
-        console.log('Filtered parents:', this.filteredParents);
       }
     },
     formatPostalCode() {
@@ -685,6 +636,12 @@ export default {
       this.form.city = '';
       this.cities = [];
       
+      // If region is м. Київ, set city to Київ automatically and return
+      if (this.form.region === 'м. Київ') {
+        this.form.city = 'Київ';
+        return Promise.resolve([]);
+      }
+      
       if (this.form.region) {
         console.log('Loading cities for region:', this.form.region);
         return axios.get(`/public/cities/${encodeURIComponent(this.form.region)}`)
@@ -788,70 +745,6 @@ export default {
         return false;
       }
       return true;
-    },
-    onParentChange() {
-      if (this.form.parent_id) {
-        // Находим родителя в массиве parents
-        const selectedParent = this.parents.find(parent => parent.id == this.form.parent_id);
-        if (selectedParent) {
-          console.log('Selected parent from list:', selectedParent);
-          
-          // Получаем полные данные родителя с сервера
-          axios.get(`/public/parent/${this.form.parent_id}`)
-            .then(response => {
-              const parentData = response.data.parent || {};
-              console.log('Parent data from server:', parentData);
-              
-              // Создаем объект с адресными данными родителя
-              this.parentAddress = {
-                region: parentData.region || selectedParent.region || 'Не указано',
-                city: parentData.city || selectedParent.city || 'Не указано',
-                street: parentData.street || selectedParent.street || 'Не указано',
-                house_number: parentData.house_number || selectedParent.house_number || 'Не указано',
-                postal_code: parentData.postal_code || selectedParent.postal_code || 'Не указано',
-                phone: parentData.phone || selectedParent.phone || 'Не указано'
-              };
-              
-              // Скрытые поля для отправки на сервер
-              this.form.region = parentData.region || selectedParent.region || '';
-              this.form.city = parentData.city || selectedParent.city || '';
-              this.form.street = parentData.street || selectedParent.street || '';
-              this.form.house_number = parentData.house_number || selectedParent.house_number || '';
-              this.form.postal_code = parentData.postal_code || selectedParent.postal_code || '';
-              this.form.phone = parentData.phone || selectedParent.phone || '';
-              
-              console.log('Final parent address data:', this.parentAddress);
-            })
-            .catch(error => {
-              console.error('Error fetching parent details:', error);
-              
-              // Используем данные из переданного массива
-              this.parentAddress = {
-                region: selectedParent.region || 'Не указано',
-                city: selectedParent.city || 'Не указано',
-                street: selectedParent.street || 'Не указано',
-                house_number: selectedParent.house_number || 'Не указано',
-                postal_code: selectedParent.postal_code || 'Не указано',
-                phone: selectedParent.phone || 'Не указано'
-              };
-              
-              // Скрытые поля для отправки на сервер
-              this.form.region = selectedParent.region || '';
-              this.form.city = selectedParent.city || '';
-              this.form.street = selectedParent.street || '';
-              this.form.house_number = selectedParent.house_number || '';
-              this.form.postal_code = selectedParent.postal_code || '';
-              this.form.phone = selectedParent.phone || '';
-              
-              console.log('Using parent address from list:', this.parentAddress);
-            });
-        } else {
-          console.warn('Parent not found in parents array');
-          this.parentAddress = null;
-        }
-      } else {
-        this.parentAddress = null;
-      }
     },
     onCityChange() {
       // Reset district when city changes

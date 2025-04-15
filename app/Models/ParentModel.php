@@ -40,6 +40,7 @@ class ParentModel extends Model
         'postal_code',
         'street',
         'house_number',
+        'district',
     ];
 
     public function children(): BelongsToMany
