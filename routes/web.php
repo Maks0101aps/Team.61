@@ -20,6 +20,7 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\GoogleCalendarController;
+use App\Http\Controllers\Auth\ChangePasswordController;
 
 
 
@@ -73,6 +74,15 @@ Route::get('password/reset/{token}', [ResetPasswordController::class, 'showReset
 Route::post('password/reset', [ResetPasswordController::class, 'reset'])
     ->name('password.update')
     ->middleware('guest');
+
+// Смена пароля для студентов при первом входе
+Route::get('password/change', [ChangePasswordController::class, 'showChangeForm'])
+    ->name('password.change')
+    ->middleware('auth');
+
+Route::post('password/change', [ChangePasswordController::class, 'change'])
+    ->name('password.change.update')
+    ->middleware('auth');
 
 
 Route::get('/', [DashboardController::class, 'index'])

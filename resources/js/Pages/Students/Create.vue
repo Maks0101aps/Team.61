@@ -67,7 +67,9 @@
                 v-model="form.email" 
                 :error="form.errors.email" 
                 :label="language === 'uk' ? 'Електронна пошта' : 'Email'" 
-                type="email" 
+                type="email"
+                :required="true"
+                :help-text="language === 'uk' ? 'На цю адресу буде відправлено дані для входу в систему' : 'Login credentials will be sent to this email'"
               />
               <text-input 
                 v-model="form.phone" 

@@ -17,6 +17,7 @@ class User extends Authenticatable
     // User roles
     const ROLE_TEACHER = 'teacher';
     const ROLE_PARENT = 'parent';
+    const ROLE_STUDENT = 'student';
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +32,8 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'middle_name',
+        'account_id',
+        'password_change_required',
     ];
 
     /**
@@ -53,6 +56,7 @@ class User extends Authenticatable
         return [
             'owner' => 'boolean',
             'email_verified_at' => 'datetime',
+            'password_change_required' => 'boolean',
         ];
     }
 
@@ -89,6 +93,11 @@ class User extends Authenticatable
     public function isParent()
     {
         return $this->role === self::ROLE_PARENT;
+    }
+
+    public function isStudent()
+    {
+        return $this->role === self::ROLE_STUDENT;
     }
 
     public function scopeOrderByName($query)
