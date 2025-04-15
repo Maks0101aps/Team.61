@@ -46,6 +46,10 @@ Route::get('email/verify', [VerificationController::class, 'show'])
     ->name('verification.notice')
     ->middleware('auth');
 
+Route::post('email/verify', [VerificationController::class, 'verify'])
+    ->name('verification.verify_code')
+    ->middleware('auth');
+
 Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])
     ->name('verification.verify')
     ->middleware(['auth', 'signed']);

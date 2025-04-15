@@ -39,6 +39,42 @@
       </div>
     </div>
     
+    <!-- Parent Student Registration Banner - Only for parent role -->
+    <div v-if="isParentUser && !studentBannerDismissed" class="relative overflow-hidden mb-8 rounded-xl bg-gradient-to-r from-green-500 to-green-600">
+      <!-- Close button -->
+      <button @click="dismissStudentBanner" class="absolute top-3 right-3 p-1.5 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 text-white transition-all duration-200 transform hover:scale-105 focus:outline-none z-10" aria-label="Close banner">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <div class="px-6 py-5 flex items-center sm:px-8">
+        <div class="flex-shrink-0 mr-8">
+          <div class="h-12 w-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+          </div>
+        </div>
+        <div class="flex-1 mr-8">
+          <h3 class="text-lg font-medium text-white">
+            {{ localLanguage === 'uk' ? 'Додайте своїх учнів' : 'Add your students' }}
+          </h3>
+          <p class="mt-1 text-sm text-green-100">
+            {{ localLanguage === 'uk' ? 'Зареєструйте інформацію про своїх дітей, щоб мати доступ до їх розкладу та завдань.' : 'Register information about your children to access their schedule and assignments.' }}
+          </p>
+        </div>
+        <div class="flex-shrink-0 mr-6">
+          <Link href="/students/create" class="whitespace-nowrap inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-white text-green-700 hover:bg-green-50 transition-all duration-300 shadow-sm">
+            {{ localLanguage === 'uk' ? 'Додати учня' : 'Add student' }}
+            <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 -mr-0.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </div>
+    </div>
+    
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -143,13 +179,19 @@ export default {
     language: {
       type: String,
       default: () => localStorage.getItem('language') || 'uk'
+    },
+    userRole: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
       localLanguage: this.language,
       showWelcomeBanner: true,
-      hasVisitedBefore: localStorage.getItem('hasVisitedBefore') === 'true'
+      hasVisitedBefore: localStorage.getItem('hasVisitedBefore') === 'true',
+      isParentUser: false,
+      studentBannerDismissed: false
     }
   },
   computed: {
@@ -191,6 +233,14 @@ export default {
     dismissWelcomeBanner() {
       this.showWelcomeBanner = false
       localStorage.setItem('welcomeBannerDismissed', 'true')
+    },
+    dismissStudentBanner() {
+      this.studentBannerDismissed = true
+      localStorage.setItem('studentBannerDismissed', 'true')
+    },
+    restoreStudentBanner() {
+      this.studentBannerDismissed = false
+      localStorage.setItem('studentBannerDismissed', 'false')
     }
   },
   mounted() {
@@ -202,6 +252,14 @@ export default {
     // Check if user has visited before and set flag
     if (!localStorage.getItem('hasVisitedBefore')) {
       localStorage.setItem('hasVisitedBefore', 'true')
+    }
+    
+    // Check if this user is a parent
+    this.isParentUser = this.userRole === 'parent'
+    
+    // Check if student banner has been dismissed
+    if (localStorage.getItem('studentBannerDismissed') === 'true') {
+      this.studentBannerDismissed = true
     }
     
     // Get current language from localStorage when component mounts

@@ -28,6 +28,7 @@ class VerifyEmail extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
+                    ->from('school@example.com', 'School 61')
                     ->subject('Підтвердіть вашу електронну пошту')
                     ->greeting('Вітаємо, ' . $this->name . '!')
                     ->line('Дякуємо вам за реєстрацію. Будь ласка, використовуйте наступний код для підтвердження вашої електронної пошти.')

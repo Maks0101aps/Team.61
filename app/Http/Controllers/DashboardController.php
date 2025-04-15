@@ -56,6 +56,7 @@ class DashboardController extends Controller
             'tasks' => $tasks,
             'events' => $events,
             'language' => session('language', 'uk'),
+            'userRole' => Auth::user()->role,
         ]);
     }
 }

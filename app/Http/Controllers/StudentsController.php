@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\ParentModel;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -16,9 +18,31 @@ class StudentsController extends Controller
 {
     public function index(): Response
     {
-        return Inertia::render('Students/Index', [
-            'filters' => Request::all('search', 'trashed'),
-            'students' => Auth::user()->account->students()
+        $user = Auth::user();
+        $students = [];
+        
+        if ($user->role === User::ROLE_PARENT) {
+            // For parents, only show their students
+            $parent = ParentModel::where('email', $user->email)->first();
+            
+            if ($parent) {
+                $students = $parent->children()
+                    ->orderByName()
+                    ->filter(Request::only('search', 'trashed'))
+                    ->paginate(10)
+                    ->withQueryString()
+                    ->through(fn ($student) => [
+                        'id' => $student->id,
+                        'name' => $student->name,
+                        'phone' => $student->phone,
+                        'city' => $student->city,
+                        'class' => $student->class,
+                        'deleted_at' => $student->deleted_at,
+                    ]);
+            }
+        } else {
+            // For teachers/admins, show all students
+            $students = Auth::user()->account->students()
                 ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -30,7 +54,13 @@ class StudentsController extends Controller
                     'city' => $student->city,
                     'class' => $student->class,
                     'deleted_at' => $student->deleted_at,
-                ]),
+                ]);
+        }
+        
+        return Inertia::render('Students/Index', [
+            'filters' => Request::all('search', 'trashed'),
+            'students' => $students,
+            'userRole' => $user->role,
         ]);
     }
 
@@ -43,7 +73,10 @@ class StudentsController extends Controller
 
     public function store(): RedirectResponse
     {
-        Auth::user()->account->students()->create(
+        $user = Auth::user();
+        
+        // Create the student
+        $student = Auth::user()->account->students()->create(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'middle_name' => ['required', 'max:50'],
@@ -58,12 +91,32 @@ class StudentsController extends Controller
                 'class' => ['nullable', 'max:10'],
             ])
         );
+        
+        // If the user is a parent, attach this student to them
+        if ($user->role === User::ROLE_PARENT) {
+            $parent = ParentModel::where('email', $user->email)->first();
+            if ($parent) {
+                $parent->children()->attach($student->id);
+            }
+        }
 
-        return Redirect::route('students.index')->with('success', 'Student created.');
+        return Redirect::route('students.index')->with('success', 'Учня успішно створено.');
     }
 
     public function edit(Student $student): Response
     {
+        $user = Auth::user();
+        
+        // If user is a parent, check if they have access to this student
+        if ($user->role === User::ROLE_PARENT) {
+            $parent = ParentModel::where('email', $user->email)->first();
+            $hasAccess = $parent && $parent->children()->where('student_id', $student->id)->exists();
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'У вас немає доступу до цього учня.');
+            }
+        }
+        
         return Inertia::render('Students/Edit', [
             'student' => [
                 'id' => $student->id,
@@ -85,6 +138,18 @@ class StudentsController extends Controller
 
     public function update(Student $student): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // If user is a parent, check if they have access to this student
+        if ($user->role === User::ROLE_PARENT) {
+            $parent = ParentModel::where('email', $user->email)->first();
+            $hasAccess = $parent && $parent->children()->where('student_id', $student->id)->exists();
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'У вас немає доступу до цього учня.');
+            }
+        }
+        
         $student->update(
             Request::validate([
                 'first_name' => ['required', 'max:50'],
@@ -101,20 +166,44 @@ class StudentsController extends Controller
             ])
         );
 
-        return Redirect::back()->with('success', 'Student updated.');
+        return Redirect::back()->with('success', 'Інформацію про учня оновлено.');
     }
 
     public function destroy(Student $student): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // If user is a parent, check if they have access to this student
+        if ($user->role === User::ROLE_PARENT) {
+            $parent = ParentModel::where('email', $user->email)->first();
+            $hasAccess = $parent && $parent->children()->where('student_id', $student->id)->exists();
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'У вас немає доступу до цього учня.');
+            }
+        }
+        
         $student->delete();
 
-        return Redirect::back()->with('success', 'Student deleted.');
+        return Redirect::back()->with('success', 'Учня видалено.');
     }
 
     public function restore(Student $student): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // If user is a parent, check if they have access to this student
+        if ($user->role === User::ROLE_PARENT) {
+            $parent = ParentModel::where('email', $user->email)->first();
+            $hasAccess = $parent && $parent->children()->where('student_id', $student->id)->exists();
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'У вас немає доступу до цього учня.');
+            }
+        }
+        
         $student->restore();
 
-        return Redirect::back()->with('success', 'Student restored.');
+        return Redirect::back()->with('success', 'Учня відновлено.');
     }
 } 
