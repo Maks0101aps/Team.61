@@ -22,7 +22,8 @@ class RequirePasswordChange
         if ($user && $user->password_change_required) {
             // Если пользователь не на странице смены пароля и не пытается сменить пароль
             if (!$request->is('password/change') && !$request->is('password/update')) {
-                return redirect()->route('password.change');
+                return redirect()->route('password.change')
+                    ->with('info', __('Для вашої безпеки потрібно змінити тимчасовий пароль.'));
             }
         }
         

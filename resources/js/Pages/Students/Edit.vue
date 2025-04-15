@@ -69,12 +69,11 @@
                 :label="language === 'uk' ? 'Електронна пошта' : 'Email'" 
                 type="email" 
               />
-              <text-input 
+              <phone-input 
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="language === 'uk' ? 'Телефон' : 'Phone'" 
-                type="phone"
-                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380 XX XXX-XX-XX' : 'Enter phone number in format +380 XX XXX-XX-XX'"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380XXXXXXXXX' : 'Enter phone number in format +380XXXXXXXXX'"
               />
             </div>
           </div>
@@ -210,6 +209,7 @@ import Layout from '@/Shared/Layout.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import SelectInput from '@/Shared/SelectInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
+import PhoneInput from '@/Components/PhoneInput.vue'
 import axios from 'axios'
 
 export default {
@@ -219,6 +219,7 @@ export default {
     LoadingButton,
     SelectInput,
     TextInput,
+    PhoneInput,
   },
   layout: Layout,
   props: {
@@ -277,7 +278,7 @@ export default {
       this.form.put(`/students/${this.student.id}`);
     },
     destroy() {
-      if (confirm(language === 'uk' ? 'Ви впевнені, що хочете видалити цього студента?' : 'Are you sure you want to delete this student?')) {
+      if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити цього студента?' : 'Are you sure you want to delete this student?')) {
         this.$inertia.delete(`/students/${this.student.id}`);
       }
     },
@@ -286,14 +287,23 @@ export default {
     },
     loadCities() {
       this.form.city = null;
+      this.form.district = null;
       this.cities = [];
+      this.isKyivSelected = false;
       
       if (this.form.region) {
         axios.get(`/cities/${encodeURIComponent(this.form.region)}`)
           .then(response => {
             this.cities = response.data.cities;
-            if (this.student.city && this.cities.includes(this.student.city)) {
-              this.form.city = this.student.city;
+            
+            // If any of the cities is Kyiv, check and handle it
+            const kyivCity = this.cities.find(city => 
+              ['Київ', 'Киев', 'Kyiv'].includes(city)
+            );
+            
+            if (kyivCity) {
+              this.form.city = kyivCity;
+              this.isKyivSelected = true;
             }
           })
           .catch(error => {
@@ -303,7 +313,7 @@ export default {
     },
     updateClass() {
       this.form.class = `${this.selectedGrade}${this.selectedLetter}`;
-    }
+    },
   },
 }
 </script>

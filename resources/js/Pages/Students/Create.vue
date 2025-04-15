@@ -71,12 +71,11 @@
                 :required="true"
                 :help-text="language === 'uk' ? 'На цю адресу буде відправлено дані для входу в систему' : 'Login credentials will be sent to this email'"
               />
-              <text-input 
+              <phone-input 
                 v-model="form.phone" 
                 :error="form.errors.phone" 
                 :label="language === 'uk' ? 'Телефон' : 'Phone'" 
-                type="phone"
-                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380 XX XXX-XX-XX' : 'Enter phone number in format +380 XX XXX-XX-XX'"
+                :help-text="language === 'uk' ? 'Введіть номер телефону у форматі +380XXXXXXXXX' : 'Enter phone number in format +380XXXXXXXXX'"
               />
             </div>
           </div>
@@ -217,6 +216,7 @@ import Layout from '@/Shared/Layout.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import SelectInput from '@/Shared/SelectInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
+import PhoneInput from '@/Components/PhoneInput.vue'
 import axios from 'axios'
 
 export default {
@@ -226,6 +226,7 @@ export default {
     LoadingButton,
     SelectInput,
     TextInput,
+    PhoneInput,
   },
   layout: Layout,
   props: {
@@ -320,7 +321,7 @@ export default {
     },
     updateClass() {
       this.form.class = `${this.selectedGrade}${this.selectedLetter}`;
-    }
+    },
   },
   computed: {
     currentLanguageLabels() {

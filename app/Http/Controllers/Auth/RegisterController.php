@@ -116,6 +116,7 @@ class RegisterController extends Controller
             'password' => $request->password,
             'role' => $request->role,
             'email_verified_at' => null, // Не подтверждаем email сразу
+            'password_change_required' => $request->role === User::ROLE_STUDENT, // Требует смены пароля для студентов
         ]);
 
         // If user is a parent, create a parent record
