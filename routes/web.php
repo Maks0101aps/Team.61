@@ -105,7 +105,12 @@ Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::post('/users/{user}/restore', [UsersController::class, 'restore'])->name('users.restore');
 });
 
-Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/parents', [ParentsController::class, 'index'])->name('parents.index');
     Route::get('/parents/create', [ParentsController::class, 'create'])->name('parents.create');
     Route::post('/parents', [ParentsController::class, 'store'])->name('parents.store');
@@ -117,7 +122,12 @@ Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/teachers', [TeachersController::class, 'index'])->name('teachers.index');
     Route::get('/teachers/create', [TeachersController::class, 'create'])->name('teachers.create');
     Route::get('/teachers/cities/{region}', [TeachersController::class, 'getCitiesByRegion'])->name('teachers.cities.by_region');
@@ -134,7 +144,12 @@ Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/images/{path}', [ImagesController::class, 'show'])->name('images.show')->where('path', '.*');
 });
 
-Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/events', [EventsController::class, 'index'])->name('events.index');
     Route::get('/events/create-permissions', [EventsController::class, 'checkCreatePermissions'])->name('events.create.permissions');
     Route::get('/events/create', [EventsController::class, 'create'])->name('events.create');
@@ -149,7 +164,12 @@ Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/calendar', [EventsController::class, 'calendar'])->name('events.calendar');
 });
 
-Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/tasks', [TasksController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/create', [TasksController::class, 'create'])->name('tasks.create');
     Route::post('/tasks', [TasksController::class, 'store'])->name('tasks.store');
@@ -161,7 +181,12 @@ Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/students', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/students/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentsController::class, 'store'])->name('students.store');

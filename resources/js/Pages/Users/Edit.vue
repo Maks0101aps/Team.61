@@ -11,11 +11,61 @@
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore"> This user has been deleted. </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
-      <form @submit.prevent="update">
+      <form @submit.prevent="update" enctype="multipart/form-data">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <!-- Personal Information Section -->
           <div class="w-full pb-4">
             <h2 class="text-lg font-bold mb-4 text-gray-700">{{ language === 'uk' ? 'Особиста інформація' : 'Personal Information' }}</h2>
+          </div>
+          
+          <!-- Profile photo section - visible for all users -->
+          <div class="pb-8 pr-6 w-full">
+            <label class="form-label">{{ language === 'uk' ? 'Фото профілю' : 'Profile Photo' }}:</label>
+            <div class="flex items-center mt-2">
+              <div 
+                v-if="user.photo" 
+                class="relative w-16 h-16 mr-4"
+                @mouseenter="showDeletePhotoButton = true"
+                @mouseleave="showDeletePhotoButton = false"
+              >
+                <img 
+                  class="w-16 h-16 rounded-full object-cover" 
+                  :src="user.photo" 
+                  alt="Фото профілю" 
+                />
+                <button 
+                  v-if="showDeletePhotoButton"
+                  type="button"
+                  @click="deletePhoto"
+                  class="absolute inset-0 flex items-center justify-center bg-red-500 bg-opacity-70 rounded-full text-white"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div v-else class="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center mr-4">
+                <span class="text-gray-500 text-xl">{{ form.first_name.charAt(0) }}{{ form.last_name.charAt(0) }}</span>
+              </div>
+              
+              <div class="flex-1">
+                <file-input 
+                  v-model="form.photo" 
+                  :error="form.errors.photo" 
+                  type="file" 
+                  accept="image/*" 
+                  :label="false" />
+                <p class="mt-1 text-xs text-gray-500">
+                  {{ language === 'uk' ? 'Максимальний розмір файлу: 3МБ' : 'Maximum file size: 3MB' }}
+                </p>
+              </div>
+            </div>
+            <p v-if="form.errors.photo" class="mt-2 text-sm text-red-600">
+              {{ form.errors.photo }}
+            </p>
+            <p v-if="photoUploadSuccess" class="mt-2 text-sm text-green-600">
+              {{ language === 'uk' ? 'Фото успішно оновлено' : 'Photo successfully updated' }}
+            </p>
           </div>
           
           <!-- For parent users, make name fields read-only -->
@@ -75,15 +125,6 @@
             <option :value="false">{{ language === 'uk' ? 'Ні' : 'No' }}</option>
           </select-input>
           
-          <!-- Photo field only for non-parent users -->
-          <file-input v-if="user.role !== 'parent'" 
-                      v-model="form.photo" 
-                      :error="form.errors.photo" 
-                      class="pb-8 pr-6 w-full lg:w-1/2" 
-                      type="file" 
-                      accept="image/*" 
-                      :label="language === 'uk' ? 'Фото' : 'Photo'" />
-          
           <!-- Address Section for parents -->
           <template v-if="user.role === 'parent'">
             <div class="w-full pb-4 pt-4">
@@ -142,7 +183,7 @@
           <button v-if="!user.deleted_at && user.role !== 'parent'" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">
             {{ language === 'uk' ? 'Видалити користувача' : 'Delete User' }}
           </button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" buttonType="submit">
             {{ language === 'uk' ? 'Оновити' : 'Update' }}
           </loading-button>
         </div>
@@ -178,6 +219,8 @@ export default {
   data() {
     return {
       language: localStorage.getItem('language') || 'uk',
+      showDeletePhotoButton: false,
+      photoUploadSuccess: false,
       form: this.$inertia.form({
         _method: 'put',
         first_name: this.user.first_name,
@@ -187,6 +230,7 @@ export default {
         password: '',
         owner: this.user.owner,
         photo: null,
+        delete_photo: false,
         street: this.user.street || '',
         house_number: this.user.house_number || '',
         city: this.user.city || '',
@@ -200,8 +244,31 @@ export default {
   methods: {
     update() {
       this.form.post(`/users/${this.user.id}`, {
-        onSuccess: () => this.form.reset('password', 'photo'),
+        onSuccess: () => {
+          this.form.reset('password', 'photo', 'delete_photo')
+          this.photoUploadSuccess = true
+          setTimeout(() => {
+            this.photoUploadSuccess = false
+          }, 3000)
+        },
+        preserveScroll: true,
       })
+    },
+    deletePhoto() {
+      if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити фото профілю?' : 'Are you sure you want to delete your profile photo?')) {
+        this.form.delete_photo = true
+        this.form.photo = null
+        this.form.post(`/users/${this.user.id}`, {
+          onSuccess: () => {
+            this.form.reset('password', 'photo', 'delete_photo')
+            this.photoUploadSuccess = true
+            setTimeout(() => {
+              this.photoUploadSuccess = false
+            }, 3000)
+          },
+          preserveScroll: true,
+        })
+      }
     },
     destroy() {
       if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити цього користувача?' : 'Are you sure you want to delete this user?')) {

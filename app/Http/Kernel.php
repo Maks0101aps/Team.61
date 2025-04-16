@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'parent' => \App\Http\Middleware\CheckParentRole::class,
         'student.event' => \App\Http\Middleware\CheckStudentEventAccess::class,
         'parent.event' => \App\Http\Middleware\CheckParentEventAccess::class,
+        'restrict.student' => \App\Http\Middleware\RestrictStudentActions::class,
     ];
 } 

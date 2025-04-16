@@ -1,6 +1,7 @@
 <template>
   <button
     :disabled="loading"
+    :type="buttonType"
     class="flex items-center justify-center transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
     :class="[
       buttonClass,
@@ -34,6 +35,11 @@ export default {
       type: String,
       default: 'primary',
       validator: value => ['primary', 'secondary', 'success', 'danger', 'warning', 'info'].includes(value)
+    },
+    buttonType: {
+      type: String,
+      default: 'button',
+      validator: value => ['button', 'submit', 'reset'].includes(value)
     }
   },
   computed: {

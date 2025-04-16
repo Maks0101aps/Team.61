@@ -40,6 +40,7 @@ class StudentsController extends Controller
                         'city' => $student->city,
                         'class' => $student->class,
                         'deleted_at' => $student->deleted_at,
+                        'photo' => $this->getStudentPhoto($student),
                     ]);
             }
         } else {
@@ -56,6 +57,7 @@ class StudentsController extends Controller
                     'city' => $student->city,
                     'class' => $student->class,
                     'deleted_at' => $student->deleted_at,
+                    'photo' => $this->getStudentPhoto($student),
                 ]);
         }
         
@@ -154,6 +156,7 @@ class StudentsController extends Controller
                 'postal_code' => $student->postal_code,
                 'class' => $student->class,
                 'deleted_at' => $student->deleted_at,
+                'photo' => $this->getStudentPhoto($student),
             ],
             'regions' => Teacher::getRegions(),
         ]);
@@ -228,5 +231,23 @@ class StudentsController extends Controller
         $student->restore();
 
         return Redirect::back()->with('success', 'Учня відновлено.');
+    }
+
+    // Метод для отримання фото студента
+    private function getStudentPhoto(Student $student)
+    {
+        // Спробуємо знайти користувача з таким самим email
+        $user = User::where('email', $student->email)->first();
+        
+        if ($user && $user->photo_path) {
+            return \Illuminate\Support\Facades\URL::route('images.show', [
+                'path' => $user->photo_path, 
+                'w' => 40, 
+                'h' => 40, 
+                'fit' => 'crop'
+            ]);
+        }
+        
+        return null;
     }
 } 

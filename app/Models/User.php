@@ -34,6 +34,8 @@ class User extends Authenticatable
         'middle_name',
         'account_id',
         'password_change_required',
+        'photo_path',
+        'owner',
     ];
 
     /**

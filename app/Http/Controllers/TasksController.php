@@ -34,6 +34,18 @@ class TasksController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        
+        // Перевіряємо, чи є користувач учнем
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', 'Учні не можуть створювати завдання.');
+        }
+        
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати завдання.');
+        }
+        
         return Inertia::render('Tasks/Create', [
             'events' => Auth::user()->account->events()
                 ->orderBy('title')
@@ -60,6 +72,18 @@ class TasksController extends Controller
 
     public function store()
     {
+        $user = Auth::user();
+        
+        // Перевіряємо, чи є користувач учнем
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', 'Учні не можуть створювати завдання.');
+        }
+        
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати завдання.');
+        }
+        
         $validated = Request::validate([
             'event_id' => ['required', 'exists:events,id'],
             'title' => ['required', 'max:100'],

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Storage;
 
 class UsersController extends Controller
 {
@@ -30,7 +31,7 @@ class UsersController extends Controller
                     'name' => $user->name,
                     'email' => $user->email,
                     'owner' => $user->owner,
-                    'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
+                    'photo' => $user->photo_path ? URL::route('images.show', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
                     'deleted_at' => $user->deleted_at,
                 ]),
         ]);
@@ -49,7 +50,7 @@ class UsersController extends Controller
             'email' => ['required', 'max:50', 'email', Rule::unique('users')],
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
-            'photo' => ['nullable', 'image'],
+            'photo' => ['nullable', 'image', 'max:3072'], // 3MB
         ]);
 
         Auth::user()->account->users()->create([
@@ -76,7 +77,7 @@ class UsersController extends Controller
             'last_name' => $user->last_name,
             'email' => $user->email,
             'owner' => $user->owner,
-            'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
+            'photo' => $user->photo_path ? URL::route('images.show', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
             'deleted_at' => $user->deleted_at,
             'role' => $user->role,
         ];
@@ -138,7 +139,8 @@ class UsersController extends Controller
             'last_name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($user->id)],
             'password' => ['nullable'],
-            'photo' => ['nullable', 'image'],
+            'photo' => ['nullable', 'image', 'max:3072'], // 3MB
+            'delete_photo' => ['boolean'],
         ]);
 
         // For parents, validate additional fields
@@ -165,28 +167,48 @@ class UsersController extends Controller
         }
 
         // Update user fields (except owner for parents)
-        if ($user->isParent()) {
-            $user->update([
-                'first_name' => $validated['first_name'],
-                'last_name' => $validated['last_name'],
-                'email' => $validated['email'],
-            ]);
-        } else {
-            $user->update([
-                'first_name' => $validated['first_name'],
-                'last_name' => $validated['last_name'],
-                'email' => $validated['email'],
-                'owner' => Request::get('owner', false),
-            ]);
+        $userUpdates = [
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
+            'email' => $validated['email'],
+        ];
+        
+        // Add owner field for non-parent users
+        if (!$user->isParent()) {
+            $userUpdates['owner'] = Request::get('owner', false);
         }
-
-        if (Request::file('photo')) {
-            $user->update(['photo_path' => Request::file('photo')->store('users')]);
+        
+        // Handle photo removal if requested
+        if (Request::boolean('delete_photo')) {
+            if ($user->photo_path) {
+                if (Storage::exists($user->photo_path)) {
+                    Storage::delete($user->photo_path);
+                }
+                $userUpdates['photo_path'] = null;
+            }
+        } 
+        // Process photo if uploaded and not deleting
+        else if (Request::file('photo')) {
+            try {
+                // Remove old photo if exists
+                if ($user->photo_path) {
+                    if (Storage::exists($user->photo_path)) {
+                        Storage::delete($user->photo_path);
+                    }
+                }
+                
+                $userUpdates['photo_path'] = Request::file('photo')->store('users');
+            } catch (\Exception $e) {
+                return Redirect::back()->withErrors(['photo' => 'The photo failed to upload. ' . $e->getMessage()]);
+            }
         }
-
+        
+        // Update password if provided
         if (Request::get('password')) {
-            $user->update(['password' => Request::get('password')]);
+            $userUpdates['password'] = Request::get('password');
         }
+        
+        $user->update($userUpdates);
 
         return Redirect::back()->with('success', 'User updated.');
     }

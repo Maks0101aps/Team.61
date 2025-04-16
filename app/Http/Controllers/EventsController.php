@@ -7,6 +7,7 @@ use App\Models\EventAttachment;
 use App\Models\Contact;
 use App\Models\Teacher;
 use App\Models\ParentModel;
+use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -127,47 +128,40 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
-        // If user is a parent, they cannot create events
-        if ($user->isParent()) {
-            if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
-                return response()->json([
-                    'message' => __('Батьки не можуть створювати або змінювати події')
-                ], 403);
-            }
-            
-            return redirect()->route('events.index')
-                ->with('error', __('Батьки не можуть створювати або змінювати події'));
-        }
-        
-        $types = Event::getTypes();
-        
-        // If user is a student, only allow personal events
+        // Для учнів зробимо спеціальний інтерфейс
         if ($user->isStudent()) {
-            $types = [Event::TYPE_PERSONAL => $types[Event::TYPE_PERSONAL]];
+            return Inertia::render('Events/Create', [
+                'students' => Auth::user()->account->students()
+                    ->orderByName()
+                    ->get()
+                    ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+                'teachers' => [],  // Учні не можуть запрошувати вчителів
+                'parents' => [],   // Учні не можуть запрошувати батьків
+                'eventTypes' => Event::getTypes(),
+                'isStudent' => true,
+            ]);
         }
         
-        // Get selected date from calendar if available
-        $selectedDate = request()->query('date') ? request()->query('date') : now()->format('Y-m-d');
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати події.');
+        }
         
         return Inertia::render('Events/Create', [
-            'types' => $types,
-            'selectedDate' => $selectedDate,
             'students' => Auth::user()->account->students()
                 ->orderByName()
                 ->get()
-                ->map
-                ->only('id', 'name'),
-            // Show teachers and parents only for non-students
-            'teachers' => !$user->isStudent() ? Auth::user()->account->teachers()
-                ->orderBy('last_name')
+                ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+            'teachers' => Auth::user()->account->teachers()
+                ->orderByName()
                 ->get()
-                ->map
-                ->only('id', 'name') : [],
-            'parents' => !$user->isStudent() ? Auth::user()->account->parents()
-                ->orderBy('last_name')
+                ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+            'parents' => Auth::user()->account->parents()
+                ->orderByName()
                 ->get()
-                ->map
-                ->only('id', 'name') : [],
+                ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+            'eventTypes' => Event::getTypes(),
+            'isStudent' => false,
         ]);
     }
 
@@ -175,80 +169,75 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
+        // Якщо це батько, забороняємо створення подій
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати події.');
+        }
+        
         $validated = request()->validate([
             'title' => ['required', 'max:100'],
-            'type' => ['required', 'in:' . implode(',', array_keys(Event::getTypes()))],
+            'type' => ['required', 'in:'.implode(',', array_keys(Event::getTypes()))],
             'start_date' => ['required', 'date'],
             'duration' => ['required', 'integer', 'min:1'],
             'content' => ['nullable', 'string'],
+            'location' => ['nullable', 'max:150'],
+            'online_link' => ['nullable', 'url', 'max:255'],
             'is_content_hidden' => ['boolean'],
-            'location' => ['nullable', 'string', 'max:100'],
-            'online_link' => ['nullable', 'url', 'max:200'],
-            'tasks' => ['nullable', 'string'],
-            'student_ids' => ['array'],
-            'student_ids.*.id' => ['exists:contacts,id'],
-            'teacher_ids' => ['array'],
-            'teacher_ids.*.id' => ['exists:teachers,id'],
-            'parent_ids' => ['array'],
-            'parent_ids.*.id' => ['exists:parent_models,id'],
-            'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:102400'], // 100MB limit (in KB)
+            'students' => ['array'],
+            'students.*.id' => ['exists:contacts,id'],
+            'teachers' => ['array'],
+            'teachers.*.id' => ['exists:teachers,id'],
+            'parents' => ['array'],
+            'parents.*.id' => ['exists:parent_models,id'],
         ]);
-
-        // For students, enforce that they can only create personal events and can't invite teachers or parents
+        
+        // Якщо користувач - учень, обмежуємо доступ до додавання вчителів та батьків
         if ($user->isStudent()) {
-            if ($validated['type'] !== Event::TYPE_PERSONAL) {
-                return back()->with('error', __('Учні можуть створювати тільки особисті події'));
-            }
-            
-            if (!empty($validated['teacher_ids'])) {
-                return back()->with('error', __('Учні не можуть запрошувати вчителів на події'));
-            }
-            
-            if (!empty($validated['parent_ids'])) {
-                return back()->with('error', __('Учні не можуть запрошувати батьків на події'));
-            }
+            // Обнуляємо списки вчителів та батьків, щоб учень не міг їх додати
+            $validated['teachers'] = [];
+            $validated['parents'] = [];
         }
-
+        
         $event = Auth::user()->account->events()->create([
             'title' => $validated['title'],
             'type' => $validated['type'],
             'start_date' => $validated['start_date'],
             'duration' => $validated['duration'],
-            'content' => $validated['content'],
+            'content' => $validated['content'] ?? '',
+            'location' => $validated['location'] ?? null,
+            'online_link' => $validated['online_link'] ?? null,
             'is_content_hidden' => $validated['is_content_hidden'] ?? false,
-            'location' => $validated['location'],
-            'online_link' => $validated['online_link'],
-            'tasks' => $validated['tasks'],
             'created_by' => Auth::id(),
         ]);
-
-        if (!empty($validated['student_ids'])) {
-            $event->students()->attach(collect($validated['student_ids'])->pluck('id'));
+        
+        // Додаємо студентів
+        if (!empty($validated['students'])) {
+            $studentIds = collect($validated['students'])->pluck('id');
+            $event->students()->attach($studentIds, ['status' => 'pending']);
         }
-
-        if (!empty($validated['teacher_ids'])) {
-            $event->teachers()->attach(collect($validated['teacher_ids'])->pluck('id'));
+        
+        // Додаємо вчителів (тільки якщо не учень)
+        if (!empty($validated['teachers']) && !$user->isStudent()) {
+            $teacherIds = collect($validated['teachers'])->pluck('id');
+            $event->teachers()->attach($teacherIds, ['status' => 'pending']);
         }
-
-        if (!empty($validated['parent_ids'])) {
-            $event->parents()->attach(collect($validated['parent_ids'])->pluck('id'));
+        
+        // Додаємо батьків (тільки якщо не учень)
+        if (!empty($validated['parents']) && !$user->isStudent()) {
+            $parentIds = collect($validated['parents'])->pluck('id');
+            $event->parents()->attach($parentIds, ['status' => 'pending']);
         }
-
-        // Upload attachments if any
-        if (request()->hasFile('attachments')) {
-            foreach (request()->file('attachments') as $file) {
-                $path = $file->store('event-attachments');
-                $event->attachments()->create([
-                    'filename' => $path,
-                    'original_filename' => $file->getClientOriginalName(),
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                ]);
+        
+        // Якщо учень створив подію, автоматично додаємо його самого до події
+        if ($user->isStudent()) {
+            // Знаходимо студента за email користувача
+            $student = Student::where('email', $user->email)->first();
+            if ($student) {
+                $event->students()->attach($student->id, ['status' => 'accepted']);
             }
         }
-
-        return Redirect::route('events.index')->with('success', __('Event created.'));
+        
+        return Redirect::route('events.index')->with('success', 'Подію створено.');
     }
 
     public function edit(Event $event)
@@ -545,19 +534,28 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
-        // Parents can't create events
+        // Учні можуть створювати події для себе та інших учнів
+        if ($user->isStudent()) {
+            return response()->json([
+                'success' => true,
+                'can_create' => true,
+                'is_student' => true,
+                'message' => __('Учні можуть створювати події тільки для інших учнів')
+            ]);
+        }
+        
+        // Батьки не можуть створювати події
         if ($user->isParent()) {
             return response()->json([
                 'message' => __('Батьки не можуть створювати або змінювати події')
             ], 403);
         }
         
-        // Students have limited permissions (handled in other methods)
-        
-        // All other users (teachers, admins) can create events
+        // Всі інші користувачі (вчителі, адміни) можуть створювати події
         return response()->json([
             'success' => true,
-            'can_create' => true
+            'can_create' => true,
+            'is_student' => false
         ]);
     }
     
