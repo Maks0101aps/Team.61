@@ -305,7 +305,8 @@
           </Link>
           <loading-button 
             :loading="form.processing" 
-            type="primary" 
+            variant="primary"
+            buttonType="submit" 
             class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
             Створити подію
@@ -339,11 +340,13 @@ export default {
   },
   layout: Layout,
   props: {
-    types: Array,
+    types: Object,
+    eventTypes: Object,
     teachers: Array,
     students: Array,
     parents: Array,
     selectedDate: String,
+    isStudent: Boolean,
   },
   data() {
     return {
@@ -436,9 +439,6 @@ export default {
     }
   },
   computed: {
-    isStudent() {
-      return this.$page.props.auth.user.role === 'student';
-    },
     currentLanguageLabels() {
       return {
         en: {

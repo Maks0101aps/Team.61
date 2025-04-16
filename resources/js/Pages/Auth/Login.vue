@@ -55,7 +55,7 @@
             </div>
           </div>
           <div class="flex px-12 py-5 bg-gradient-to-r from-blue-50 to-gray-50 border-t border-gray-100 login-form-item" :style="{ animationDelay: '0.6s' }">
-            <loading-button :loading="form.processing" class="btn-blue ml-auto" type="submit">{{ language === 'uk' ? 'Увійти' : 'Login' }}</loading-button>
+            <loading-button :loading="form.processing" class="btn-blue ml-auto" buttonType="submit">{{ language === 'uk' ? 'Увійти' : 'Login' }}</loading-button>
           </div>
         </form>
       </div>
@@ -89,7 +89,11 @@ export default {
   },
   methods: {
     login() {
-      this.form.post('/login')
+      this.form.post('/login', {
+        onFinish: () => {
+          // Optionally reset form or handle completion
+        },
+      })
     },
     setLanguage(lang) {
       this.language = lang

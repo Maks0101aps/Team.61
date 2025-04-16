@@ -140,13 +140,10 @@ export default {
       date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) // Expires in one year
       document.cookie = `language=${lang}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
       
-      // Broadcast the language change
+      // Use the event bus for language change events (it will handle dispatching the custom event)
       if (this.$languageEventBus) {
         this.$languageEventBus.emit('language-changed', lang)
       }
-      
-      // Also dispatch a custom event for components that might not have access to the event bus
-      window.dispatchEvent(new CustomEvent('language-changed', { detail: { language: lang } }))
     }
   },
   mounted() {

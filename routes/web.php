@@ -164,6 +164,11 @@ Route::middleware([
     Route::get('/calendar', [EventsController::class, 'calendar'])->name('events.calendar');
 });
 
+// Routes accessible to all authenticated users including students
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
+    Route::put('/events/{eventId}/participation', [EventsController::class, 'updateParticipation'])->name('events.participation.update');
+});
+
 Route::middleware([
     'auth', 
     'verified', 

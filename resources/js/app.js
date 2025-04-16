@@ -7,13 +7,38 @@ const languageEventBus = {
   install: (app) => {
     app.config.globalProperties.$languageEventBus = {
       emit(event, ...args) {
-        window.dispatchEvent(new CustomEvent(event, { detail: args }))
+        if (event === 'language-changed' && args.length > 0) {
+          const lang = args[0];
+          window.dispatchEvent(new CustomEvent(event, { detail: [lang] }))
+        } else {
+          window.dispatchEvent(new CustomEvent(event, { detail: args }))
+        }
       },
       on(event, callback) {
-        window.addEventListener(event, (e) => callback(...(e.detail || [])))
+        const wrappedCallback = (e) => {
+          if (event === 'language-changed') {
+            const detail = e.detail;
+            if (Array.isArray(detail) && detail.length > 0) {
+              callback(detail[0]);
+            } else if (detail && detail.language) {
+              callback(detail.language);
+            } else {
+              callback(...(detail || []));
+            }
+          } else {
+            callback(...(e.detail || []));
+          }
+        };
+        
+        if (!callback._wrappedCallback) {
+          callback._wrappedCallback = wrappedCallback;
+        }
+        
+        window.addEventListener(event, wrappedCallback);
       },
       off(event, callback) {
-        window.removeEventListener(event, callback)
+        const wrappedCallback = callback._wrappedCallback || callback;
+        window.removeEventListener(event, wrappedCallback);
       }
     }
   }

@@ -19,7 +19,7 @@
           <Link href="/login" class="flex items-center text-blue-700 hover:text-blue-900 font-medium">
             {{ language === 'uk' ? 'Назад до входу' : 'Back to Login' }}
           </Link>
-          <loading-button :loading="form.processing" class="btn-blue ml-auto" type="submit">
+          <loading-button :loading="form.processing" class="btn-blue ml-auto" buttonType="submit">
             {{ language === 'uk' ? 'Скинути пароль' : 'Reset Password' }}
           </loading-button>
         </div>
