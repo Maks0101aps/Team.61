@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\ParentModel;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\URL;
 
 class ParentsController extends Controller
 {
@@ -31,12 +33,25 @@ class ParentsController extends Controller
                     'parent_type' => $parent->parent_type,
                     'parent_type_name' => $parent->parent_type_name,
                     'deleted_at' => $parent->deleted_at,
+                    'photo' => $this->getParentPhoto($parent),
                 ]),
         ]);
     }
 
     public function create(): Response
     {
+        $user = Auth::user();
+        
+        // Перевіряємо, чи є користувач учнем
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', 'Учні не можуть створювати нових батьків.');
+        }
+        
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати інших батьків.');
+        }
+        
         return Inertia::render('Parents/Create', [
             'students' => Student::all()->map->only('id', 'first_name', 'middle_name', 'last_name', 'full_name'),
             'regions' => Teacher::getRegions(),
@@ -45,6 +60,18 @@ class ParentsController extends Controller
 
     public function store(): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Перевіряємо, чи є користувач учнем
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', 'Учні не можуть створювати нових батьків.');
+        }
+        
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати інших батьків.');
+        }
+        
         $validated = Request::validate([
             'first_name' => ['required', 'max:50'],
             'middle_name' => ['required', 'max:50'],
@@ -91,6 +118,7 @@ class ParentsController extends Controller
                 'postal_code' => $parent->postal_code,
                 'children' => $parent->children->map->only('id'),
                 'deleted_at' => $parent->deleted_at,
+                'photo' => $this->getParentPhoto($parent),
             ],
             'students' => Student::all()->map->only('id', 'first_name', 'middle_name', 'last_name', 'full_name'),
             'regions' => Teacher::getRegions(),
@@ -177,5 +205,23 @@ class ParentsController extends Controller
                 'postal_code' => $parent->postal_code,
             ]
         ]);
+    }
+
+    // Метод для отримання фото батька/матері
+    private function getParentPhoto(ParentModel $parent)
+    {
+        // Спробуємо знайти користувача з таким самим email
+        $user = User::where('email', $parent->email)->first();
+        
+        if ($user && $user->photo_path) {
+            return URL::route('images.show', [
+                'path' => $user->photo_path, 
+                'w' => 40, 
+                'h' => 40, 
+                'fit' => 'crop'
+            ]);
+        }
+        
+        return null;
     }
 }

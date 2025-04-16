@@ -58,6 +58,12 @@ class LanguageServiceProvider extends ServiceProvider
                 'Учні не можуть запрошувати батьків на події' => 'Учні не можуть запрошувати батьків на події',
                 'Учні можуть редагувати тільки власні події' => 'Учні можуть редагувати тільки власні події',
                 'Учні можуть видаляти тільки власні події' => 'Учні можуть видаляти тільки власні події',
+                'Task created successfully.' => 'Завдання успішно створено.',
+                'Task updated successfully.' => 'Завдання успішно оновлено.',
+                'Task deleted successfully.' => 'Завдання успішно видалено.',
+                'Task restored successfully.' => 'Завдання успішно відновлено.',
+                'Students cannot create tasks.' => 'Учні не можуть створювати завдання.',
+                'Parents cannot create tasks.' => 'Батьки не можуть створювати завдання.',
             ],
             'en' => [
                 'students' => 'Students',
@@ -96,6 +102,12 @@ class LanguageServiceProvider extends ServiceProvider
                 'Учні не можуть запрошувати батьків на події' => 'Students cannot invite parents to events',
                 'Учні можуть редагувати тільки власні події' => 'Students can only edit their own events',
                 'Учні можуть видаляти тільки власні події' => 'Students can only delete their own events',
+                'Task created successfully.' => 'Task created successfully.',
+                'Task updated successfully.' => 'Task updated successfully.',
+                'Task deleted successfully.' => 'Task deleted successfully.',
+                'Task restored successfully.' => 'Task restored successfully.',
+                'Students cannot create tasks.' => 'Students cannot create tasks.',
+                'Parents cannot create tasks.' => 'Parents cannot create tasks.',
             ],
         ];
     }

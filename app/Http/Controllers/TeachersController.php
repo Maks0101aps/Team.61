@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -32,12 +34,25 @@ class TeachersController extends Controller
                     'qualification' => $teacher->qualification,
                     'deleted_at' => $teacher->deleted_at,
                     'organization' => $teacher->organization ? $teacher->organization->only('name') : null,
+                    'photo' => $this->getTeacherPhoto($teacher),
                 ]),
         ]);
     }
 
     public function create(): Response
     {
+        $user = Auth::user();
+        
+        // Перевіряємо, чи є користувач учнем
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', 'Учні не можуть створювати нових вчителів.');
+        }
+        
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати вчителів.');
+        }
+        
         return Inertia::render('Teachers/Create', [
             'subjects' => Teacher::getSubjects(),
             'qualifications' => Teacher::getQualifications(),
@@ -47,6 +62,18 @@ class TeachersController extends Controller
 
     public function store(): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Перевіряємо, чи є користувач учнем
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', 'Учні не можуть створювати нових вчителів.');
+        }
+        
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати вчителів.');
+        }
+        
         $validatedData = Request::validate([
             'first_name' => ['required', 'max:50'],
             'middle_name' => ['required', 'max:50'],
@@ -92,6 +119,7 @@ class TeachersController extends Controller
                 'country' => $teacher->country,
                 'postal_code' => $teacher->postal_code,
                 'deleted_at' => $teacher->deleted_at,
+                'photo' => $this->getTeacherPhoto($teacher),
             ],
             'subjects' => Teacher::getSubjects(),
             'qualifications' => Teacher::getQualifications(),
@@ -149,5 +177,23 @@ class TeachersController extends Controller
         return response()->json([
             'cities' => Teacher::getCitiesByRegion($region)
         ]);
+    }
+
+    // Метод для отримання фото вчителя
+    private function getTeacherPhoto(Teacher $teacher)
+    {
+        // Спробуємо знайти користувача з таким самим email
+        $user = User::where('email', $teacher->email)->first();
+        
+        if ($user && $user->photo_path) {
+            return URL::route('images.show', [
+                'path' => $user->photo_path, 
+                'w' => 40, 
+                'h' => 40, 
+                'fit' => 'crop'
+            ]);
+        }
+        
+        return null;
     }
 } 

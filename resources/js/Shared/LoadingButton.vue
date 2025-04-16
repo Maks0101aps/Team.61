@@ -1,6 +1,7 @@
 <template>
   <button
     :disabled="loading"
+    :type="buttonType"
     class="flex items-center justify-center transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
     :class="[
       buttonClass,
@@ -30,10 +31,20 @@ export default {
       default: 'md',
       validator: value => ['sm', 'md', 'lg'].includes(value)
     },
-    type: {
+    variant: {
       type: String,
       default: 'primary',
       validator: value => ['primary', 'secondary', 'success', 'danger', 'warning', 'info'].includes(value)
+    },
+    buttonType: {
+      type: String,
+      default: 'button',
+      validator: value => ['button', 'submit', 'reset'].includes(value)
+    },
+    // For backward compatibility, allow 'type' as well, but it will be deprecated
+    type: {
+      type: String,
+      default: undefined
     }
   },
   computed: {
@@ -53,7 +64,9 @@ export default {
         info: 'bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-white focus:ring-cyan-400'
       };
       
-      return `${sizeClasses[this.size]} ${typeClasses[this.type]} rounded-lg shadow-sm`;
+      // Use variant prop first, fall back to type prop for backward compatibility
+      const buttonVariant = this.variant || this.type || 'primary';
+      return `${sizeClasses[this.size]} ${typeClasses[buttonVariant]} rounded-lg shadow-sm`;
     }
   }
 }

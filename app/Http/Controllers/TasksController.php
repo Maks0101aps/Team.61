@@ -34,6 +34,18 @@ class TasksController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        
+        // Check if user is a student
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', __('Students cannot create tasks.'));
+        }
+        
+        // Check if user is a parent
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', __('Parents cannot create tasks.'));
+        }
+        
         return Inertia::render('Tasks/Create', [
             'events' => Auth::user()->account->events()
                 ->orderBy('title')
@@ -60,6 +72,18 @@ class TasksController extends Controller
 
     public function store()
     {
+        $user = Auth::user();
+        
+        // Check if user is a student
+        if ($user->isStudent()) {
+            return Redirect::route('dashboard')->with('error', __('Students cannot create tasks.'));
+        }
+        
+        // Check if user is a parent
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', __('Parents cannot create tasks.'));
+        }
+        
         $validated = Request::validate([
             'event_id' => ['required', 'exists:events,id'],
             'title' => ['required', 'max:100'],
@@ -93,7 +117,7 @@ class TasksController extends Controller
             $task->parents()->attach(collect($validated['parents'])->pluck('id'));
         }
 
-        return Redirect::route('tasks.index')->with('success', 'Task created.');
+        return Redirect::route('tasks.index')->with('success', __('Task created successfully.'));
     }
 
     public function edit(Task $task)
@@ -162,20 +186,20 @@ class TasksController extends Controller
         $task->teachers()->sync(collect($validated['teachers'] ?? [])->pluck('id'));
         $task->parents()->sync(collect($validated['parents'] ?? [])->pluck('id'));
 
-        return Redirect::back()->with('success', 'Task updated.');
+        return Redirect::back()->with('success', __('Task updated successfully.'));
     }
 
     public function destroy(Task $task)
     {
         $task->delete();
 
-        return Redirect::back()->with('success', 'Task deleted.');
+        return Redirect::back()->with('success', __('Task deleted successfully.'));
     }
 
     public function restore(Task $task)
     {
         $task->restore();
 
-        return Redirect::back()->with('success', 'Task restored.');
+        return Redirect::back()->with('success', __('Task restored successfully.'));
     }
 }

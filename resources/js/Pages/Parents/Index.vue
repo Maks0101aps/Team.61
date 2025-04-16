@@ -57,31 +57,39 @@
       :class="{ 'border-l-4 border-red-400': parent.deleted_at }"
     >
       <div class="flex justify-between items-start">
-        <div>
-          <Link 
-            class="text-lg font-bold text-blue-800 hover:text-blue-600 transition-colors duration-200" 
-            :href="`/parents/${parent.id}/edit`"
-          >
-            {{ parent.name }}
-          </Link>
-          <div class="mt-2 space-y-1">
-            <div class="flex items-center text-sm text-gray-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              {{ parent.parent_type_name || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+        <div class="flex">
+          <div class="mr-4 flex-shrink-0">
+            <img 
+              v-if="parent.photo" 
+              :src="parent.photo" 
+              class="w-12 h-12 rounded-full object-cover shadow-sm border border-gray-200" 
+              :alt="parent.name"
+            />
+            <div v-else class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 shadow-sm border border-gray-200">
+              <span>{{ parent.name.substring(0, 2) }}</span>
             </div>
-            <div class="flex items-center text-sm text-gray-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-              </svg>
-              {{ parent.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
-            </div>
-            <div class="flex items-center text-sm text-gray-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-              </svg>
-              {{ parent.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+          </div>
+          <div>
+            <Link 
+              class="text-lg font-bold text-blue-800 hover:text-blue-600 transition-colors duration-200 flex items-center" 
+              :href="`/parents/${parent.id}/edit`"
+            >
+              {{ parent.name }}
+              <span v-if="parent.parent_type_name" class="ml-2 text-sm text-gray-600">({{ parent.parent_type_name }})</span>
+            </Link>
+            <div class="mt-2 space-y-1">
+              <div class="flex items-center text-sm text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                </svg>
+                {{ parent.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+              </div>
+              <div class="flex items-center text-sm text-gray-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+                {{ parent.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+              </div>
             </div>
           </div>
         </div>
@@ -115,10 +123,10 @@
     <table class="w-full">
       <thead>
         <tr class="bg-gradient-to-r from-blue-50 to-blue-100 text-left">
-          <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Ім\'я' : 'Name' }}</th>
+          <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Повне ім\'я' : 'Full Name' }}</th>
           <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Тип' : 'Type' }}</th>
-          <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Телефон' : 'Phone' }}</th>
           <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Місто' : 'City' }}</th>
+          <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Номер телефону' : 'Phone Number' }}</th>
           <th class="py-4 px-6 font-bold text-blue-900 text-center">{{ language === 'uk' ? 'Дії' : 'Actions' }}</th>
         </tr>
       </thead>
@@ -134,6 +142,17 @@
               class="font-medium text-blue-800 hover:text-blue-600 transition-colors duration-200 flex items-center" 
               :href="`/parents/${parent.id}/edit`"
             >
+              <div class="mr-3 flex-shrink-0">
+                <img 
+                  v-if="parent.photo" 
+                  :src="parent.photo" 
+                  class="w-8 h-8 rounded-full object-cover shadow-sm border border-gray-200" 
+                  :alt="parent.name"
+                />
+                <div v-else class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 shadow-sm border border-gray-200">
+                  <span class="text-xs">{{ parent.name.substring(0, 2) }}</span>
+                </div>
+              </div>
               {{ parent.name }}
               <svg v-if="parent.deleted_at" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
@@ -144,10 +163,10 @@
             {{ parent.parent_type_name || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
           </td>
           <td class="py-4 px-6 text-gray-600">
-            {{ parent.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+            {{ parent.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
           </td>
           <td class="py-4 px-6 text-gray-600">
-            {{ parent.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+            {{ parent.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
           </td>
           <td class="py-4 px-6">
             <div class="flex justify-center space-x-3">

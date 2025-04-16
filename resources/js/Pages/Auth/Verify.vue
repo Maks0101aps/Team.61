@@ -39,7 +39,7 @@
         </div>
         
         <div class="flex px-12 py-5 bg-gradient-to-r from-blue-50 to-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-blue ml-auto" type="submit">
+          <loading-button :loading="form.processing" class="btn-blue ml-auto" buttonType="submit">
             {{ language === 'uk' ? 'Підтвердити' : 'Verify' }}
           </loading-button>
         </div>

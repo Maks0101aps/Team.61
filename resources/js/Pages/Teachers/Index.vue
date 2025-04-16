@@ -58,31 +58,51 @@
         :class="{ 'border-l-4 border-red-400': teacher.deleted_at }"
       >
         <div class="flex justify-between items-start">
-          <div>
-            <Link 
-              class="text-lg font-bold text-blue-800 hover:text-blue-600 transition-colors duration-200" 
-              :href="`/teachers/${teacher.id}/edit`"
-            >
-              {{ teacher.name }}
-            </Link>
-            <div class="mt-2 space-y-1">
-              <div class="flex items-center text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-                </svg>
-                {{ teacher.subject || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+          <div class="flex">
+            <div class="mr-4 flex-shrink-0">
+              <img 
+                v-if="teacher.photo" 
+                :src="teacher.photo" 
+                class="w-12 h-12 rounded-full object-cover shadow-sm border border-gray-200" 
+                :alt="teacher.name"
+              />
+              <div v-else class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 shadow-sm border border-gray-200">
+                <span>{{ teacher.name.substring(0, 2) }}</span>
               </div>
-              <div class="flex items-center text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                </svg>
-                {{ teacher.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
-              </div>
-              <div class="flex items-center text-sm text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                </svg>
-                {{ teacher.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+            </div>
+            <div>
+              <Link 
+                class="text-lg font-bold text-blue-800 hover:text-blue-600 transition-colors duration-200" 
+                :href="`/teachers/${teacher.id}/edit`"
+              >
+                {{ teacher.name }}
+              </Link>
+              <div class="mt-2 space-y-1">
+                <div v-if="teacher.subject" class="flex items-center text-sm text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
+                  </svg>
+                  {{ teacher.subject }}
+                </div>
+                <div v-if="teacher.qualification" class="flex items-center text-sm text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                    <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                  </svg>
+                  {{ teacher.qualification }}
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                  </svg>
+                  {{ teacher.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+                </div>
+                <div class="flex items-center text-sm text-gray-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                  </svg>
+                  {{ teacher.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
+                </div>
               </div>
             </div>
           </div>
@@ -120,7 +140,6 @@
             <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Предмет' : 'Subject' }}</th>
             <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Кваліфікація' : 'Qualification' }}</th>
             <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Місто' : 'City' }}</th>
-            <th class="py-4 px-6 font-bold text-blue-900">{{ language === 'uk' ? 'Номер телефону' : 'Phone Number' }}</th>
             <th class="py-4 px-6 font-bold text-blue-900 text-center">{{ language === 'uk' ? 'Дії' : 'Actions' }}</th>
           </tr>
         </thead>
@@ -136,24 +155,29 @@
                 class="font-medium text-blue-800 hover:text-blue-600 transition-colors duration-200 flex items-center" 
                 :href="`/teachers/${teacher.id}/edit`"
               >
+                <div class="mr-3 flex-shrink-0">
+                  <img 
+                    v-if="teacher.photo" 
+                    :src="teacher.photo" 
+                    class="w-8 h-8 rounded-full object-cover shadow-sm border border-gray-200" 
+                    :alt="teacher.name"
+                  />
+                  <div v-else class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 shadow-sm border border-gray-200">
+                    <span class="text-xs">{{ teacher.name.substring(0, 2) }}</span>
+                  </div>
+                </div>
                 {{ teacher.name }}
-                <svg v-if="teacher.deleted_at" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-            </Link>
-          </td>
+              </Link>
+            </td>
             <td class="py-4 px-6 text-gray-600">
               {{ teacher.subject || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
-          </td>
+            </td>
             <td class="py-4 px-6 text-gray-600">
               {{ teacher.qualification || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
-          </td>
+            </td>
             <td class="py-4 px-6 text-gray-600">
               {{ teacher.city || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
-          </td>
-            <td class="py-4 px-6 text-gray-600">
-              {{ teacher.phone || (language === 'uk' ? 'Не вказано' : 'Not specified') }}
-          </td>
+            </td>
             <td class="py-4 px-6">
               <div class="flex justify-center space-x-3">
                 <Link 
@@ -163,7 +187,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
-            </Link>
+                </Link>
                 <button 
                   @click="destroy(teacher)" 
                   class="p-2 text-red-600 hover:text-red-800 transition-colors duration-200 rounded-full hover:bg-red-100"
@@ -171,15 +195,15 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                   </svg>
-            </button>
+                </button>
               </div>
-          </td>
-        </tr>
-        <tr v-if="teachers.data.length === 0">
-            <td class="py-6 px-6 text-center text-gray-500" colspan="6">
+            </td>
+          </tr>
+          <tr v-if="teachers.data.length === 0">
+            <td class="py-6 px-6 text-center text-gray-500" colspan="5">
               {{ language === 'uk' ? 'Вчителів не знайдено.' : 'No teachers found.' }}
             </td>
-        </tr>
+          </tr>
         </tbody>
       </table>
     </div>

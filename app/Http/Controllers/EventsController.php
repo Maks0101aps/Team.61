@@ -7,6 +7,7 @@ use App\Models\EventAttachment;
 use App\Models\Contact;
 use App\Models\Teacher;
 use App\Models\ParentModel;
+use App\Models\Student;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -54,10 +55,28 @@ class EventsController extends Controller
             'attachments'
         ]);
         
+        // Check if user is participant or creator
+        $isParticipant = false;
+        $isCreator = $event->created_by === $user->id;
+        $isAdmin = $user->isAdmin();
+        
+        if ($user->isStudent() && $event->students->contains('id', $user->contactId())) {
+            $isParticipant = true;
+        } elseif ($user->isTeacher() && $event->teachers->contains('id', $user->teacherId())) {
+            $isParticipant = true;
+        } elseif ($user->isParent() && $event->parents->contains('id', $user->parentId())) {
+            $isParticipant = true;
+        }
+        
+        // If user is not a participant, creator, or admin, redirect to calendar
+        if (!$isParticipant && !$isCreator && !$isAdmin) {
+            return redirect()->route('events.calendar')->with('error', 'Ви не є учасником цієї події.');
+        }
+        
         // Determine if the user can view content (if it's hidden)
         $canViewContent = !$event->is_content_hidden || 
-                        $event->created_by === $user->id || 
-                        $user->isAdmin() || 
+                        $isCreator || 
+                        $isAdmin || 
                         $event->start_date <= now();
                         
         // Determine user's participation status
@@ -108,7 +127,7 @@ class EventsController extends Controller
                     ];
                 }),
                 'participation_status' => $participationStatus,
-                'attachments' => $event->attachments->map(function ($attachment) {
+                'attachments' => $event->attachments->map(function ($attachment) use ($event) {
                     return [
                         'id' => $attachment->id,
                         'original_filename' => $attachment->original_filename,
@@ -120,6 +139,7 @@ class EventsController extends Controller
                 }),
             ],
             'canViewContent' => $canViewContent,
+            'isParticipant' => $isParticipant,
         ]);
     }
 
@@ -127,47 +147,42 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
-        // If user is a parent, they cannot create events
-        if ($user->isParent()) {
-            if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
-                return response()->json([
-                    'message' => __('Батьки не можуть створювати або змінювати події')
-                ], 403);
-            }
-            
-            return redirect()->route('events.index')
-                ->with('error', __('Батьки не можуть створювати або змінювати події'));
-        }
-        
-        $types = Event::getTypes();
-        
-        // If user is a student, only allow personal events
+        // Для учнів зробимо спеціальний інтерфейс
         if ($user->isStudent()) {
-            $types = [Event::TYPE_PERSONAL => $types[Event::TYPE_PERSONAL]];
+            return Inertia::render('Events/Create', [
+                'students' => Auth::user()->account->students()
+                    ->orderByName()
+                    ->get()
+                    ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+                'teachers' => [],  // Учні не можуть запрошувати вчителів
+                'parents' => [],   // Учні не можуть запрошувати батьків
+                'types' => Event::getTypes(),
+                'eventTypes' => Event::getTypes(),
+                'isStudent' => true,
+            ]);
         }
         
-        // Get selected date from calendar if available
-        $selectedDate = request()->query('date') ? request()->query('date') : now()->format('Y-m-d');
+        // Перевіряємо, чи є користувач батьком
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати події.');
+        }
         
         return Inertia::render('Events/Create', [
-            'types' => $types,
-            'selectedDate' => $selectedDate,
             'students' => Auth::user()->account->students()
                 ->orderByName()
                 ->get()
-                ->map
-                ->only('id', 'name'),
-            // Show teachers and parents only for non-students
-            'teachers' => !$user->isStudent() ? Auth::user()->account->teachers()
-                ->orderBy('last_name')
+                ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+            'teachers' => Auth::user()->account->teachers()
+                ->orderByName()
                 ->get()
-                ->map
-                ->only('id', 'name') : [],
-            'parents' => !$user->isStudent() ? Auth::user()->account->parents()
-                ->orderBy('last_name')
+                ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+            'parents' => Auth::user()->account->parents()
+                ->orderByName()
                 ->get()
-                ->map
-                ->only('id', 'name') : [],
+                ->map->only('id', 'first_name', 'last_name', 'email', 'name'),
+            'types' => Event::getTypes(),
+            'eventTypes' => Event::getTypes(),
+            'isStudent' => false,
         ]);
     }
 
@@ -175,80 +190,75 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
+        // Якщо це батько, забороняємо створення подій
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати події.');
+        }
+        
         $validated = request()->validate([
             'title' => ['required', 'max:100'],
-            'type' => ['required', 'in:' . implode(',', array_keys(Event::getTypes()))],
+            'type' => ['required', 'in:'.implode(',', array_keys(Event::getTypes()))],
             'start_date' => ['required', 'date'],
             'duration' => ['required', 'integer', 'min:1'],
             'content' => ['nullable', 'string'],
+            'location' => ['nullable', 'max:150'],
+            'online_link' => ['nullable', 'url', 'max:255'],
             'is_content_hidden' => ['boolean'],
-            'location' => ['nullable', 'string', 'max:100'],
-            'online_link' => ['nullable', 'url', 'max:200'],
-            'tasks' => ['nullable', 'string'],
-            'student_ids' => ['array'],
-            'student_ids.*.id' => ['exists:contacts,id'],
-            'teacher_ids' => ['array'],
-            'teacher_ids.*.id' => ['exists:teachers,id'],
-            'parent_ids' => ['array'],
-            'parent_ids.*.id' => ['exists:parent_models,id'],
-            'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:102400'], // 100MB limit (in KB)
+            'students' => ['array'],
+            'students.*.id' => ['exists:contacts,id'],
+            'teachers' => ['array'],
+            'teachers.*.id' => ['exists:teachers,id'],
+            'parents' => ['array'],
+            'parents.*.id' => ['exists:parent_models,id'],
         ]);
-
-        // For students, enforce that they can only create personal events and can't invite teachers or parents
+        
+        // Якщо користувач - учень, обмежуємо доступ до додавання вчителів та батьків
         if ($user->isStudent()) {
-            if ($validated['type'] !== Event::TYPE_PERSONAL) {
-                return back()->with('error', __('Учні можуть створювати тільки особисті події'));
-            }
-            
-            if (!empty($validated['teacher_ids'])) {
-                return back()->with('error', __('Учні не можуть запрошувати вчителів на події'));
-            }
-            
-            if (!empty($validated['parent_ids'])) {
-                return back()->with('error', __('Учні не можуть запрошувати батьків на події'));
-            }
+            // Обнуляємо списки вчителів та батьків, щоб учень не міг їх додати
+            $validated['teachers'] = [];
+            $validated['parents'] = [];
         }
-
+        
         $event = Auth::user()->account->events()->create([
             'title' => $validated['title'],
             'type' => $validated['type'],
             'start_date' => $validated['start_date'],
             'duration' => $validated['duration'],
-            'content' => $validated['content'],
+            'content' => $validated['content'] ?? '',
+            'location' => $validated['location'] ?? null,
+            'online_link' => $validated['online_link'] ?? null,
             'is_content_hidden' => $validated['is_content_hidden'] ?? false,
-            'location' => $validated['location'],
-            'online_link' => $validated['online_link'],
-            'tasks' => $validated['tasks'],
             'created_by' => Auth::id(),
         ]);
-
-        if (!empty($validated['student_ids'])) {
-            $event->students()->attach(collect($validated['student_ids'])->pluck('id'));
+        
+        // Додаємо студентів
+        if (!empty($validated['students'])) {
+            $studentIds = collect($validated['students'])->pluck('id');
+            $event->students()->attach($studentIds, ['status' => 'pending']);
         }
-
-        if (!empty($validated['teacher_ids'])) {
-            $event->teachers()->attach(collect($validated['teacher_ids'])->pluck('id'));
+        
+        // Додаємо вчителів (тільки якщо не учень)
+        if (!empty($validated['teachers']) && !$user->isStudent()) {
+            $teacherIds = collect($validated['teachers'])->pluck('id');
+            $event->teachers()->attach($teacherIds, ['status' => 'pending']);
         }
-
-        if (!empty($validated['parent_ids'])) {
-            $event->parents()->attach(collect($validated['parent_ids'])->pluck('id'));
+        
+        // Додаємо батьків (тільки якщо не учень)
+        if (!empty($validated['parents']) && !$user->isStudent()) {
+            $parentIds = collect($validated['parents'])->pluck('id');
+            $event->parents()->attach($parentIds, ['status' => 'pending']);
         }
-
-        // Upload attachments if any
-        if (request()->hasFile('attachments')) {
-            foreach (request()->file('attachments') as $file) {
-                $path = $file->store('event-attachments');
-                $event->attachments()->create([
-                    'filename' => $path,
-                    'original_filename' => $file->getClientOriginalName(),
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                ]);
+        
+        // Якщо учень створив подію, автоматично додаємо його самого до події
+        if ($user->isStudent()) {
+            // Знаходимо студента за email користувача
+            $student = Student::where('email', $user->email)->first();
+            if ($student) {
+                $event->students()->attach($student->id, ['status' => 'accepted']);
             }
         }
-
-        return Redirect::route('events.index')->with('success', __('Event created.'));
+        
+        return Redirect::route('events.index')->with('success', 'Подію створено.');
     }
 
     public function edit(Event $event)
@@ -496,6 +506,26 @@ class EventsController extends Controller
             'attachments'
         ]);
         
+        // Check if user is participant or creator
+        $isParticipant = false;
+        $isCreator = $event->created_by === $user->id;
+        $isAdmin = $user->isAdmin();
+        
+        if ($user->isStudent() && $user->contactId() && $event->students->contains('id', $user->contactId())) {
+            $isParticipant = true;
+        } elseif ($user->isTeacher() && $user->teacherId() && $event->teachers->contains('id', $user->teacherId())) {
+            $isParticipant = true;
+        } elseif ($user->isParent() && $user->parentId() && $event->parents->contains('id', $user->parentId())) {
+            $isParticipant = true;
+        }
+        
+        // If user is not a participant, creator, or admin, return an error
+        if (!$isParticipant && !$isCreator && !$isAdmin) {
+            return response()->json([
+                'error' => 'Ви не є учасником цієї події.'
+            ], 403);
+        }
+        
         // Determine if the user can view content (if it's hidden)
         $canViewContent = !$event->is_content_hidden || 
                         $event->created_by === $user->id || 
@@ -522,19 +552,83 @@ class EventsController extends Controller
                 ],
                 'created_by' => $event->creator->name,
                 'created_by_id' => $event->created_by,
-                'attachments' => $event->attachments->map(function ($attachment) {
+                'attachments' => $event->attachments->map(function ($attachment) use ($event, $user) {
                     return [
                         'id' => $attachment->id,
                         'original_filename' => $attachment->original_filename,
                         'mime_type' => $attachment->mime_type,
                         'size' => $attachment->size,
                         'download_url' => route('events.attachments.download', [$attachment->event_id, $attachment->id]),
-                        'can_delete' => Auth::user()->id === $event->created_by || Auth::user()->isAdmin(),
+                        'can_delete' => $user->id === $event->created_by || $user->isAdmin(),
                     ];
                 }),
             ],
             'canViewContent' => $canViewContent,
+            'isParticipant' => $isParticipant,
         ]);
+    }
+
+    /**
+     * Update the participation status for the current user for this event.
+     *
+     * @param int $eventId
+     * @return \Illuminate\Http\Response
+     */
+    public function updateParticipation($eventId)
+    {
+        // Find the event by ID
+        $event = Event::findOrFail($eventId);
+        
+        $user = Auth::user();
+        $status = request()->input('status');
+
+        // Validate the status
+        request()->validate([
+            'status' => ['required', 'in:accepted,declined,pending'],
+        ]);
+
+        $contactId = $user->contactId();
+        $teacherId = $user->teacherId();
+        $parentId = $user->parentId();
+
+        // Update the participation status based on user role
+        $updated = false;
+        
+        if ($user->isStudent() && $contactId && $event->students->contains('id', $contactId)) {
+            $event->students()->updateExistingPivot($contactId, ['status' => $status]);
+            $updated = true;
+        } elseif ($user->isTeacher() && $teacherId && $event->teachers->contains('id', $teacherId)) {
+            $event->teachers()->updateExistingPivot($teacherId, ['status' => $status]);
+            $updated = true;
+        } elseif ($user->isParent() && $parentId && $event->parents->contains('id', $parentId)) {
+            $event->parents()->updateExistingPivot($parentId, ['status' => $status]);
+            $updated = true;
+        }
+
+        if (!$updated) {
+            if (request()->header('X-Inertia')) {
+                // For Inertia requests, redirect to calendar with a flash message
+                return redirect()->route('events.calendar')->with('error', 'Ви не є учасником цієї події або не маєте дозволу змінювати статус участі.');
+            } elseif (request()->wantsJson()) {
+                return response()->json([
+                    'error' => 'Ви не є учасником цієї події або не маєте дозволу змінювати статус участі.'
+                ], 403);
+            }
+            
+            return redirect()->back()->with('error', 'Ви не є учасником цієї події або не маєте дозволу змінювати статус участі.');
+        }
+        
+        // For Inertia requests, redirect back with a flash message
+        if (request()->header('X-Inertia')) {
+            return back()->with('success', 'Ваш статус участі оновлено.');
+        } elseif (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Ваш статус участі оновлено.'
+            ]);
+        }
+        
+        return redirect()->back()->with('success', 'Ваш статус участі оновлено.');
     }
 
     /**
@@ -545,19 +639,28 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
-        // Parents can't create events
+        // Учні можуть створювати події для себе та інших учнів
+        if ($user->isStudent()) {
+            return response()->json([
+                'success' => true,
+                'can_create' => true,
+                'is_student' => true,
+                'message' => __('Учні можуть створювати події тільки для інших учнів')
+            ]);
+        }
+        
+        // Батьки не можуть створювати події
         if ($user->isParent()) {
             return response()->json([
                 'message' => __('Батьки не можуть створювати або змінювати події')
             ], 403);
         }
         
-        // Students have limited permissions (handled in other methods)
-        
-        // All other users (teachers, admins) can create events
+        // Всі інші користувачі (вчителі, адміни) можуть створювати події
         return response()->json([
             'success' => true,
-            'can_create' => true
+            'can_create' => true,
+            'is_student' => false
         ]);
     }
     
@@ -572,21 +675,43 @@ class EventsController extends Controller
         $currentDate = now()->format('Y-m-d');
         
         // Get events for the calendar
-        $events = Event::where(function($query) use ($user) {
-                // Get events where the user is a participant
-                $query->whereHas('students', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                })
-                ->orWhereHas('teachers', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                })
-                ->orWhereHas('parents', function($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                });
-            })
-            ->where('start_date', '>=', now()->subDays(30))
-            ->where('start_date', '<=', now()->addDays(60))
-            ->get()
+        $query = Event::query();
+        
+        // If user is admin, show all events
+        if ($user->isAdmin()) {
+            // Admin can see all events
+        } else {
+            // Non-admin users can only see events they're related to
+            $query->where(function($subquery) use ($user) {
+                // Events created by the user
+                $subquery->where('created_by', $user->id);
+                
+                // Events where the user is a participant
+                if ($user->isStudent() && $user->contactId()) {
+                    $subquery->orWhereHas('students', function($q) use ($user) {
+                        $q->where('id', $user->contactId());
+                    });
+                }
+                
+                if ($user->isTeacher() && $user->teacherId()) {
+                    $subquery->orWhereHas('teachers', function($q) use ($user) {
+                        $q->where('id', $user->teacherId());
+                    });
+                }
+                
+                if ($user->isParent() && $user->parentId()) {
+                    $subquery->orWhereHas('parents', function($q) use ($user) {
+                        $q->where('id', $user->parentId());
+                    });
+                }
+            });
+        }
+        
+        // Time range filter (always apply this regardless of user role)
+        $query->where('start_date', '>=', now()->subDays(30))
+              ->where('start_date', '<=', now()->addDays(60));
+        
+        $events = $query->get()
             ->map(function ($event) {
                 return [
                     'id' => $event->id,

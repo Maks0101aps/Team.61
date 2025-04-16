@@ -16,10 +16,15 @@
             <option :value="true">Yes</option>
             <option :value="false">No</option>
           </select-input>
-          <file-input v-model="form.photo" :error="form.errors.photo" class="pb-8 pr-6 w-full lg:w-1/2" type="file" accept="image/*" label="Photo" />
+          <div class="pb-8 pr-6 w-full lg:w-1/2">
+            <file-input v-model="form.photo" :error="form.errors.photo" type="file" accept="image/*" label="Photo" />
+            <p class="mt-1 text-xs text-gray-500">
+              {{ language === 'uk' ? 'Максимальний розмір файлу: 3МБ' : 'Maximum file size: 3MB' }}
+            </p>
+          </div>
         </div>
         <div class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <loading-button :loading="form.processing" class="btn-indigo" type="submit">Create User</loading-button>
+          <loading-button :loading="form.processing" class="btn-indigo" buttonType="submit">Create User</loading-button>
         </div>
       </form>
     </div>
@@ -47,6 +52,7 @@ export default {
   remember: 'form',
   data() {
     return {
+      language: localStorage.getItem('language') || 'uk',
       form: this.$inertia.form({
         first_name: '',
         last_name: '',

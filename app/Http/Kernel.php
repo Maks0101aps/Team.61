@@ -61,13 +61,15 @@ class Kernel extends HttpKernel
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'password.change' => \App\Http\Middleware\RequirePasswordChange::class,
         'role' => \App\Http\Middleware\CheckRole::class,
-        'signed' => \App\Http\Middleware\ValidateSignature::class,
+        'signed' => \Illuminate\Auth\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'student' => \App\Http\Middleware\CheckStudentRole::class,
         'parent' => \App\Http\Middleware\CheckParentRole::class,
         'student.event' => \App\Http\Middleware\CheckStudentEventAccess::class,
         'parent.event' => \App\Http\Middleware\CheckParentEventAccess::class,
+        'restrict.student' => \App\Http\Middleware\RestrictStudentActions::class,
     ];
 } 

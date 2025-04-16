@@ -300,7 +300,12 @@ export default {
       this.isKyivSelected = ['Київ', 'Киев', 'Kyiv'].includes(this.form.city);
     },
     updateLanguage(event) {
-      this.language = event.detail.language;
+      // Handle both formats: detail as array [lang] and detail as object {language: lang}
+      if (Array.isArray(event.detail)) {
+        this.language = event.detail[0];
+      } else if (event.detail && event.detail.language) {
+        this.language = event.detail.language;
+      }
     }
   },
   computed: {

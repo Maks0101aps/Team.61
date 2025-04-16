@@ -20,6 +20,8 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\GoogleCalendarController;
+use App\Http\Controllers\Auth\ChangePasswordController;
+use App\Http\Controllers\TestController;
 
 
 
@@ -74,13 +76,25 @@ Route::post('password/reset', [ResetPasswordController::class, 'reset'])
     ->name('password.update')
     ->middleware('guest');
 
+// Смена пароля для студентов при первом входе
+Route::get('password/change', [ChangePasswordController::class, 'showChangeForm'])
+    ->name('password.change')
+    ->middleware('auth');
+
+Route::post('password/change', [ChangePasswordController::class, 'change'])
+    ->name('password.change.update')
+    ->middleware('auth');
+
+// Тестовый маршрут для проверки флага password_change_required
+Route::get('/test-password-change', [TestController::class, 'testPasswordChange']);
+Route::get('/set-password-change/{studentId}', [TestController::class, 'setPasswordChangeFlag']);
 
 Route::get('/', [DashboardController::class, 'index'])
     ->name('dashboard')
-    ->middleware(['auth', 'verified']);
+    ->middleware(['auth', 'verified', 'password.change']);
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UsersController::class, 'create'])->name('users.create');
     Route::post('/users', [UsersController::class, 'store'])->name('users.store');
@@ -91,7 +105,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/users/{user}/restore', [UsersController::class, 'restore'])->name('users.restore');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/parents', [ParentsController::class, 'index'])->name('parents.index');
     Route::get('/parents/create', [ParentsController::class, 'create'])->name('parents.create');
     Route::post('/parents', [ParentsController::class, 'store'])->name('parents.store');
@@ -103,7 +122,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/teachers', [TeachersController::class, 'index'])->name('teachers.index');
     Route::get('/teachers/create', [TeachersController::class, 'create'])->name('teachers.create');
     Route::get('/teachers/cities/{region}', [TeachersController::class, 'getCitiesByRegion'])->name('teachers.cities.by_region');
@@ -116,11 +140,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/images/{path}', [ImagesController::class, 'show'])->name('images.show')->where('path', '.*');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/events', [EventsController::class, 'index'])->name('events.index');
     Route::get('/events/create-permissions', [EventsController::class, 'checkCreatePermissions'])->name('events.create.permissions');
     Route::get('/events/create', [EventsController::class, 'create'])->name('events.create');
@@ -135,7 +164,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/calendar', [EventsController::class, 'calendar'])->name('events.calendar');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+// Routes accessible to all authenticated users including students
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
+    Route::put('/events/{eventId}/participation', [EventsController::class, 'updateParticipation'])->name('events.participation.update');
+});
+
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/tasks', [TasksController::class, 'index'])->name('tasks.index');
     Route::get('/tasks/create', [TasksController::class, 'create'])->name('tasks.create');
     Route::post('/tasks', [TasksController::class, 'store'])->name('tasks.store');
@@ -147,7 +186,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware([
+    'auth', 
+    'verified', 
+    'password.change', 
+    \App\Http\Middleware\RestrictStudentActions::class
+])->group(function () {
     Route::get('/students', [StudentsController::class, 'index'])->name('students.index');
     Route::get('/students/create', [StudentsController::class, 'create'])->name('students.create');
     Route::post('/students', [StudentsController::class, 'store'])->name('students.store');
@@ -158,7 +202,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/students/{student}/restore', [StudentsController::class, 'restore'])->name('students.restore');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/cities', [CitiesController::class, 'index'])->name('cities.index');
     Route::get('/cities/{region}', [CitiesController::class, 'getCitiesByRegion'])->name('cities.by_region');
 });
@@ -168,19 +212,19 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/public/cities/{region}', [CitiesController::class, 'getCitiesByRegion'])->name('cities.public.by_region');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/api/registration/helpers', [RegisterController::class, 'getHelpers'])->name('registration.helpers');
     Route::get('/api/registration/parent/{id}', [RegisterController::class, 'getParentInfo'])->name('registration.parent.info');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
     Route::get('/reports/students', [ReportsController::class, 'students'])->name('reports.students');
     Route::get('/reports/teachers', [ReportsController::class, 'teachers'])->name('reports.teachers');
     Route::get('/reports/events', [ReportsController::class, 'events'])->name('reports.events');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'password.change'])->group(function () {
     Route::get('/calendar/settings', [GoogleCalendarController::class, 'settings'])->name('calendar.settings');
     Route::get('/google-calendar/redirect', [GoogleCalendarController::class, 'redirectToGoogle'])->name('google.calendar.redirect');
     Route::get('/google-calendar/callback', [GoogleCalendarController::class, 'handleGoogleCallback'])->name('google.calendar.callback');
@@ -190,6 +234,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // API Endpoint for events (temporary fix)
-Route::get('/api/events/{event}', [EventsController::class, 'apiGetEvent'])->name('api.events.show')->middleware(['auth', 'verified']);
+Route::get('/api/events/{event}', [EventsController::class, 'apiGetEvent'])->name('api.events.show')->middleware(['auth', 'verified', 'password.change']);
 
 

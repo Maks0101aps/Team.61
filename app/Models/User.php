@@ -9,6 +9,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Contact;
+use App\Models\Teacher;
+use App\Models\ParentModel;
 
 class User extends Authenticatable
 {
@@ -17,6 +20,7 @@ class User extends Authenticatable
     // User roles
     const ROLE_TEACHER = 'teacher';
     const ROLE_PARENT = 'parent';
+    const ROLE_STUDENT = 'student';
 
     /**
      * The attributes that are mass assignable.
@@ -31,6 +35,10 @@ class User extends Authenticatable
         'first_name',
         'last_name',
         'middle_name',
+        'account_id',
+        'password_change_required',
+        'photo_path',
+        'owner',
     ];
 
     /**
@@ -53,6 +61,7 @@ class User extends Authenticatable
         return [
             'owner' => 'boolean',
             'email_verified_at' => 'datetime',
+            'password_change_required' => 'boolean',
         ];
     }
 
@@ -81,6 +90,11 @@ class User extends Authenticatable
         return $this->email === 'johndoe@example.com';
     }
 
+    public function isAdmin()
+    {
+        return $this->owner === true;
+    }
+
     public function isTeacher()
     {
         return $this->role === self::ROLE_TEACHER;
@@ -89,6 +103,50 @@ class User extends Authenticatable
     public function isParent()
     {
         return $this->role === self::ROLE_PARENT;
+    }
+
+    public function isStudent()
+    {
+        return $this->role === self::ROLE_STUDENT;
+    }
+
+    /**
+     * Get the contact ID for the user if they are a student
+     */
+    public function contactId()
+    {
+        if (!$this->isStudent()) {
+            return null;
+        }
+
+        $student = Contact::where('email', $this->email)->first();
+        return $student ? $student->id : null;
+    }
+
+    /**
+     * Get the teacher ID for the user if they are a teacher
+     */
+    public function teacherId()
+    {
+        if (!$this->isTeacher()) {
+            return null;
+        }
+
+        $teacher = Teacher::where('email', $this->email)->first();
+        return $teacher ? $teacher->id : null;
+    }
+
+    /**
+     * Get the parent ID for the user if they are a parent
+     */
+    public function parentId()
+    {
+        if (!$this->isParent()) {
+            return null;
+        }
+
+        $parent = ParentModel::where('email', $this->email)->first();
+        return $parent ? $parent->id : null;
     }
 
     public function scopeOrderByName($query)

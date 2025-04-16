@@ -1,6 +1,7 @@
 <template>
   <div>
     <Head :title="event.title" />
+    
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-indigo-400 hover:text-indigo-600" href="/events">Події</Link>
       <span class="text-indigo-400 font-medium">/</span>
@@ -36,7 +37,7 @@
                 </span>
               </p>
               
-              <div class="flex space-x-2">
+              <div v-if="isParticipant" class="flex space-x-2">
                 <button
                   @click="updateParticipation('accepted')"
                   class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none"
@@ -51,6 +52,9 @@
                 >
                   Відхилити
                 </button>
+              </div>
+              <div v-else class="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-yellow-700">
+                <p>Ви не є учасником цієї події, тому не можете змінювати статус участі.</p>
               </div>
             </div>
           </div>
@@ -211,6 +215,10 @@ export default {
   props: {
     event: Object,
     canViewContent: Boolean,
+    isParticipant: {
+      type: Boolean,
+      default: false
+    },
   },
   data() {
     return {
@@ -258,7 +266,12 @@ export default {
     updateParticipation(status) {
       this.$inertia.put(`/events/${this.event.id}/participation`, {
         status: status
-      })
+      }, {
+        preserveScroll: true,
+        onSuccess: () => {
+          this.event.participation_status = status;
+        },
+      });
     },
     addComment() {
       this.form.post(`/events/${this.event.id}/comments`, {

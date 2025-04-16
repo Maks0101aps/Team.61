@@ -254,7 +254,7 @@
           >
             Видалити подію
           </button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">
+          <loading-button :loading="form.processing" class="btn-indigo ml-auto" buttonType="submit">
             Оновити подію
           </loading-button>
         </div>
