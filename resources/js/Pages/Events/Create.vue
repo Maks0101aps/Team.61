@@ -1,21 +1,21 @@
 <template>
   <div>
-    <Head title="Створити подію" />
+    <Head :title="language === 'uk' ? 'Створити подію' : 'Create Event'" />
     
     <!-- Header with breadcrumbs and title -->
     <div class="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <div>
         <div class="flex items-center">
           <Link class="text-blue-600 hover:text-blue-700 transition-colors duration-200" href="/events">
-            Події
+            {{ language === 'uk' ? 'Події' : 'Events' }}
           </Link>
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
-          <span class="text-gray-700">Створення</span>
+          <span class="text-gray-700">{{ language === 'uk' ? 'Створення' : 'Creation' }}</span>
         </div>
         <h1 class="mt-1 text-3xl font-bold text-gray-900">
-          Створення події
+          {{ language === 'uk' ? 'Створення події' : 'Create Event' }}
         </h1>
       </div>
       <div class="mt-4 sm:mt-0">
@@ -25,7 +25,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Назад
+          {{ language === 'uk' ? 'Назад' : 'Back' }}
         </Link>
       </div>
     </div>
@@ -36,10 +36,10 @@
         <!-- Form header -->
         <div class="px-8 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
           <h2 class="text-lg font-medium text-gray-900">
-            Інформація про подію
+            {{ language === 'uk' ? 'Інформація про подію' : 'Event Information' }}
           </h2>
           <p class="mt-1 text-sm text-gray-600">
-            Заповніть дані для створення нової події в системі
+            {{ language === 'uk' ? 'Заповніть дані для створення нової події в системі' : 'Fill in the details to create a new event in the system' }}
           </p>
         </div>
         
@@ -48,24 +48,24 @@
           <!-- Basic Info Section -->
           <div class="mb-8">
             <h3 class="text-base font-medium text-gray-900 mb-4">
-              Основна інформація
+              {{ language === 'uk' ? 'Основна інформація' : 'Basic Information' }}
             </h3>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <text-input 
                 v-model="form.title" 
                 :error="form.errors.title" 
-                label="Назва події" 
-                help-text="Введіть інформативну назву для події"
+                :label="language === 'uk' ? 'Назва події' : 'Event Name'" 
+                :help-text="language === 'uk' ? 'Введіть інформативну назву для події' : 'Enter an informative name for the event'"
               />
               
               <div v-if="isStudent">
                 <div class="border border-amber-200 bg-amber-50 rounded-md p-4">
-                  <div class="text-sm font-medium text-amber-800 mb-1">Тип події</div>
+                  <div class="text-sm font-medium text-amber-800 mb-1">{{ language === 'uk' ? 'Тип події' : 'Event Type' }}</div>
                   <div class="text-sm text-amber-700">
-                    Учні можуть створювати тільки особисті події.
+                    {{ language === 'uk' ? 'Учні можуть створювати тільки особисті події.' : 'Students can only create personal events.' }}
                   </div>
                   <div class="mt-2 font-semibold">
-                    Тип: Особиста подія
+                    {{ language === 'uk' ? 'Тип: Особиста подія' : 'Type: Personal event' }}
                   </div>
                 </div>
                 <input type="hidden" v-model="form.type" />
@@ -74,10 +74,10 @@
                 v-else
                 v-model="form.type" 
                 :error="form.errors.type" 
-                label="Тип події"
-                help-text="Оберіть тип події для правильної категоризації"
+                :label="language === 'uk' ? 'Тип події' : 'Event Type'"
+                :help-text="language === 'uk' ? 'Оберіть тип події для правильної категоризації' : 'Choose the event type for proper categorization'"
               >
-                <option value="" disabled>Оберіть тип події</option>
+                <option value="" disabled>{{ language === 'uk' ? 'Оберіть тип події' : 'Select event type' }}</option>
                 <option v-for="(label, value) in types" :key="value" :value="value">{{ label }}</option>
               </select-input>
             </div>
@@ -86,23 +86,23 @@
           <!-- Timing Section -->
           <div class="mb-8">
             <h3 class="text-base font-medium text-gray-900 mb-4">
-              Часова інформація
+              {{ language === 'uk' ? 'Часова інформація' : 'Time Information' }}
             </h3>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <text-input 
                 v-model="form.start_date" 
                 :error="form.errors.start_date" 
-                label="Дата початку" 
+                :label="language === 'uk' ? 'Дата початку' : 'Start Date'" 
                 type="datetime-local"
-                help-text="Вкажіть дату і час початку події"
+                :help-text="language === 'uk' ? 'Вкажіть дату і час початку події' : 'Specify the date and time of the event start'"
               />
               
               <text-input 
                 v-model="form.duration" 
                 :error="form.errors.duration" 
-                label="Тривалість (у хвилинах)" 
+                :label="language === 'uk' ? 'Тривалість (у хвилинах)' : 'Duration (in minutes)'" 
                 type="number"
-                help-text="Вкажіть тривалість події у хвилинах"
+                :help-text="language === 'uk' ? 'Вкажіть тривалість події у хвилинах' : 'Specify the duration of the event in minutes'"
               />
             </div>
           </div>
@@ -110,22 +110,22 @@
           <!-- Location Section -->
           <div class="mb-8">
             <h3 class="text-base font-medium text-gray-900 mb-4">
-              Місце проведення
+              {{ language === 'uk' ? 'Місце проведення' : 'Location' }}
             </h3>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <text-input 
                 v-model="form.location" 
                 :error="form.errors.location" 
-                label="Фізичне місце" 
-                help-text="Вкажіть фізичне місце проведення (за наявності)"
+                :label="language === 'uk' ? 'Фізичне місце' : 'Physical Location'" 
+                :help-text="language === 'uk' ? 'Вкажіть фізичне місце проведення (за наявності)' : 'Specify the physical location (if applicable)'"
               />
               
               <text-input 
                 v-model="form.online_link" 
                 :error="form.errors.online_link" 
-                label="Посилання для онлайн-участі" 
+                :label="language === 'uk' ? 'Посилання для онлайн-участі' : 'Online Meeting Link'" 
                 type="url"
-                help-text="Вкажіть посилання для онлайн-участі (за наявності)"
+                :help-text="language === 'uk' ? 'Вкажіть посилання для онлайн-участі (за наявності)' : 'Specify the link for online participation (if applicable)'"
               />
             </div>
           </div>
@@ -133,24 +133,24 @@
           <!-- Description Section -->
           <div class="mb-8">
             <h3 class="text-base font-medium text-gray-900 mb-4">
-              Опис події
+              {{ language === 'uk' ? 'Опис події' : 'Event Description' }}
             </h3>
             <div class="mb-6">
               <text-area 
                 v-model="form.content" 
                 :error="form.errors.content" 
-                label="Детальний опис" 
+                :label="language === 'uk' ? 'Детальний опис' : 'Detailed Description'" 
                 rows="6"
-                help-text="Детально опишіть подію, включаючи всі важливі деталі"
+                :help-text="language === 'uk' ? 'Детально опишіть подію, включаючи всі важливі деталі' : 'Describe the event in detail, including all important information'"
               />
             </div>
             <div class="mb-6">
               <text-area 
                 v-model="form.tasks" 
                 :error="form.errors.tasks" 
-                label="Завдання" 
+                :label="language === 'uk' ? 'Завдання' : 'Tasks'" 
                 rows="4"
-                help-text="Опишіть завдання, які потрібно виконати в рамках цієї події"
+                :help-text="language === 'uk' ? 'Опишіть завдання, які потрібно виконати в рамках цієї події' : 'Describe the tasks that need to be completed as part of this event'"
               />
             </div>
           </div>
@@ -158,10 +158,10 @@
           <!-- Attachments Section -->
           <div class="mb-8">
             <h3 class="text-base font-medium text-gray-900 mb-4">
-              Файли та посилання
+              {{ language === 'uk' ? 'Файли та посилання' : 'Files and Links' }}
             </h3>
             <div class="mb-6">
-              <label class="form-label">Прикріплені файли:</label>
+              <label class="form-label">{{ language === 'uk' ? 'Прикріплені файли:' : 'Attached Files:' }}</label>
               <div class="mt-2">
                 <input 
                   type="file" 
@@ -186,10 +186,10 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                     <p class="mt-2 text-sm text-gray-600">
-                      Перетягніть файли сюди або клікніть для вибору
+                      {{ language === 'uk' ? 'Перетягніть файли сюди або клікніть для вибору' : 'Drag files here or click to select' }}
                     </p>
                     <p class="mt-1 text-xs text-gray-500">
-                      Максимальний розмір файлу: 100MB
+                      {{ language === 'uk' ? 'Максимальний розмір файлу: 100MB' : 'Maximum file size: 100MB' }}
                     </p>
                   </div>
                 </div>
@@ -197,7 +197,7 @@
               
               <!-- File List -->
               <div v-if="form.attachments.length > 0" class="mt-4">
-                <h4 class="text-sm font-medium text-gray-700 mb-2">Обрані файли:</h4>
+                <h4 class="text-sm font-medium text-gray-700 mb-2">{{ language === 'uk' ? 'Обрані файли:' : 'Selected files:' }}</h4>
                 <ul class="space-y-2">
                   <li v-for="(file, index) in form.attachments" :key="index" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div class="flex items-center">
@@ -231,14 +231,14 @@
           <!-- Participants Section -->
           <div class="mb-4">
             <h3 class="text-base font-medium text-gray-900 mb-4">
-              Учасники події
+              {{ language === 'uk' ? 'Учасники події' : 'Event Participants' }}
             </h3>
             
             <div class="grid grid-cols-1 gap-6">
               <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4">
-                <div class="text-sm font-medium text-amber-800 mb-1">Вчителі</div>
+                <div class="text-sm font-medium text-amber-800 mb-1">{{ language === 'uk' ? 'Вчителі' : 'Teachers' }}</div>
                 <div class="text-sm text-amber-700">
-                  Учні не можуть запрошувати вчителів на події. Це обмеження встановлено системою.
+                  {{ language === 'uk' ? 'Учні не можуть запрошувати вчителів на події. Це обмеження встановлено системою.' : 'Students cannot invite teachers to events. This restriction is set by the system.' }}
                 </div>
               </div>
               <div v-else>
@@ -247,10 +247,10 @@
                   :options="teachers"
                   option-label="name"
                   option-value="id"
-                  label="Вчителі"
-                  placeholder="Оберіть вчителів для події"
+                  :label="language === 'uk' ? 'Вчителі' : 'Teachers'"
+                  :placeholder="language === 'uk' ? 'Оберіть вчителів для події' : 'Choose teachers for the event'"
                   :error="form.errors.teachers"
-                  help-text="Оберіть вчителів, які мають бути присутніми на події"
+                  :help-text="language === 'uk' ? 'Оберіть вчителів, які мають бути присутніми на події' : 'Select teachers who should attend the event'"
                 />
               </div>
               
@@ -259,16 +259,16 @@
                 :options="students"
                 option-label="name"
                 option-value="id"
-                label="Учні"
-                placeholder="Оберіть учнів для події"
+                :label="language === 'uk' ? 'Учні' : 'Students'"
+                :placeholder="language === 'uk' ? 'Оберіть учнів для події' : 'Choose students for the event'"
                 :error="form.errors.students"
-                help-text="Оберіть учнів, які мають бути присутніми на події"
+                :help-text="language === 'uk' ? 'Оберіть учнів, які мають бути присутніми на події' : 'Select students who should attend the event'"
               />
               
               <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4">
-                <div class="text-sm font-medium text-amber-800 mb-1">Батьки</div>
+                <div class="text-sm font-medium text-amber-800 mb-1">{{ language === 'uk' ? 'Батьки' : 'Parents' }}</div>
                 <div class="text-sm text-amber-700">
-                  Учні не можуть запрошувати батьків на події. Це обмеження встановлено системою.
+                  {{ language === 'uk' ? 'Учні не можуть запрошувати батьків на події. Це обмеження встановлено системою.' : 'Students cannot invite parents to events. This restriction is set by the system.' }}
                 </div>
               </div>
               <div v-else>
@@ -277,10 +277,10 @@
                   :options="parents"
                   option-label="name"
                   option-value="id"
-                  label="Батьки"
-                  placeholder="Оберіть батьків для події"
+                  :label="language === 'uk' ? 'Батьки' : 'Parents'"
+                  :placeholder="language === 'uk' ? 'Оберіть батьків для події' : 'Choose parents for the event'"
                   :error="form.errors.parents"
-                  help-text="Оберіть батьків, які мають бути присутніми на події"
+                  :help-text="language === 'uk' ? 'Оберіть батьків, які мають бути присутніми на події' : 'Select parents who should attend the event'"
                 />
               </div>
             </div>
@@ -289,8 +289,8 @@
               <checkbox-input 
                 v-model="form.notify_participants" 
                 :error="form.errors.notify_participants" 
-                label="Повідомити всіх учасників про подію" 
-                help-text="Відмітьте цю опцію, щоб надіслати повідомлення про подію всім обраним учасникам"
+                :label="language === 'uk' ? 'Повідомити всіх учасників про подію' : 'Notify all participants about the event'" 
+                :help-text="language === 'uk' ? 'Відмітьте цю опцію, щоб надіслати повідомлення про подію всім обраним учасникам' : 'Check this option to send a notification about the event to all selected participants'"
               />
             </div>
           </div>
@@ -301,7 +301,7 @@
           <Link 
             href="/events" 
             class="px-4 py-2 mr-3 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            Скасувати
+            {{ language === 'uk' ? 'Скасувати' : 'Cancel' }}
           </Link>
           <loading-button 
             :loading="form.processing" 
@@ -309,7 +309,7 @@
             buttonType="submit" 
             class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
-            Створити подію
+            {{ language === 'uk' ? 'Створити подію' : 'Create Event' }}
           </loading-button>
         </div>
       </form>
@@ -350,6 +350,7 @@ export default {
   },
   data() {
     return {
+      language: localStorage.getItem('language') || 'uk',
       form: this.$inertia.form({
         title: '',
         type: this.$page.props.auth.user.role === 'student' ? 'personal' : '',
@@ -367,6 +368,19 @@ export default {
       }),
       dragover: false,
     }
+  },
+  mounted() {
+    window.addEventListener('language-changed', this.updateLanguage);
+    
+    // Also listen for language changes using the event bus
+    if (this.$languageEventBus) {
+      this.$languageEventBus.on('language-changed', (lang) => {
+        this.language = lang;
+      });
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('language-changed', this.updateLanguage);
   },
   methods: {
     store() {
@@ -436,6 +450,9 @@ export default {
       const minutes = String(d.getMinutes()).padStart(2, '0');
       
       return `${year}-${month}-${day}T${hours}:${minutes}`;
+    },
+    updateLanguage(lang) {
+      this.language = lang;
     }
   },
   computed: {

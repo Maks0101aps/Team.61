@@ -19,7 +19,7 @@ class DashboardController extends Controller
                 return [
                     'id' => $task->id,
                     'title' => $task->title,
-                    'event' => $task->event->title,
+                    'event' => $task->event ? $task->event->title : null,
                     'due_date' => $task->due_date->format('Y-m-d H:i:s'),
                     'completed' => $task->completed,
                 ];

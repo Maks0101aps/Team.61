@@ -316,9 +316,7 @@ export default {
       }
       
       // Apply language translation if needed
-      if (this.language === 'uk') {
-        return result;
-      } else {
+      if (this.language === 'en') {
         return result.map(event => {
           const translatedTitles = {
             'Шкільна олімпіада з математики': 'School Mathematics Olympiad',
@@ -358,6 +356,8 @@ export default {
             location: translatedLocations[event.location] || event.location
           };
         });
+      } else {
+        return result;
       }
     }
   },

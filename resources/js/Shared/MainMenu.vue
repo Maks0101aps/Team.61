@@ -197,4 +197,23 @@ export default {
     transform: scale(1);
   }
 }
+
+/* Стили для мобильных устройств */
+@media (max-width: 768px) {
+  .group {
+    @apply bg-blue-600/30 text-blue-100;
+  }
+  
+  .group:hover {
+    @apply bg-blue-500/50 text-white;
+  }
+  
+  .group svg {
+    @apply fill-blue-300;
+  }
+  
+  .group:hover svg {
+    @apply fill-white;
+  }
+}
 </style>
