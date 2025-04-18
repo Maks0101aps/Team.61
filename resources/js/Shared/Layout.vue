@@ -42,7 +42,7 @@
               </span>
             </div>
             <div class="flex items-center space-x-6">
-              <div class="hidden md:flex items-center">
+              <div class="hidden md:flex items-center space-x-2">
                 <div class="inline-flex rounded-full shadow-md overflow-hidden">
                   <button @click="setLanguage('uk')" 
                           type="button" 
@@ -67,6 +67,8 @@
                           :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                 </div>
+                <!-- Theme Toggle Button -->
+                <theme-toggle />
               </div>
               <dropdown class="mt-1" placement="bottom-end">
                 <template #default>
@@ -127,6 +129,7 @@ import Logo from '@/Shared/Logo.vue'
 import Dropdown from '@/Shared/Dropdown.vue'
 import MainMenu from '@/Shared/MainMenu.vue'
 import FlashMessages from '@/Shared/FlashMessages.vue'
+import ThemeToggle from '@/Components/ThemeToggle.vue'
 
 export default {
   components: {
@@ -136,6 +139,7 @@ export default {
     Link,
     Logo,
     MainMenu,
+    ThemeToggle,
   },
   props: {
     auth: Object,
