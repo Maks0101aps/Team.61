@@ -77,9 +77,9 @@
       </Link>
     </div>
     
-    <!-- Mobile Language Switcher -->
-    <div class="md:hidden mt-12 menu-item" :style="{ animationDelay: '0.8s' }">
-      <div class="px-4">
+    <!-- Language Switcher + Theme Toggle (всегда вместе) -->
+    <div class="mt-12 menu-item flex items-center gap-4" :style="{ animationDelay: '0.8s' }">
+      <div class="px-4 flex-1">
         <p class="text-blue-100 text-xs uppercase font-bold tracking-wider mb-4 flex items-center">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
@@ -105,6 +105,7 @@
           </button>
         </div>
       </div>
+      <ThemeToggle />
     </div>
   </div>
 </template>
@@ -112,11 +113,13 @@
 <script>
 import { Link } from '@inertiajs/vue3'
 import Icon from '@/Shared/Icon.vue'
+import ThemeToggle from '@/Components/ThemeToggle.vue'
 
 export default {
   components: {
     Icon,
     Link,
+    ThemeToggle,
   },
   data() {
     return {
@@ -201,19 +204,48 @@ export default {
 /* Стили для мобильных устройств */
 @media (max-width: 768px) {
   .group {
-    @apply bg-blue-600/30 text-blue-100;
+    @apply bg-blue-600/30 text-blue-100 dark:bg-gray-700/30 dark:text-gray-200;
   }
   
   .group:hover {
-    @apply bg-blue-500/50 text-white;
+    @apply bg-blue-500/50 text-white dark:bg-gray-600/50 dark:text-white;
   }
   
   .group svg {
-    @apply fill-blue-300;
+    @apply fill-blue-300 dark:fill-gray-300;
   }
   
   .group:hover svg {
-    @apply fill-white;
+    @apply fill-white dark:fill-white;
   }
+}
+
+/* Дополнительные стили для темной темы */
+.dark .menu-container {
+    @apply bg-gray-800;
+}
+
+.dark .menu-header {
+    @apply bg-gray-800 text-white;
+}
+
+.dark .menu-item {
+    @apply text-gray-300;
+}
+
+.dark .menu-item:hover {
+    @apply text-white;
+}
+
+.dark .group:not(.bg-gradient-to-r) {
+    @apply text-gray-300 hover:bg-gray-700 hover:text-white;
+}
+
+.dark .group.bg-gradient-to-r {
+    @apply from-blue-600 to-blue-800 text-white shadow-blue-900/50;
+}
+
+.dark .text-blue-100 {
+    @apply text-blue-300;
 }
 </style>

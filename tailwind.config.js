@@ -1,7 +1,13 @@
 import defaultTheme from 'tailwindcss/defaultTheme'
 
+/** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./resources/**/*.{js,vue,blade.php}'],
+  content: [
+    './resources/**/*.blade.php',
+    './resources/**/*.js',
+    './resources/**/*.vue',
+  ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -20,4 +26,5 @@ export default {
       },
     },
   },
+  plugins: [],
 }
