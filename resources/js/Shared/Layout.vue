@@ -24,6 +24,30 @@
               </template>
               <template #dropdown>
                 <div class="mt-2 px-8 py-4 bg-white rounded-lg shadow-xl">
+                  <div class="mb-4 pb-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Мова' : 'Language' }}</span>
+                      <theme-toggle />
+                    </div>
+                    <div class="flex rounded-full shadow-md overflow-hidden">
+                      <button @click="setLanguage('uk')" 
+                              type="button" 
+                              class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
+                              :class="language === 'uk' 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                                : 'bg-white text-gray-700 hover:bg-blue-50'">
+                        <span class="relative z-10">UA</span>
+                      </button>
+                      <button @click="setLanguage('en')" 
+                              type="button" 
+                              class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
+                              :class="language === 'en' 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                                : 'bg-white text-gray-700 hover:bg-blue-50'">
+                        <span class="relative z-10">EN</span>
+                      </button>
+                    </div>
+                  </div>
                   <main-menu />
                 </div>
               </template>
