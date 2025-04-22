@@ -65,6 +65,65 @@
   color: #93C5FD !important; /* text-blue-300 */
 }
 
+/* Fix for the gray box behind the logo text in dark mode */
+.dark .bg-gradient-to-r span {
+  background-color: transparent !important;
+}
+
+/* More specific fix for the header logo text */
+.dark .from-\[\#6CB4EE\].to-\[\#4A90E2\] span,
+.dark .bg-gradient-to-r.from-\[\#6CB4EE\].to-\[\#4A90E2\] span {
+  background-color: transparent !important;
+  color: white !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix for login page title (Шкільний календар) in dark mode */
+.dark h1,
+.dark .text-4xl,
+.dark .text-5xl,
+.dark .text-6xl,
+.dark h1.text-4xl,
+.dark h1.text-5xl,
+.dark h1.text-6xl,
+.dark h1.bg-clip-text {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: #60A5FA !important; /* Use blue-400 for better contrast */
+  box-shadow: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* Fix for SVG text elements in dark mode */
+.dark svg text {
+  fill: currentColor !important;
+  background: none !important;
+  background-color: transparent !important;
+  filter: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* Fix specifically for login page logo */
+.dark svg.logo-text,
+.dark svg text.logo-text,
+.dark .logo-text,
+.dark .bg-gradient-to-br svg text {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-shadow: none !important;
+  stroke: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  fill: #60A5FA !important;
+  color: #60A5FA !important;
+  -webkit-text-fill-color: #60A5FA !important;
+}
+
 /* Фоны */
 .dark .bg-white,
 .dark [class*="bg-white"],

@@ -19,7 +19,7 @@
           <div class="pb-8 pr-6 w-full lg:w-1/2">
             <file-input v-model="form.photo" :error="form.errors.photo" type="file" accept="image/*" label="Photo" />
             <p class="mt-1 text-xs text-gray-500">
-              {{ language === 'uk' ? 'Максимальний розмір файлу: 3МБ' : 'Maximum file size: 3MB' }}
+              {{ language === 'uk' ? 'Максимальний розмір файлу: 2МБ' : 'Maximum file size: 3MB' }}
             </p>
           </div>
         </div>

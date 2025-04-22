@@ -2,7 +2,7 @@
   <Head title="Login" />
   <div class="flex items-center justify-center p-6 min-h-screen bg-gradient-to-br from-blue-50 to-gray-100">
     <div class="w-full max-w-xl">
-      <div class="flex justify-end mb-4">
+      <div class="flex justify-end mb-4 space-x-3">
         <div class="inline-flex rounded-full shadow-md overflow-hidden">
           <button @click="setLanguage('uk')" 
                   type="button" 
@@ -27,6 +27,7 @@
                   :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
           </button>
         </div>
+        <theme-toggle />
       </div>
       
       <logo class="block mx-auto w-full max-w-md" height="100" />
@@ -68,6 +69,7 @@ import { Head, Link } from '@inertiajs/vue3'
 import Logo from '@/Shared/Logo.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
+import ThemeToggle from '@/Components/ThemeToggle.vue'
 
 export default {
   components: {
@@ -76,6 +78,7 @@ export default {
     LoadingButton,
     Logo,
     TextInput,
+    ThemeToggle,
   },
   data() {
     return {

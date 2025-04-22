@@ -23,16 +23,9 @@ const isDark = ref(false);
 
 
 const forceRefresh = () => {
-    
-    const style = document.createElement('style');
-    document.head.appendChild(style);
-    document.head.removeChild(style);
-    
-    
-    document.body.style.display = 'none';
-    setTimeout(() => {
-        document.body.style.display = '';
-    }, 5);
+    // Force a complete page reload instead of just hiding and showing the body
+    // This ensures all CSS is properly applied throughout the application
+    window.location.reload();
 };
 
 const toggleTheme = () => {

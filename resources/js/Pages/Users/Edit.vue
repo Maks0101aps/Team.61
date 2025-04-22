@@ -7,7 +7,7 @@
         <span v-if="user.role !== 'parent'" class="text-indigo-400 font-medium">/</span>
         {{ form.first_name }} {{ form.last_name }}
       </h1>
-      <img v-if="user.photo" class="block ml-4 w-8 h-8 rounded-full" :src="user.photo" />
+      <img v-if="user.photo" class="block ml-4 w-8 h-8 rounded-full" :src="user.photo_path ? `/storage/${user.photo_path}` : user.photo" />
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore"> This user has been deleted. </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -30,7 +30,7 @@
               >
                 <img 
                   class="w-16 h-16 rounded-full object-cover" 
-                  :src="user.photo" 
+                  :src="user.photo_path ? `/storage/${user.photo_path}` : user.photo" 
                   alt="Фото профілю" 
                 />
                 <button 
@@ -56,7 +56,7 @@
                   accept="image/*" 
                   :label="false" />
                 <p class="mt-1 text-xs text-gray-500">
-                  {{ language === 'uk' ? 'Максимальний розмір файлу: 3МБ' : 'Maximum file size: 3MB' }}
+                  {{ language === 'uk' ? 'Максимальний розмір файлу: 2МБ' : 'Maximum file size: 3MB' }}
                 </p>
               </div>
             </div>
@@ -282,14 +282,14 @@ export default {
     },
   },
   mounted() {
-    
+    // Listen for language changes
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue
       }
     })
     
-    
+    // Also listen for custom event
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang
