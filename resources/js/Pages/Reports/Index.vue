@@ -185,7 +185,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang

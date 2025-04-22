@@ -282,14 +282,14 @@ export default {
     },
   },
   mounted() {
-    // Listen for language changes
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue
       }
     })
     
-    // Also listen for custom event
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang

@@ -110,14 +110,14 @@ export default {
     },
   },
   mounted() {
-    // Listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.localLanguage = lang
       })
     }
     
-    // Also listen for storage events for backward compatibility
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.localLanguage = event.newValue

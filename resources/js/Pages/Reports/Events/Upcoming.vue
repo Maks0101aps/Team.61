@@ -305,17 +305,17 @@ export default {
     filteredEvents() {
       let result = this.events;
       
-      // Filter by event type
+      
       if (this.filters.type) {
         result = result.filter(event => event.type === this.filters.type);
       }
       
-      // Filter by organizer
+      
       if (this.filters.organizer) {
         result = result.filter(event => event.organizer === this.filters.organizer);
       }
       
-      // Apply language translation if needed
+      
       if (this.language === 'en') {
         return result.map(event => {
           const translatedTitles = {
@@ -364,7 +364,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;

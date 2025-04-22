@@ -273,7 +273,7 @@ export default {
     }
   },
   created() {
-    // Get real data from props
+    
     if (this.$page.props.initialStudentData) {
       this.attendanceData = this.$page.props.initialStudentData;
     }
@@ -282,18 +282,18 @@ export default {
       this.statistics = this.$page.props.statistics;
     }
     
-    // Add localized names
+    
     this.updateStudentNames();
   },
   computed: {
     filteredAttendanceData() {
       return this.attendanceData.filter(student => {
-        // Filter by group
+        
         if (this.filters.group && !student.group.includes(this.filters.group)) {
           return false;
         }
         
-        // Filter by status
+        
         if (this.filters.status === 'present' && student.attendancePercentage < 90) {
           return false;
         } else if (this.filters.status === 'absent' && student.daysAbsent <= 3) {
@@ -328,7 +328,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;
@@ -345,7 +345,7 @@ export default {
       this.updateStudentNames();
     },
     updateStudentNames() {
-      // Update student names based on language
+      
       this.attendanceData = this.attendanceData.map(student => {
         student.name = this.getLocalizedName(student.id);
         student.group = this.getLocalizedGroup(Math.ceil(student.id / 2));

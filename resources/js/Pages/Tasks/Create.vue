@@ -242,17 +242,17 @@ export default {
     },
   },
   mounted() {
-    // Listen for language changes
+    
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;
       });
     }
     
-    // Listen for storage events for changes from other tabs
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue;

@@ -338,7 +338,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;
@@ -361,7 +361,7 @@ export default {
       this.form.post(`/events/${this.event.id}`, {
         method: 'put',
         onSuccess: () => {
-          // Clear attachments array after successful upload
+          
           this.form.attachments = [];
         }
       })
@@ -408,7 +408,7 @@ export default {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Check file size (100MB limit)
+        
         if (file.size > 100 * 1024 * 1024) {
           alert(`Файл "${file.name}" перевищує ліміт 100MB`);
           continue;

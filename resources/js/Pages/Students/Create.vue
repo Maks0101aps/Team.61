@@ -295,7 +295,7 @@ export default {
       } else if (typeof event === 'string') {
         this.language = event;
       } else {
-        // Если не удалось получить язык из события, берем его из localStorage
+        
         this.language = localStorage.getItem('language') || 'uk';
       }
     },
@@ -310,7 +310,7 @@ export default {
           .then(response => {
             this.cities = response.data.cities;
             
-            // If any of the cities is Kyiv, check and handle it
+            
             const kyivCity = this.cities.find(city => 
               ['Київ', 'Киев', 'Kyiv'].includes(city)
             );
@@ -377,5 +377,5 @@ export default {
 </script>
 
 <style scoped>
-/* Add any specific styles needed for the form here */
+
 </style>

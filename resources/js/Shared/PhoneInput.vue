@@ -61,9 +61,9 @@ export default {
   methods: {
     formatPhoneNumber(value) {
       if (!value) return '+380';
-      
+
       let cleaned = value.replace(/[^\d+]/g, '');
-      
+
       if (!cleaned.startsWith('+380') && cleaned.startsWith('+')) {
         cleaned = '+380' + cleaned.substring(1);
       } else if (!cleaned.startsWith('+')) {
@@ -73,7 +73,7 @@ export default {
           cleaned = '+380' + cleaned;
         }
       }
-      
+
       if (cleaned.length > 13) {
         cleaned = cleaned.substring(0, 13);
       }
@@ -90,7 +90,7 @@ export default {
         event.preventDefault();
         return;
       }
-      
+
       if (!/^\d$/.test(event.key) && !(event.key === '+' && (!this.modelValue || this.modelValue.length === 0))) {
         event.preventDefault();
       }
@@ -105,6 +105,7 @@ export default {
       this.$emit('update:modelValue', formatted);
     },
     onFocus() {
+      // Если поле пустое, автоматически добавляем +380
       if (!this.modelValue) {
         this.$emit('update:modelValue', '+380');
       }

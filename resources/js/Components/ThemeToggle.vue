@@ -21,14 +21,14 @@ import { ref, onMounted, nextTick } from 'vue';
 
 const isDark = ref(false);
 
-// Функция для принудительного обновления стилей страницы
+
 const forceRefresh = () => {
-    // Создаем стиль и добавляем его, затем удаляем, чтобы заставить браузер перерисовать страницу
+    
     const style = document.createElement('style');
     document.head.appendChild(style);
     document.head.removeChild(style);
     
-    // Установим display: none и сразу вернем, чтобы избежать мигания
+    
     document.body.style.display = 'none';
     setTimeout(() => {
         document.body.style.display = '';
@@ -38,8 +38,8 @@ const forceRefresh = () => {
 const toggleTheme = () => {
     isDark.value = !isDark.value;
     
-    // Применяем тему сразу ко всем ключевым элементам
-    const htmlEl = document.documentElement; // html tag
+    
+    const htmlEl = document.documentElement; 
     
     if (isDark.value) {
         htmlEl.classList.add('dark');
@@ -47,7 +47,7 @@ const toggleTheme = () => {
         htmlEl.classList.add('bg-gray-900');
         document.body.classList.add('dark-mode');
         
-        // Специфические фиксы для календаря в темной теме
+        
         const calendarElements = document.querySelectorAll('.calendar, [data-date], .fc-theme-standard td, .fc-theme-standard th, .fc-col-header, .fc-daygrid-body, .fc-scrollgrid');
         calendarElements.forEach(el => {
             el.style.backgroundColor = '#1F2937';
@@ -60,7 +60,7 @@ const toggleTheme = () => {
         htmlEl.classList.add('bg-gray-100');
         document.body.classList.remove('dark-mode');
         
-        // Специфические фиксы для календаря в светлой теме
+        
         const calendarElements = document.querySelectorAll('.calendar, [data-date], .fc-theme-standard td, .fc-theme-standard th, .fc-col-header, .fc-daygrid-body, .fc-scrollgrid');
         calendarElements.forEach(el => {
             el.style.backgroundColor = '#FFFFFF';
@@ -69,16 +69,16 @@ const toggleTheme = () => {
         });
     }
     
-    // Сохраняем выбор пользователя
+    
     localStorage.setItem('theme', isDark.value ? 'dark' : 'light');
     
-    // Принудительно обновляем стили
+    
     forceRefresh();
     
-    // Отправляем событие изменения темы для других компонентов
+    
     window.dispatchEvent(new CustomEvent('theme-changed', { detail: isDark.value ? 'dark' : 'light' }));
     
-    // Также установим или удалим атрибут data-theme для компонентов, которые могут его использовать
+    
     if (isDark.value) {
         document.documentElement.setAttribute('data-theme', 'dark');
     } else {
@@ -87,11 +87,11 @@ const toggleTheme = () => {
 };
 
 onMounted(async () => {
-    // Проверяем текущее состояние темы
+    
     const htmlEl = document.documentElement;
     isDark.value = htmlEl.classList.contains('dark');
 
-    // Загружаем сохраненную тему при монтировании компонента
+    
     const savedTheme = localStorage.getItem('theme') || 
                        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
     
@@ -99,7 +99,7 @@ onMounted(async () => {
         toggleTheme();
     }
     
-    // Слушаем события системных предпочтений
+    
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
         if (!localStorage.getItem('theme')) {
             isDark.value = e.matches;

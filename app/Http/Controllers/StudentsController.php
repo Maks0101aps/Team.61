@@ -176,21 +176,45 @@ class StudentsController extends Controller
             }
         }
         
-        $student->update(
-            Request::validate([
-                'first_name' => ['required', 'max:50'],
-                'middle_name' => ['required', 'max:50'],
-                'last_name' => ['required', 'max:50'],
-                'email' => ['nullable', 'max:50', 'email'],
-                'phone' => ['nullable', 'regex:/^\+380\d{9}$/', 'max:13'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
-                'class' => ['nullable', 'max:10'],
-            ])
-        );
+        $validatedData = Request::validate([
+            'first_name' => ['required', 'max:50'],
+            'middle_name' => ['required', 'max:50'],
+            'last_name' => ['required', 'max:50'],
+            'email' => ['nullable', 'max:50', 'email'],
+            'phone' => ['nullable', 'regex:/^\+380\d{9}$/', 'max:13'],
+            'address' => ['nullable', 'max:150'],
+            'city' => ['nullable', 'max:50'],
+            'region' => ['nullable', 'max:50'],
+            'country' => ['nullable', 'max:2'],
+            'postal_code' => ['nullable', 'max:25'],
+            'class' => ['nullable', 'max:10'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
+        ]);
+        
+        // Remove avatar from validated data before updating student
+        unset($validatedData['avatar']);
+        
+        $student->update($validatedData);
+        
+        // Обработка загрузки аватарки
+        if (Request::file('avatar')) {
+            // Найдем пользователя с таким же email для хранения аватарки
+            $user = User::where('email', $student->email)->first();
+            
+            if ($user) {
+                // Удаляем старое фото, если оно существует
+                if ($user->photo_path) {
+                    $oldPath = storage_path('app/public/' . $user->photo_path);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                }
+                
+                // Сохраняем новое фото
+                $path = Request::file('avatar')->store('students-avatars', 'public');
+                $user->update(['photo_path' => $path]);
+            }
+        }
 
         return Redirect::back()->with('success', 'Інформацію про учня оновлено.');
     }
@@ -240,12 +264,8 @@ class StudentsController extends Controller
         $user = User::where('email', $student->email)->first();
         
         if ($user && $user->photo_path) {
-            return \Illuminate\Support\Facades\URL::route('images.show', [
-                'path' => $user->photo_path, 
-                'w' => 40, 
-                'h' => 40, 
-                'fit' => 'crop'
-            ]);
+            // Return the storage URL directly
+            return '/storage/' . $user->photo_path;
         }
         
         return null;

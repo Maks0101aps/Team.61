@@ -300,7 +300,7 @@ export default {
           .then(response => {
             this.cities = response.data.cities;
             
-            // If any of the cities is Kyiv, check and handle it
+            
             const kyivCity = this.cities.find(city => 
               ['Київ', 'Киев', 'Kyiv'].includes(city)
             );

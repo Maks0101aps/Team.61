@@ -25,6 +25,6 @@
 
 <script>
 export default {
-  // This component will be automatically rerendered with Inertia's page props updates
+  
 }
 </script>

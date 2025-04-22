@@ -286,18 +286,18 @@ export default {
     };
   },
   created() {
-    // Get the selected language from localStorage
+    
     this.language = localStorage.getItem('language') || 'uk';
     
-    // Listen for language change events
+    
     window.addEventListener('languageChanged', this.handleLanguageChange);
     
-    // Load real data from props if available
+    
     if (this.$page.props.summaryData) {
       this.summaryData = this.$page.props.summaryData;
     }
     
-    // Set default date period to current month
+    
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -306,7 +306,7 @@ export default {
     this.datePeriod.to = lastDay.toISOString().split('T')[0];
   },
   beforeUnmount() {
-    // Clean up event listener when component is unmounted
+    
     window.removeEventListener('languageChanged', this.handleLanguageChange);
   },
   methods: {

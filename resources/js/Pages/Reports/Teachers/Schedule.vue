@@ -252,7 +252,7 @@ export default {
     }
   },
   created() {
-    // Load days and periods from props if provided
+    
     if (this.$page.props.days) {
       this.days = this.$page.props.days.map(day => day.toLowerCase());
     }
@@ -265,16 +265,16 @@ export default {
       }));
     }
     
-    // Load teachers and schedule from props
+    
     if (this.$page.props.teacherSchedules) {
       this.teachers = this.$page.props.teacherSchedules.map(teacher => ({
         id: teacher.id,
         name: teacher.name,
-        nameEn: teacher.name,  // We could translate this if needed
+        nameEn: teacher.name,  
         subject: teacher.subject
       }));
       
-      // Convert schedule from the backend format to our component format
+      
       let scheduleItems = [];
       
       this.$page.props.teacherSchedules.forEach(teacher => {
@@ -303,12 +303,12 @@ export default {
     filteredTeachers() {
       let result = this.teachers;
       
-      // Filter by teacher
+      
       if (this.filters.teacher) {
         result = result.filter(teacher => teacher.id.toString() === this.filters.teacher);
       }
       
-      // Filter by subject
+      
       if (this.filters.subject) {
         result = result.filter(teacher => teacher.subject === this.filters.subject);
       }
@@ -319,7 +319,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;
@@ -390,11 +390,11 @@ export default {
         return null;
       }
       
-      // If no teacher filter, show any class scheduled for this period and day
+      
       const scheduleItems = this.schedule.filter(item => item.period === periodId && item.day === day);
       
       if (scheduleItems.length > 0) {
-        // If multiple classes, just show the first one for simplicity
+        
         const item = scheduleItems[0];
         const teacher = this.teachers.find(t => t.id === item.teacherId);
         
@@ -407,16 +407,16 @@ export default {
       return null;
     },
     getTeacherSchedule(teacherId) {
-      // Filter schedule for this teacher
+      
       const teacherSchedule = this.schedule.filter(item => item.teacherId === teacherId);
       
-      // Filter by day if needed
+      
       let filteredSchedule = teacherSchedule;
       if (this.filters.day) {
         filteredSchedule = filteredSchedule.filter(item => item.day === this.filters.day);
       }
       
-      // Group by day
+      
       const groupedByDay = {};
       
       filteredSchedule.forEach(item => {
@@ -434,12 +434,12 @@ export default {
         });
       });
       
-      // Sort lessons by period
+      
       Object.values(groupedByDay).forEach(daySchedule => {
         daySchedule.lessons.sort((a, b) => a.period - b.period);
       });
       
-      // Convert to array sorted by day
+      
       const dayOrder = { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5 };
       return Object.values(groupedByDay).sort((a, b) => dayOrder[a.day] - dayOrder[b.day]);
     },

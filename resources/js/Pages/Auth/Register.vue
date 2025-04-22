@@ -329,7 +329,6 @@ export default {
   data() {
     console.log('Parents received:', this.parents);
     
-    // Выводим детальную информацию о первом родителе для отладки структуры данных
     if (this.parents && this.parents.length > 0) {
       console.log('First parent structure:');
       for (const key in this.parents[0]) {
@@ -405,10 +404,8 @@ export default {
     register() {
       console.log('Register method called');
 
-      // Add basic validation
       this.form.clearErrors();
 
-      // Check if required fields are filled
       if (!this.form.first_name) {
         this.form.errors.first_name = this.language === 'uk' ? 'Ім\'я обов\'язкове' : 'First name is required';
         return;
@@ -434,13 +431,11 @@ export default {
         return;
       }
       
-      // Add validation for phone number
       if (this.form.phone && !this.validatePhoneNumber()) {
         console.log('Phone validation failed');
         return;
       }
       
-      // Add validation for required fields based on role
       if (this.form.role === 'teacher') {
         if (!this.form.subject) {
           this.form.errors.subject = this.language === 'uk' ? 'Оберіть предмет' : 'Please select a subject';
@@ -462,23 +457,18 @@ export default {
         return;
       }
       
-      // Save original phone for restoration if needed
       const originalPhone = this.form.phone;
       
-      // Clean phone number (remove formatting)
       if (this.form.phone) {
         this.form.phone = this.form.phone.replace(/\s+/g, '').replace(/[()-]/g, '');
       }
       
       console.log('Submitting form with data:', this.form);
       
-      // Submit the form
       this.form.post('/register', {
         onFinish: () => {
           console.log('Form submission finished');
-          // Only reset password fields, not the whole form
           this.form.reset('password', 'password_confirmation');
-          // Restore formatted phone number
           this.form.phone = originalPhone;
         },
         onSuccess: () => {
@@ -486,7 +476,6 @@ export default {
         },
         onError: (errors) => {
           console.error('Registration failed with errors:', errors);
-          // Restore formatted phone number
           this.form.phone = originalPhone;
         }
       });
@@ -494,6 +483,10 @@ export default {
     setLanguage(lang) {
       this.language = lang
       localStorage.setItem('language', lang)
+      
+      window.dispatchEvent(new CustomEvent('language-change', {
+        detail: { language: lang }
+      }))
     },
     onRoleChange(role) {
       console.log('Role changed to:', role);
@@ -546,81 +539,63 @@ export default {
     lookupAddressByPostalCode(postalCode) {
       console.log('Looking up address for postal code:', postalCode);
       
-      // Здесь можно реализовать запрос к API Укрпочты или использовать статический словарь индексов
-      // Для демонстрации будем использовать несколько тестовых индексов
       const postalCodeDatabase = {
-        // Киев
         '01001': { region: 'м. Київ', city: 'Київ' },
         '02000': { region: 'м. Київ', city: 'Київ' },
         '03000': { region: 'м. Київ', city: 'Київ' },
         '04000': { region: 'м. Київ', city: 'Київ' },
         
-        // Львовская область
         '79000': { region: 'Львівська область', city: 'Львів' },
         '79013': { region: 'Львівська область', city: 'Львів' },
         '80100': { region: 'Львівська область', city: 'Червоноград' },
         '80300': { region: 'Львівська область', city: 'Жовква' },
         '82100': { region: 'Львівська область', city: 'Дрогобич' },
         
-        // Днепропетровская область
         '49000': { region: 'Дніпропетровська область', city: 'Дніпро' },
         '49044': { region: 'Дніпропетровська область', city: 'Дніпро' },
         '50000': { region: 'Дніпропетровська область', city: 'Кривий Ріг' },
         '51400': { region: 'Дніпропетровська область', city: 'Павлоград' },
         '52200': { region: 'Дніпропетровська область', city: 'Жовті Води' },
         
-        // Одесская область
         '65000': { region: 'Одеська область', city: 'Одеса' },
         '65009': { region: 'Одеська область', city: 'Одеса' },
         '68000': { region: 'Одеська область', city: 'Чорноморськ' },
         '68600': { region: 'Одеська область', city: 'Ізмаїл' },
         '66000': { region: 'Одеська область', city: 'Подільськ' },
         
-        // Харьковская область
         '61000': { region: 'Харківська область', city: 'Харків' },
         '61166': { region: 'Харківська область', city: 'Харків' },
         '62300': { region: 'Харківська область', city: 'Дергачі' },
         '63700': { region: 'Харківська область', city: 'Куп\'янськ' },
         '64700': { region: 'Харківська область', city: 'Зміїв' },
         
-        // Винницкая область
         '21000': { region: 'Вінницька область', city: 'Вінниця' },
         '21100': { region: 'Вінницька область', city: 'Вінниця' },
         '24000': { region: 'Вінницька область', city: 'Могилів-Подільський' },
         
-        // Волынская область
         '43000': { region: 'Волинська область', city: 'Луцьк' },
         '44700': { region: 'Волинська область', city: 'Володимир' },
         '45000': { region: 'Волинська область', city: 'Ковель' },
         
-        // Закарпатская область
         '88000': { region: 'Закарпатська область', city: 'Ужгород' },
         '89600': { region: 'Закарпатська область', city: 'Мукачево' },
         '90500': { region: 'Закарпатська область', city: 'Хуст' },
       };
       
-      // Проверяем, есть ли данные для этого индекса
       const addressInfo = postalCodeDatabase[postalCode];
       
       if (addressInfo) {
         console.log('Found address information:', addressInfo);
         
-        // Устанавливаем регион и загружаем города
         if (addressInfo.region && this.regions.includes(addressInfo.region)) {
           this.form.region = addressInfo.region;
           
-          // Загружаем города для выбранного региона
           this.loadCities().then(() => {
-            // После загрузки городов, выбираем город, если он доступен
             if (addressInfo.city && this.cities.includes(addressInfo.city)) {
               this.form.city = addressInfo.city;
             } else if (addressInfo.city) {
-              // Если город не найден в списке доступных городов, но известен из базы индексов,
-              // можно показать уведомление пользователю или попытаться использовать другой подход
               console.warn('City not found in available cities list:', addressInfo.city);
               
-              // Опциональная обработка - можно добавить город в список доступных
-              // Для целей демонстрации, добавляем город в список, если его там нет
               if (!this.cities.includes(addressInfo.city)) {
                 this.cities.push(addressInfo.city);
                 this.form.city = addressInfo.city;
@@ -636,7 +611,6 @@ export default {
       this.form.city = '';
       this.cities = [];
       
-      // If region is м. Київ, set city to Київ automatically and return
       if (this.form.region === 'м. Київ') {
         this.form.city = 'Київ';
         return Promise.resolve([]);
@@ -648,51 +622,42 @@ export default {
           .then(response => {
             this.cities = response.data.cities;
             console.log('Loaded cities:', this.cities);
-            return this.cities; // Возвращаем массив городов
+            return this.cities;
           })
           .catch(error => {
             console.error('Error loading cities:', error);
-            return []; // В случае ошибки возвращаем пустой массив
+            return [];
           });
       }
-      return Promise.resolve([]); // Если регион не выбран, возвращаем пустой массив
+      return Promise.resolve([]);
     },
     ensurePhonePrefix() {
-      // Если поле пустое, устанавливаем префикс +380
       if (!this.form.phone || this.form.phone.trim() === '') {
         this.form.phone = '+380';
       } 
-      // Если не начинается с +380, добавляем его
       else if (!this.form.phone.startsWith('+380')) {
         this.form.phone = '+380' + this.form.phone.replace(/\D/g, '');
       }
     },
     formatPhoneNumber() {
-      // Сначала убеждаемся, что префикс +380 на месте
       this.ensurePhonePrefix();
       
-      // Удаляем все нецифровые символы, кроме +
       let phoneValue = this.form.phone;
       const hasPlus = phoneValue.startsWith('+');
       
-      // Получаем только цифры
       let digitsOnly = phoneValue.replace(/\D/g, '');
       
-      // Строго ограничиваем до 12 цифр (380 + 9 цифр номера)
       if (digitsOnly.length > 12) {
         digitsOnly = digitsOnly.substring(0, 12);
       }
       
-      // Собираем форматированный номер
       let formatted = '+380';
       
-      // Добавляем оставшиеся цифры номера
       if (digitsOnly.length > 3) {
         const numberPart = digitsOnly.substring(3);
         formatted += numberPart;
       }
       
-      // Форматируем номер в виде +380 XX XXX XX XX
       if (formatted.length > 4) {
         const number = formatted.substring(4);
         formatted = '+380';
@@ -717,16 +682,13 @@ export default {
       const char = String.fromCharCode(event.keyCode || event.which);
       const phoneValue = this.form.phone;
       
-      // Получаем только цифры из текущего значения
       const currentDigits = phoneValue.replace(/\D/g, '');
       
-      // Если уже есть 12 цифр (380 + 9 цифр номера), блокируем ввод
       if (currentDigits.length >= 12) {
         event.preventDefault();
         return;
       }
       
-      // Разрешаем только цифры после +380
       if (phoneValue.startsWith('+380')) {
         if (!/^\d$/.test(char)) {
           event.preventDefault();
@@ -734,7 +696,6 @@ export default {
       }
     },
     validatePhoneNumber() {
-      // Проверяем, что номер соответствует формату +380XXXXXXXXX
       const phoneRegex = /^\+380[0-9]{9}$/;
       const cleanPhone = this.form.phone.replace(/\s+/g, '').replace(/[()-]/g, '');
       
@@ -747,19 +708,15 @@ export default {
       return true;
     },
     onCityChange() {
-      // Reset district when city changes
       this.form.district = '';
     },
     onRegionChange() {
-      // Reset city and district when region changes
       this.form.city = '';
       this.form.district = '';
       
-      // If region is м. Київ, set city to Київ automatically
       if (this.form.region === 'м. Київ') {
         this.form.city = 'Київ';
       } else {
-        // Load cities for other regions
         this.loadCities();
       }
     },
@@ -769,7 +726,6 @@ export default {
       localStorage.setItem('language', 'uk')
     }
     
-    // Debug parents
     console.log('Parents in mounted:', this.parents);
     if (this.parents) {
       console.log('Parents count:', this.parents.length);
@@ -778,7 +734,6 @@ export default {
       }
     }
     
-    // Debug subjects and regions
     console.log('Subjects:', this.subjects);
     console.log('Qualifications:', this.qualifications);
     console.log('Regions:', this.regions);
@@ -814,7 +769,6 @@ export default {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-/* Анимация для формы регистрации */
 .register-form {
   animation: fadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -856,7 +810,6 @@ export default {
   }
 }
 
-/* Анимация при нажатии на ссылку логина */
 .login-link {
   position: relative;
   transition: all 0.3s ease;

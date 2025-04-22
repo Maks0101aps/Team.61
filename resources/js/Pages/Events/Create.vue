@@ -372,7 +372,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;
@@ -384,7 +384,7 @@ export default {
   },
   methods: {
     store() {
-      // If user is a student, ensure teachers and parents arrays are empty
+      
       if (this.isStudent) {
         this.form.teachers = [];
         this.form.parents = [];
@@ -420,7 +420,7 @@ export default {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Check file size (100MB limit)
+        
         if (file.size > 100 * 1024 * 1024) {
           alert(`Файл "${file.name}" перевищує ліміт 100MB`);
           continue;
@@ -433,9 +433,9 @@ export default {
       this.form.attachments.splice(index, 1);
     },
     formatDateTimeForInput(date) {
-      // Format date as YYYY-MM-DDThh:mm
+      
       if (typeof date === 'string' && !date.includes('T')) {
-        // If it's just a date (YYYY-MM-DD), add the current time
+        
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');

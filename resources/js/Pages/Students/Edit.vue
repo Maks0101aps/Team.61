@@ -51,6 +51,14 @@
               {{ language === 'uk' ? 'Особисті дані' : 'Personal Data' }}
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <!-- Только аватар без кнопок -->
+              <div class="md:col-span-2 mb-4">
+                <label class="form-label block mb-2 text-sm font-medium text-gray-700">{{ language === 'uk' ? 'Аватар' : 'Avatar' }}</label>
+                <div class="flex justify-center">
+                  <img v-if="avatarUrl" :src="avatarUrl" class="h-24 w-24 object-cover rounded-full border border-gray-200 shadow-sm" alt="Avatar" />
+                </div>
+              </div>
+              
               <text-input v-model="form.first_name" :error="form.errors.first_name" :label="language === 'uk' ? 'Ім\'я' : 'First Name'" />
               <text-input v-model="form.middle_name" :error="form.errors.middle_name" :label="language === 'uk' ? 'По батькові' : 'Middle Name'" />
               <text-input v-model="form.last_name" :error="form.errors.last_name" :label="language === 'uk' ? 'Прізвище' : 'Last Name'" class="md:col-span-2" />
@@ -209,7 +217,7 @@ import Layout from '@/Shared/Layout.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import SelectInput from '@/Shared/SelectInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
-import PhoneInput from '@/Components/PhoneInput.vue'
+import PhoneInput from '@/Shared/PhoneInput.vue'
 import axios from 'axios'
 
 export default {
@@ -247,6 +255,7 @@ export default {
         country: "UA",
         postal_code: this.student.postal_code,
         class: this.student.class,
+        avatar: null,
       }),
       language: localStorage.getItem('language') || 'uk',
       cities: [],
@@ -254,6 +263,33 @@ export default {
       selectedLetter: null,
       classLetters: ['A', 'B', 'C', 'D', 'E'],
     }
+  },
+  computed: {
+    avatarUrl() {
+      // For photo_path coming from storage
+      if (this.student.photo_path) {
+        return `/storage/${this.student.photo_path}`;
+      }
+      
+      if (this.student.avatar_url && this.student.avatar_url.startsWith('/')) {
+        // Если путь относительный, добавляем базовый URL
+        return window.location.origin + this.student.avatar_url;
+      } else if (this.student.avatar_url) {
+        // Если путь уже полный
+        return this.student.avatar_url;
+      } else if (this.student.avatar) {
+        return this.student.avatar;
+      } else if (this.student.photo_url) {
+        return this.student.photo_url;
+      } else if (this.student.image_url) {
+        return this.student.image_url;
+      }
+      
+      // Запасной вариант - генерируем аватарку
+      return 'https://ui-avatars.com/api/?name=' + 
+        encodeURIComponent(this.student.first_name + ' ' + this.student.last_name) + 
+        '&color=7F9CF5&background=EBF4FF';
+    },
   },
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
@@ -275,6 +311,9 @@ export default {
   },
   methods: {
     update() {
+      // Avatar is not editable from this form
+      this.form.avatar = null;
+      
       this.form.put(`/students/${this.student.id}`);
     },
     destroy() {

@@ -51,6 +51,14 @@
               {{ language === 'uk' ? 'Особисті дані' : 'Personal Information' }}
             </h3>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <!-- Avatar display (read-only) -->
+              <div class="lg:col-span-2 mb-4">
+                <label class="form-label block mb-2 text-sm font-medium text-gray-700">{{ language === 'uk' ? 'Аватар' : 'Avatar' }}</label>
+                <div class="flex justify-center">
+                  <img :src="avatarUrl" class="h-24 w-24 object-cover rounded-full border border-gray-200 shadow-sm" alt="Avatar" />
+                </div>
+              </div>
+              
               <text-input v-model="form.first_name" :error="form.errors.first_name" :label="currentLanguageLabels.first_name" />
               <text-input v-model="form.middle_name" :error="form.errors.middle_name" :label="currentLanguageLabels.middle_name" />
               <text-input v-model="form.last_name" :error="form.errors.last_name" :label="currentLanguageLabels.last_name" />
@@ -239,6 +247,7 @@ export default {
         region: this.teacher.region,
         country: "UA",
         postal_code: this.teacher.postal_code,
+        avatar: null,
       }),
       cities: [],
       language: localStorage.getItem('language') || 'uk',
@@ -255,6 +264,9 @@ export default {
   },
   methods: {
     update() {
+      // Avatar is not editable from this form
+      this.form.avatar = null;
+      
       this.form.put(`/teachers/${this.teacher.id}`);
     },
     destroy() {
@@ -284,6 +296,42 @@ export default {
     }
   },
   computed: {
+    avatarUrl() {
+      // For photo_path coming from storage
+      if (this.teacher.photo_path) {
+        return `/storage/${this.teacher.photo_path}`;
+      }
+      
+      // Check for photo property which contains the uploaded image URL
+      if (this.teacher.photo && this.teacher.photo.startsWith('http')) {
+        return this.teacher.photo;
+      }
+      
+      // Handle case when photo is stored with URL prefix
+      if (this.teacher.photo && this.teacher.photo.startsWith('/')) {
+        return window.location.origin + this.teacher.photo;
+      }
+      
+      // Check other possible properties that might contain the avatar URL
+      const possibleProps = ['avatar_url', 'avatar', 'photo_url', 'image_url'];
+      for (const prop of possibleProps) {
+        if (this.teacher[prop]) {
+          // If URL is relative, make it absolute
+          if (this.teacher[prop].startsWith('/')) {
+            return window.location.origin + this.teacher[prop];
+          }
+          // If URL is already absolute
+          if (this.teacher[prop].startsWith('http')) {
+            return this.teacher[prop];
+          }
+        }
+      }
+      
+      // Fallback to generated avatar
+      return 'https://ui-avatars.com/api/?name=' + 
+        encodeURIComponent(this.teacher.first_name + ' ' + this.teacher.last_name) + 
+        '&color=7F9CF5&background=EBF4FF';
+    },
     currentLanguageLabels() {
       return {
         en: {

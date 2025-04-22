@@ -91,7 +91,7 @@ export default {
       this.resendForm.post('/email/resend', {
         preserveScroll: true,
         onSuccess: () => {
-          // Можно добавить уведомление об успешной отправке
+          
         },
       })
     },

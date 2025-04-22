@@ -230,7 +230,7 @@ export default {
     }
   },
   created() {
-    // Get real data from props
+    
     if (this.$page.props.initialStudentData) {
       this.students = this.$page.props.initialStudentData;
     }
@@ -238,17 +238,17 @@ export default {
   computed: {
     filteredStudents() {
       return this.students.filter(student => {
-        // Filter by grade
+        
         if (this.filters.grade && student.grade.toString() !== this.filters.grade) {
           return false;
         }
         
-        // Filter by group
+        
         if (this.filters.group && !student.group.includes(this.filters.group)) {
           return false;
         }
         
-        // Filter by status
+        
         if (this.filters.status && student.status !== this.filters.status) {
           return false;
         }
@@ -260,7 +260,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang

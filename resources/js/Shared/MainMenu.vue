@@ -106,26 +106,26 @@ export default {
       this.language = lang
       localStorage.setItem('language', lang)
       
-      // Set a cookie for server-side language detection
+      
       const date = new Date()
-      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) // Expires in one year
+      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) 
       document.cookie = `language=${lang}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
       
-      // Use the event bus for language change events (it will handle dispatching the custom event)
+      
       if (this.$languageEventBus) {
         this.$languageEventBus.emit('language-changed', lang)
       }
     }
   },
   mounted() {
-    // Listen for language changes from other components
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang
       })
     }
     
-    // Also listen for storage events for backward compatibility
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue
@@ -169,7 +169,7 @@ export default {
   }
 }
 
-/* Стили для мобильных устройств */
+
 @media (max-width: 768px) {
   .group {
     @apply bg-blue-600/30 text-blue-100 dark:bg-gray-700/30 dark:text-gray-200;
@@ -188,7 +188,7 @@ export default {
   }
 }
 
-/* Дополнительные стили для темной темы */
+
 .dark .menu-container {
     @apply bg-gray-800;
 }
