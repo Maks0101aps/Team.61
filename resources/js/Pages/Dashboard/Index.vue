@@ -244,35 +244,35 @@ export default {
     }
   },
   mounted() {
-    // Check if the welcome banner has been dismissed before
+    
     if (localStorage.getItem('welcomeBannerDismissed') === 'true') {
       this.showWelcomeBanner = false
     }
     
-    // Check if user has visited before and set flag
+    
     if (!localStorage.getItem('hasVisitedBefore')) {
       localStorage.setItem('hasVisitedBefore', 'true')
     }
     
-    // Check if this user is a parent
+    
     this.isParentUser = this.userRole === 'parent'
     
-    // Check if student banner has been dismissed
+    
     if (localStorage.getItem('studentBannerDismissed') === 'true') {
       this.studentBannerDismissed = true
     }
     
-    // Get current language from localStorage when component mounts
+    
     this.localLanguage = localStorage.getItem('language') || 'uk'
     
-    // Listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.localLanguage = lang
       })
     }
     
-    // Also listen for storage events for backward compatibility
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.localLanguage = event.newValue
@@ -287,19 +287,19 @@ export default {
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
-/* Добавляем плавные переходы для всех интерактивных элементов */
+
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
 
-/* Добавляем эффект подсветки при наведении */
+
 .hover\:shadow-lg:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-/* Анимация для календаря */
+
 .dashboard-calendar {
   animation: fadeInFromLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
   opacity: 0;
@@ -317,7 +317,7 @@ export default {
   }
 }
 
-/* Анимация для блока задач */
+
 .dashboard-tasks {
   animation: fadeInFromRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
   opacity: 0;
@@ -335,7 +335,7 @@ export default {
   }
 }
 
-/* Анимация для задач */
+
 .task-item {
   opacity: 0;
   transform: translateY(10px);

@@ -24,6 +24,30 @@
               </template>
               <template #dropdown>
                 <div class="mt-2 px-8 py-4 bg-white rounded-lg shadow-xl">
+                  <div class="mb-4 pb-4 border-b border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-medium text-gray-600">{{ language === 'uk' ? 'Мова' : 'Language' }}</span>
+                      <theme-toggle />
+                    </div>
+                    <div class="flex rounded-full shadow-md overflow-hidden">
+                      <button @click="setLanguage('uk')" 
+                              type="button" 
+                              class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
+                              :class="language === 'uk' 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                                : 'bg-white text-gray-700 hover:bg-blue-50'">
+                        <span class="relative z-10">UA</span>
+                      </button>
+                      <button @click="setLanguage('en')" 
+                              type="button" 
+                              class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
+                              :class="language === 'en' 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
+                                : 'bg-white text-gray-700 hover:bg-blue-50'">
+                        <span class="relative z-10">EN</span>
+                      </button>
+                    </div>
+                  </div>
                   <main-menu />
                 </div>
               </template>
@@ -42,7 +66,7 @@
               </span>
             </div>
             <div class="flex items-center space-x-6">
-              <div class="hidden md:flex items-center">
+              <div class="hidden md:flex items-center space-x-2">
                 <div class="inline-flex rounded-full shadow-md overflow-hidden">
                   <button @click="setLanguage('uk')" 
                           type="button" 
@@ -67,6 +91,8 @@
                           :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                 </div>
+                <!-- Theme Toggle Button -->
+                <theme-toggle />
               </div>
               <dropdown class="mt-1" placement="bottom-end">
                 <template #default>
@@ -127,6 +153,7 @@ import Logo from '@/Shared/Logo.vue'
 import Dropdown from '@/Shared/Dropdown.vue'
 import MainMenu from '@/Shared/MainMenu.vue'
 import FlashMessages from '@/Shared/FlashMessages.vue'
+import ThemeToggle from '@/Components/ThemeToggle.vue'
 
 export default {
   components: {
@@ -136,14 +163,15 @@ export default {
     Link,
     Logo,
     MainMenu,
+    ThemeToggle,
   },
   props: {
     auth: Object,
   },
   data() {
     return {
-      language: localStorage.getItem('language') || 'uk', // Default to Ukrainian
-      parentType: 'mother', // Default value
+      language: localStorage.getItem('language') || 'uk', 
+      parentType: 'mother', 
       hasVisitedBefore: localStorage.getItem('hasVisitedBefore') === 'true'
     }
   },
@@ -152,29 +180,29 @@ export default {
       this.language = lang
       localStorage.setItem('language', lang)
       
-      // Set a cookie for server-side language detection
+      
       const date = new Date()
-      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) // Expires in one year
+      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) 
       document.cookie = `language=${lang}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
       
-      // Use the event bus for language change events (it will handle dispatching the custom event)
+      
       if (this.$languageEventBus) {
         this.$languageEventBus.emit('language-changed', lang)
       }
     }
   },
   mounted() {
-    // Ensure we have a language set in localStorage
+    
     if (!localStorage.getItem('language')) {
       localStorage.setItem('language', 'uk')
     }
     
-    // Check if user has visited before and set flag
+    
     if (!localStorage.getItem('hasVisitedBefore')) {
       localStorage.setItem('hasVisitedBefore', 'true')
     }
     
-    // Fetch parent type if the user is a parent
+    
     if (this.auth.user.role === 'parent') {
       fetch(`/api/parent-type/${this.auth.user.id}`)
         .then(response => response.json())
@@ -192,14 +220,14 @@ export default {
 </script>
 
 <style>
-/* Добавляем плавные переходы для всех интерактивных элементов */
+
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
 
-/* Анимация выдвижения меню */
+
 .menu-sidebar {
   transform: translateX(0);
   transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -220,7 +248,7 @@ export default {
   }
 }
 
-/* Улучшаем внешний вид скроллбара */
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;

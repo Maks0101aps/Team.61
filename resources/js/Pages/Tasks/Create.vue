@@ -57,7 +57,6 @@
                 :label="currentLanguageLabels.event_id"
                 :help-text="currentLanguageLabels.choose_event"
               >
-                <option :value="null">- {{ currentLanguageLabels.no_event }} -</option>
                 <option v-for="event in events" :key="event.id" :value="event.id">{{ event.title }}</option>
               </select-input>
               
@@ -175,6 +174,7 @@
           <loading-button 
             :loading="form.processing" 
             type="primary" 
+            buttonType="submit"
             class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
             {{ currentLanguageLabels.create_task_button }}
@@ -242,17 +242,17 @@ export default {
     },
   },
   mounted() {
-    // Listen for language changes
+    
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;
       });
     }
     
-    // Listen for storage events for changes from other tabs
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue;
@@ -345,7 +345,7 @@ export default {
           cancel: 'Скасувати',
           create_task_button: 'Створити завдання',
         },
-      }[this.$page.props.language?.current || this.language || 'uk']
+      }[this.$page.props.language?.current || this.language || 'uk']  
     },
   },
 }

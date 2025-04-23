@@ -41,7 +41,7 @@ export default {
       default: 'button',
       validator: value => ['button', 'submit', 'reset'].includes(value)
     },
-    // For backward compatibility, allow 'type' as well, but it will be deprecated
+    
     type: {
       type: String,
       default: undefined
@@ -64,7 +64,7 @@ export default {
         info: 'bg-cyan-500 hover:bg-cyan-600 active:bg-cyan-700 text-white focus:ring-cyan-400'
       };
       
-      // Use variant prop first, fall back to type prop for backward compatibility
+      
       const buttonVariant = this.variant || this.type || 'primary';
       return `${sizeClasses[this.size]} ${typeClasses[buttonVariant]} rounded-lg shadow-sm`;
     }
@@ -73,5 +73,5 @@ export default {
 </script>
 
 <style scoped>
-/* No additional styles needed as we're using Tailwind classes */
+
 </style>

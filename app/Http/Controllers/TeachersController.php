@@ -142,18 +142,36 @@ class TeachersController extends Controller
             'city' => ['nullable', 'max:50'],
             'region' => ['nullable', 'max:50'],
             'postal_code' => ['nullable', 'max:25'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        // Always set the country to UA
         $validatedData['country'] = 'UA';
         $validatedData['organization_id'] = null;
+        
+        unset($validatedData['avatar']);
 
-        // Очищаем номер телефона от форматирования перед сохранением
+       
         if (isset($validatedData['phone'])) {
             $validatedData['phone'] = preg_replace('/[^0-9+]/', '', $validatedData['phone']);
         }
 
         $teacher->update($validatedData);
+
+        if (Request::file('avatar')) {
+            $user = User::where('email', $teacher->email)->first();
+            
+            if ($user) {
+                if ($user->photo_path) {
+                    $oldPath = storage_path('app/public/' . $user->photo_path);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                }
+
+                $path = Request::file('avatar')->store('teachers-avatars', 'public');
+                $user->update(['photo_path' => $path]);
+            }
+        }
 
         return Redirect::back()->with('success', 'Teacher updated.');
     }

@@ -5,3 +5,392 @@
 @import 'form';
 
 @import 'tailwindcss/utilities';
+
+/* Light Mode (Default) Calendar Styles */
+.calendar,
+[data-date],
+[class*="calendar"],
+[class*="datepicker"],
+[class*="date-picker"],
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-col-header,
+.fc-daygrid-body,
+.fc-scrollgrid {
+  background-color: #FFFFFF !important; /* bg-white */
+  color: #374151 !important; /* text-gray-700 */
+  border-color: #E5E7EB !important; /* border-gray-200 */
+}
+
+.fc-day,
+.fc-daygrid-day,
+.fc-theme-standard .fc-scrollgrid {
+  background-color: #FFFFFF !important; /* bg-white */
+  border-color: #E5E7EB !important; /* border-gray-200 */
+}
+
+.fc-day-today,
+.fc-daygrid-day.fc-day-today,
+[class*="today"] {
+  background-color: #F3F4F6 !important; /* bg-gray-100 */
+}
+
+.fc-event,
+.fc-daygrid-event {
+  background-color: #3B82F6 !important; /* bg-blue-500 */
+  border-color: #2563EB !important; /* border-blue-600 */
+  color: white !important;
+}
+
+/* Dark Mode Styles */
+.dark {
+  color-scheme: dark;
+}
+
+/* Базовые элементы */
+.dark body,
+.dark .bg-gray-100,
+.dark .bg-gray-50,
+.dark div[class*="bg-gray-"],
+.dark main {
+  background-color: #111827 !important; /* bg-gray-900 */
+  color: #F3F4F6 !important; /* text-gray-100 */
+}
+
+.dark a {
+  color: #60A5FA !important; /* text-blue-400 */
+}
+
+.dark a:hover {
+  color: #93C5FD !important; /* text-blue-300 */
+}
+
+/* Fix for the gray box behind the logo text in dark mode */
+.dark .bg-gradient-to-r span {
+  background-color: transparent !important;
+}
+
+/* More specific fix for the header logo text */
+.dark .from-\[\#6CB4EE\].to-\[\#4A90E2\] span,
+.dark .bg-gradient-to-r.from-\[\#6CB4EE\].to-\[\#4A90E2\] span {
+  background-color: transparent !important;
+  color: white !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+/* Fix for login page title (Шкільний календар) in dark mode */
+.dark h1,
+.dark .text-4xl,
+.dark .text-5xl,
+.dark .text-6xl,
+.dark h1.text-4xl,
+.dark h1.text-5xl,
+.dark h1.text-6xl,
+.dark h1.bg-clip-text {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: #60A5FA !important; /* Use blue-400 for better contrast */
+  box-shadow: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* Fix for SVG text elements in dark mode */
+.dark svg text {
+  fill: currentColor !important;
+  background: none !important;
+  background-color: transparent !important;
+  filter: none !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* Fix specifically for login page logo */
+.dark svg.logo-text,
+.dark svg text.logo-text,
+.dark .logo-text,
+.dark .bg-gradient-to-br svg text {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  text-shadow: none !important;
+  stroke: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  fill: #60A5FA !important;
+  color: #60A5FA !important;
+  -webkit-text-fill-color: #60A5FA !important;
+}
+
+/* Фоны */
+.dark .bg-white,
+.dark [class*="bg-white"],
+.dark div[class*="bg-white"],
+.dark section,
+.dark aside,
+.dark header,
+.dark footer {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  color: #F3F4F6 !important; /* text-gray-100 */
+}
+
+.dark .bg-gray-200,
+.dark div[class*="bg-gray-200"] {
+  background-color: #374151 !important; /* bg-gray-700 */
+}
+
+/* Специфичные контейнеры */
+.dark .container,
+.dark .mx-auto,
+.dark .max-w-7xl,
+.dark .max-w-6xl,
+.dark .max-w-5xl,
+.dark .px-4 {
+  background-color: #111827 !important; /* bg-gray-900 */
+}
+
+/* Карточки */
+.dark .card,
+.dark .rounded-lg,
+.dark .shadow-md,
+.dark .p-4,
+.dark .p-6 {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  color: #F3F4F6 !important; /* text-gray-100 */
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+/* Календарь */
+.dark .calendar,
+.dark [data-date],
+.dark [class*="calendar"],
+.dark [class*="datepicker"],
+.dark [class*="date-picker"],
+.dark table,
+.dark .fc-theme-standard td,
+.dark .fc-theme-standard th,
+.dark .fc-col-header,
+.dark .fc-daygrid-body,
+.dark .fc-scrollgrid {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  color: #F3F4F6 !important; /* text-gray-100 */
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+.dark .fc-day,
+.dark .fc-daygrid-day,
+.dark .fc-theme-standard .fc-scrollgrid {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+.dark .fc-day-today,
+.dark .fc-daygrid-day.fc-day-today,
+.dark [class*="today"] {
+  background-color: #374151 !important; /* bg-gray-700 */
+}
+
+.dark .fc-event,
+.dark .fc-daygrid-event {
+  background-color: #2563EB !important; /* bg-blue-600 */
+  border-color: #1D4ED8 !important; /* border-blue-700 */
+  color: white !important;
+}
+
+/* Текст */
+.dark .text-gray-500,
+.dark [class*="text-gray-500"] {
+  color: #9CA3AF !important;
+}
+
+.dark .text-gray-600,
+.dark [class*="text-gray-600"] {
+  color: #D1D5DB !important;
+}
+
+.dark .text-gray-700,
+.dark [class*="text-gray-700"] {
+  color: #E5E7EB !important;
+}
+
+.dark .text-gray-800,
+.dark [class*="text-gray-800"] {
+  color: #F3F4F6 !important;
+}
+
+.dark .text-gray-900,
+.dark [class*="text-gray-900"],
+.dark .text-black,
+.dark [class*="text-black"] {
+  color: #FFFFFF !important;
+}
+
+/* Тени */
+.dark .shadow, 
+.dark .shadow-sm, 
+.dark .shadow-md, 
+.dark .shadow-lg {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.7), 0 2px 4px -1px rgba(0, 0, 0, 0.7) !important;
+}
+
+.dark .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Границы */
+.dark .border,
+.dark .border-t,
+.dark .border-b,
+.dark .border-l,
+.dark .border-r,
+.dark [class*="border"] {
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+.dark .border-gray-100,
+.dark [class*="border-gray-100"] {
+  border-color: #1F2937 !important; /* border-gray-800 */
+}
+
+.dark .border-gray-200,
+.dark [class*="border-gray-200"] {
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+.dark .border-gray-300,
+.dark [class*="border-gray-300"] {
+  border-color: #4B5563 !important; /* border-gray-600 */
+}
+
+/* Кнопки */
+.dark button,
+.dark .btn,
+.dark [type="button"],
+.dark [type="submit"],
+.dark [class*="button"] {
+  background-color: #374151 !important; /* bg-gray-700 */
+  color: #FFFFFF !important;
+  border-color: #4B5563 !important; /* border-gray-600 */
+}
+
+.dark button:hover,
+.dark .btn:hover,
+.dark [type="button"]:hover,
+.dark [type="submit"]:hover,
+.dark [class*="button"]:hover {
+  background-color: #4B5563 !important; /* bg-gray-600 */
+  color: #FFFFFF !important;
+}
+
+.dark button.bg-blue-500,
+.dark button.bg-blue-600,
+.dark button.bg-blue-700 {
+  background-color: #2563EB !important; /* bg-blue-600 */
+  color: #FFFFFF !important;
+}
+
+.dark button.bg-blue-500:hover,
+.dark button.bg-blue-600:hover,
+.dark button.bg-blue-700:hover {
+  background-color: #1D4ED8 !important; /* bg-blue-700 */
+}
+
+/* Инпуты */
+.dark input, 
+.dark textarea, 
+.dark select,
+.dark [type="text"],
+.dark [type="email"],
+.dark [type="password"],
+.dark [type="number"],
+.dark [type="date"],
+.dark [type="datetime-local"],
+.dark [class*="input"] {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  border-color: #374151 !important; /* border-gray-700 */
+  color: #FFFFFF !important;
+}
+
+.dark input::placeholder, 
+.dark textarea::placeholder {
+  color: #6B7280 !important; /* text-gray-500 */
+}
+
+.dark input:focus, 
+.dark textarea:focus, 
+.dark select:focus,
+.dark [type="text"]:focus,
+.dark [type="email"]:focus,
+.dark [type="password"]:focus,
+.dark [class*="input"]:focus {
+  border-color: #3B82F6 !important; /* border-blue-500 */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3) !important; /* ring-blue-500/30 */
+}
+
+/* Таблицы */
+.dark table th,
+.dark thead th,
+.dark thead td {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  color: #D1D5DB !important; /* text-gray-300 */
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+.dark table td,
+.dark tbody td {
+  border-color: #374151 !important; /* border-gray-700 */
+  color: #F3F4F6 !important; /* text-gray-100 */
+}
+
+.dark tr:nth-child(even),
+.dark tbody tr:nth-child(even) {
+  background-color: rgba(31, 41, 55, 0.5) !important; /* bg-gray-800/50 */
+}
+
+/* Модальные окна */
+.dark .modal, 
+.dark .dialog,
+.dark [class*="modal"],
+.dark [class*="dialog"],
+.dark [role="dialog"] {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  color: #FFFFFF !important;
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+/* Навигация и меню */
+.dark nav,
+.dark [role="navigation"],
+.dark [class*="navbar"] {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  color: #FFFFFF !important;
+}
+
+.dark .dropdown-menu, 
+.dark .menu,
+.dark [class*="dropdown"],
+.dark [class*="popover"],
+.dark [class*="menu"] {
+  background-color: #1F2937 !important; /* bg-gray-800 */
+  color: #FFFFFF !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -2px rgba(0, 0, 0, 0.7) !important;
+  border-color: #374151 !important; /* border-gray-700 */
+}
+
+/* Градиенты и специальные элементы */
+.dark .bg-gradient-to-r,
+.dark [class*="gradient"] {
+  background-image: linear-gradient(to right, #1F2937, #111827) !important; /* from-gray-800 to-gray-900 */
+}
+
+.dark .from-blue-500,
+.dark [class*="from-blue-"] {
+  --tw-gradient-from: #2563EB !important; /* from-blue-600 */
+}
+
+.dark .to-blue-600,
+.dark [class*="to-blue-"] {
+  --tw-gradient-to: #1D4ED8 !important; /* to-blue-800 */
+}

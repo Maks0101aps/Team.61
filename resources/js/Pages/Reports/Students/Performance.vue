@@ -292,7 +292,7 @@ export default {
     }
   },
   created() {
-    // Load real data from props
+    
     if (this.$page.props.studentData) {
       this.students = this.$page.props.studentData;
     }
@@ -302,7 +302,7 @@ export default {
     }
     
     if (this.$page.props.statistics) {
-      // Calculate subject performance from real data
+      
       if (this.subjects && this.subjects.length > 0) {
         this.subjectPerformance = this.subjects.map(subject => {
           return {
@@ -313,7 +313,7 @@ export default {
         });
       }
       
-      // Calculate performance distribution from real data
+      
       if (this.students && this.students.length > 0) {
         let high = 0;
         let medium = 0;
@@ -352,14 +352,14 @@ export default {
     filteredStudents() {
       let result = this.students;
       
-      // Filter by group
+      
       if (this.filters.group) {
         result = result.filter(student => 
           student.group === `Група ${this.filters.group}`
         );
       }
       
-      // Filter by performance level
+      
       if (this.filters.level) {
         result = result.filter(student => {
           const avg = student.average;
@@ -376,7 +376,7 @@ export default {
         });
       }
       
-      // Apply language translation if needed
+      
       if (this.language === 'uk') {
         return result;
       } else {
@@ -402,7 +402,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;

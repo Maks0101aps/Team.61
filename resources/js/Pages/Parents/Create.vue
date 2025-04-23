@@ -208,6 +208,7 @@
           <loading-button 
             :loading="form.processing" 
             type="primary" 
+            buttonType="submit"
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
             {{ language === 'uk' ? 'Створити батьків' : 'Create Parent' }}
@@ -299,7 +300,7 @@ export default {
           .then(response => {
             this.cities = response.data.cities;
             
-            // If any of the cities is Kyiv, check and handle it
+            
             const kyivCity = this.cities.find(city => 
               ['Київ', 'Киев', 'Kyiv'].includes(city)
             );

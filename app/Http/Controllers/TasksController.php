@@ -23,7 +23,7 @@ class TasksController extends Controller
                 ->through(fn ($task) => [
                     'id' => $task->id,
                     'title' => $task->title,
-                    'event' => $task->event->title,
+                    'event' => $task->event ? $task->event->title : null,
                     'due_date' => $task->due_date->format('Y-m-d H:i'),
                     'completed' => $task->completed,
                     'created_by' => $task->creator->name,
@@ -67,6 +67,7 @@ class TasksController extends Controller
                 ->get()
                 ->map
                 ->only('id', 'name'),
+                'language' => session('language', 'uk'),
         ]);
     }
 
@@ -85,7 +86,7 @@ class TasksController extends Controller
         }
         
         $validated = Request::validate([
-            'event_id' => ['required', 'exists:events,id'],
+            'event_id' => ['nullable', 'exists:events,id'],
             'title' => ['required', 'max:100'],
             'content' => ['nullable', 'string'],
             'due_date' => ['required', 'date'],
@@ -98,7 +99,7 @@ class TasksController extends Controller
         ]);
 
         $task = Auth::user()->account->tasks()->create([
-            'event_id' => $validated['event_id'],
+            'event_id' => $validated['event_id'] ?? null,
             'title' => $validated['title'],
             'content' => $validated['content'],
             'due_date' => $validated['due_date'],
@@ -155,27 +156,28 @@ class TasksController extends Controller
                 ->get()
                 ->map
                 ->only('id', 'name'),
+            'language' => session('language', 'uk'),
         ]);
     }
 
     public function update(Task $task)
     {
         $validated = Request::validate([
-            'event_id' => ['required', 'exists:events,id'],
-            'title' => ['required', 'max:100'],
+            'event_id' => ['nullable', 'exists:events,id'],
+            'title' => ['sometimes', 'required', 'max:100'],
             'content' => ['nullable', 'string'],
-            'due_date' => ['required', 'date'],
+            'due_date' => ['sometimes', 'required', 'date'],
             'completed' => ['boolean'],
-            'students' => ['array'],
+            'students' => ['sometimes', 'array'],
             'students.*.id' => ['exists:contacts,id'],
-            'teachers' => ['array'],
+            'teachers' => ['sometimes', 'array'],
             'teachers.*.id' => ['exists:teachers,id'],
-            'parents' => ['array'],
+            'parents' => ['sometimes', 'array'],
             'parents.*.id' => ['exists:parent_models,id'],
         ]);
 
         $task->update([
-            'event_id' => $validated['event_id'],
+            'event_id' => $validated['event_id'] ?? null,
             'title' => $validated['title'],
             'content' => $validated['content'],
             'due_date' => $validated['due_date'],

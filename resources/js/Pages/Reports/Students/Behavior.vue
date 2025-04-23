@@ -335,17 +335,17 @@ export default {
     filteredEvents() {
       let result = this.events;
       
-      // Filter by group
+      
       if (this.filters.group) {
         result = result.filter(event => event.student.group === this.filters.group);
       }
       
-      // Filter by event type
+      
       if (this.filters.eventType) {
         result = result.filter(event => event.type === this.filters.eventType);
       }
       
-      // Sort by date (recent first)
+      
       result = result.sort((a, b) => new Date(b.date) - new Date(a.date));
       
       return result;
@@ -354,7 +354,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang;

@@ -102,6 +102,9 @@ class ParentsController extends Controller
 
     public function edit(ParentModel $parent): Response
     {
+        $user = User::where('email', $parent->email)->first();
+        $photoPath = $user && $user->photo_path ? $user->photo_path : null;
+        
         return Inertia::render('Parents/Edit', [
             'parent' => [
                 'id' => $parent->id,
@@ -119,6 +122,8 @@ class ParentsController extends Controller
                 'children' => $parent->children->map->only('id'),
                 'deleted_at' => $parent->deleted_at,
                 'photo' => $this->getParentPhoto($parent),
+                'photo_path' => $photoPath,
+                'has_avatar' => (bool)$photoPath,
             ],
             'students' => Student::all()->map->only('id', 'first_name', 'middle_name', 'last_name', 'full_name'),
             'regions' => Teacher::getRegions(),
@@ -141,19 +146,35 @@ class ParentsController extends Controller
             'postal_code' => ['nullable', 'max:25'],
             'children' => ['nullable', 'array'],
             'children.*.id' => ['exists:contacts,id'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $childrenIds = collect($validated['children'] ?? [])->pluck('id')->filter();
         unset($validated['children']);
+        unset($validated['avatar']);
 
-        // Очищаем номер телефона от форматирования перед сохранением
         if (isset($validated['phone'])) {
             $validated['phone'] = preg_replace('/[^0-9+]/', '', $validated['phone']);
         }
 
         $parent->update($validated);
         
-        // Sync the children relationships
+        if (Request::file('avatar')) {
+            $user = User::where('email', $parent->email)->first();
+            
+            if ($user) {
+                if ($user->photo_path) {
+                    $oldPath = storage_path('app/public/' . $user->photo_path);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
+                }
+                
+                $path = Request::file('avatar')->store('parents-avatars', 'public');
+                $user->update(['photo_path' => $path]);
+            }
+        }
+        
         $parent->children()->sync($childrenIds);
 
         return Redirect::back()->with('success', 'Батьків оновлено.');
@@ -210,10 +231,18 @@ class ParentsController extends Controller
     // Метод для отримання фото батька/матері
     private function getParentPhoto(ParentModel $parent)
     {
-        // Спробуємо знайти користувача з таким самим email
         $user = User::where('email', $parent->email)->first();
         
         if ($user && $user->photo_path) {
+            if (request()->is('*/edit') || request()->is('*/create')) {
+                return URL::route('images.show', [
+                    'path' => $user->photo_path, 
+                    'w' => 200, 
+                    'h' => 200, 
+                    'fit' => 'crop'
+                ]);
+            }
+            
             return URL::route('images.show', [
                 'path' => $user->photo_path, 
                 'w' => 40, 

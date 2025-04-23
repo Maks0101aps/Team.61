@@ -339,30 +339,30 @@ export default {
     }
   },
   setup(props) {
-    // Create reactive refs first before using them
+    
     const currentDate = ref(dayjs())
     const selectedEvent = ref(null)
     const currentView = ref('month')
     
     const updateLocale = () => {
-      // Set dayjs locale based on current language
+      
       if (props.language === 'uk') {
         dayjs.locale('uk')
       } else {
         dayjs.locale('en')
       }
       
-      // No need to force a refresh by changing view mode
-      // Just update the date object to trigger reactivity
+      
+      
       currentDate.value = dayjs(currentDate.value)
     }
     
-    // Watch for language changes and update locale
+    
     watch(() => props.language, (newLanguage) => {
       updateLocale()
       
-      // No need to force a refresh by changing view mode
-      // Just update the date object to trigger reactivity
+      
+      
       currentDate.value = dayjs(currentDate.value)
     }, { immediate: true })
 
@@ -378,10 +378,10 @@ export default {
       const month = currentDate.value.format('MMMM')
       const year = currentDate.value.format('YYYY')
       
-      // Force dayjs to use the current language setting
+      
       dayjs.locale(props.language)
       
-      // Get the month name in the current locale
+      
       const localizedMonth = currentDate.value.format('MMMM')
       
       if (props.language === 'uk') {
@@ -428,7 +428,7 @@ export default {
     }
 
     const getWeekDayDate = (weekDay) => {
-      // Force dayjs to use the current language setting
+      
       dayjs.locale(props.language)
       
       const dayIndex = weekDays.value.indexOf(weekDay)
@@ -442,10 +442,10 @@ export default {
     }
 
     const getMonthName = (monthIndex) => {
-      // Force dayjs to use the current language setting
+      
       dayjs.locale(props.language)
       
-      // Create a date object for the first day of the specified month
+      
       const date = dayjs().month(monthIndex).date(1)
       const month = date.format('MMMM')
       
@@ -508,13 +508,13 @@ export default {
     }
 
     const showEventDetails = (event) => {
-      // First set the basic event details we already have
+      
       selectedEvent.value = event
       
-      // Then fetch the complete event details including attachments
+      
       axios.get(`/api/events/${event.id}`)
         .then(response => {
-          // Update the selected event with complete data including attachments
+          
           if (response.data && response.data.event) {
             selectedEvent.value = response.data.event
           }
@@ -525,43 +525,43 @@ export default {
     }
 
     const formatDateTime = (date) => {
-      // Force dayjs to use the current language setting
+      
       dayjs.locale(props.language)
       
       return dayjs(date).format('DD.MM.YYYY HH:mm')
     }
 
-    // Check if current user can delete this event
+    
     const canDeleteEvent = (event) => {
-      // If there's no event, return false
+      
       if (!event) return false
       
-      // Check if current user created this event
-      // We'll rely on the browser to send the authenticated session with the request
-      // The backend will handle the actual authorization check
+      
+      
+      
       return true
     }
     
-    // Delete an event
+    
     const deleteEvent = (event) => {
       if (!confirm(props.language === 'uk' ? 'Ви впевнені, що хочете видалити цю подію?' : 'Are you sure you want to delete this event?')) {
         return;
       }
       
-      // Store the event ID before sending the delete request
+      
       const eventId = event.id;
       
-      // Close the modal first to prevent interaction with a potentially deleted event
+      
       selectedEvent.value = null;
       
-      // Send the delete request - the server will check if the user has permission
+      
       axios.delete(`/events/${eventId}`, {
         headers: {
           'X-Inertia': 'false'
         }
       })
         .then(response => {
-          // Show success message
+          
           const successMsg = props.language === 'uk' ? 'Подію видалено' : 'Event deleted';
           const flashEvent = new CustomEvent('inertia:flash', {
             detail: {
@@ -571,14 +571,14 @@ export default {
           });
           window.dispatchEvent(flashEvent);
           
-          // Remove the event from the local events array
+          
           const eventIndex = props.events.findIndex(e => e.id === eventId);
           if (eventIndex !== -1) {
             props.events.splice(eventIndex, 1);
           }
         })
         .catch(error => {
-          // Show error message
+          
           let errorMsg = props.language === 'uk' ? 'Помилка при видаленні події' : 'Error deleting event';
           
           if (error.response && error.response.data) {
@@ -589,7 +589,7 @@ export default {
             }
           }
           
-          // Show error in UI
+          
           const errorEvent = new CustomEvent('inertia:flash', {
             detail: {
               type: 'error',
@@ -601,13 +601,13 @@ export default {
     }
 
     const previousPeriod = () => {
-      // Ensure we're using the right locale before changing date
+      
       dayjs.locale(props.language)
       
       if (currentView.value === 'year') {
         currentDate.value = dayjs(currentDate.value).subtract(1, 'year')
       } else {
-        // Update the date directly without temporary view change
+        
         if (currentView.value === 'month') {
           currentDate.value = dayjs(currentDate.value).subtract(1, 'month')
         } else if (currentView.value === 'week') {
@@ -619,13 +619,13 @@ export default {
     }
 
     const nextPeriod = () => {
-      // Ensure we're using the right locale before changing date
+      
       dayjs.locale(props.language)
       
       if (currentView.value === 'year') {
         currentDate.value = dayjs(currentDate.value).add(1, 'year')
       } else {
-        // Update the date directly without temporary view change
+        
         if (currentView.value === 'month') {
           currentDate.value = dayjs(currentDate.value).add(1, 'month')
         } else if (currentView.value === 'week') {
@@ -641,72 +641,72 @@ export default {
     }
     
     const checkEventAccess = (date) => {
-      // Default to current date if none provided
+      
       const selectedDate = date ? date : currentDate.value.format('YYYY-MM-DD')
 
-      // Make an axios request to check if the user can access event creation
+      
       axios.get('/events/create-permissions', { 
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => {
-        // Redirect to event creation with the selected date pre-filled
+        
         window.location.href = `/events/create?date=${selectedDate}`
       })
       .catch(error => {
-        // Handle permission errors
+        
         if (error.response && error.response.status === 403) {
-          // If we have a specific error message from the server
+          
           alert(error.response.data?.message || 
                (props.language === 'uk' ? 'Ви не маєте права створювати події' : 'You do not have permission to create events'))
         } else {
-          // For other errors, show generic message
+          
           alert(props.language === 'uk' ? 'Виникла помилка' : 'An error occurred')
         }
       })
     }
 
     const formatFullDate = (date) => {
-      // Force dayjs to use the current language setting
+      
       dayjs.locale(props.language)
       
       return date.format('DD MMMM YYYY')
     }
 
-    // Add new function to handle view switching
+    
     const switchView = (viewMode) => {
-      // Directly change to the new view without setting to '_refresh'
+      
       currentView.value = viewMode;
     }
 
-    // Add method to switch to a specific month
+    
     const switchToMonth = (monthIndex) => {
-      // Set the current date to the selected month
+      
       currentDate.value = dayjs(currentDate.value).month(monthIndex);
-      // Switch to month view
+      
       currentView.value = 'month';
     }
 
-    // Add new method to go to specific day
+    
     const goToDay = (date) => {
-      // First check if we can create events, if so, open the create form
+      
       axios.get('/events/create-permissions', { 
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => {
-        // User has permissions, redirect to create event page
+        
         window.location.href = `/events/create?date=${date}`
       })
       .catch(error => {
-        // User doesn't have permissions, switch to day view for that date
+        
         currentDate.value = dayjs(date);
         currentView.value = 'day';
       });
     }
 
-    // Add a computed helper for the language
+    
     const language = computed(() => props.language)
 
-    // Add new formatting helper methods
+    
     const formatShortDate = (date) => {
       dayjs.locale(props.language);
       return dayjs(date).format('DD MMM');
@@ -756,14 +756,14 @@ export default {
   @apply bg-white rounded-xl shadow-lg p-4 sm:p-6;
 }
 
-/* Responsive adjustments for small screens */
+
 @media (max-width: 640px) {
   .calendar-container {
     @apply p-3;
   }
 }
 
-/* Добавляем анимацию для модального окна */
+
 .fixed {
   animation: fadeIn 0.3s ease-out;
 }
@@ -779,7 +779,7 @@ export default {
   }
 }
 
-/* Year view improvements */
+
 .month-card {
   display: flex;
   flex-direction: column;
@@ -882,7 +882,7 @@ export default {
   transform: translateX(-50%) translateY(0);
 }
 
-/* Add a tooltip arrow */
+
 .year-day-tooltip:after {
   content: '';
   position: absolute;
@@ -896,7 +896,7 @@ export default {
   border-top: 5px solid white;
 }
 
-/* Adjust tooltip position for edge cells to keep it visible */
+
 .year-month-grid > div:nth-child(7n) .year-day-tooltip,
 .year-month-grid > div:nth-child(7n-1) .year-day-tooltip {
   transform: translateX(-90%);
@@ -951,7 +951,7 @@ export default {
   transform: translateX(-10%) translateY(0);
 }
 
-/* Adjust grid dimensions for smaller screens */
+
 @media (max-width: 640px) {
   .year-day-cell {
     height: 20px;
@@ -964,7 +964,7 @@ export default {
   }
 }
 
-/* Further reduce for very small screens */
+
 @media (max-width: 375px) {
   .year-day-cell {
     height: 16px;

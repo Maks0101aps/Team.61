@@ -229,7 +229,7 @@ export default {
     }
   },
   created() {
-    // Get real data from props
+    
     if (this.$page.props.initialTeacherData) {
       this.teachers = this.$page.props.initialTeacherData;
     }
@@ -237,12 +237,12 @@ export default {
   computed: {
     filteredTeachers() {
       return this.teachers.filter(teacher => {
-        // Filter by subject
+        
         if (this.filters.subject && !teacher.subjects.some(s => s.includes(this.filters.subject))) {
           return false;
         }
         
-        // Filter by experience
+        
         if (this.filters.experience) {
           const yearsMatch = teacher.experience.match(/(\d+)/);
           if (yearsMatch) {
@@ -260,7 +260,7 @@ export default {
           }
         }
         
-        // Filter by status
+        
         if (this.filters.status && teacher.status !== this.filters.status) {
           return false;
         }
@@ -272,7 +272,7 @@ export default {
   mounted() {
     window.addEventListener('language-changed', this.updateLanguage);
     
-    // Also listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang

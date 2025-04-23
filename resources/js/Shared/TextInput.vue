@@ -117,13 +117,13 @@ export default {
       return this.type
     },
     formattedPhoneValue() {
-      // Format phone number for display
+      
       if (!this.value) return '';
       
-      // Extract digits from the phone number
+      
       let digits = this.value.replace(/\D/g, '');
       
-      // Ensure we only handle up to 12 digits (including 380)
+      
       if (digits.length > 12) {
         digits = digits.substring(0, 12);
       }
@@ -132,7 +132,7 @@ export default {
         return '+' + digits;
       }
       
-      // Format the phone number with proper spacing
+      
       let formatted = '+380';
       
       if (digits.length > 3) {
@@ -159,81 +159,81 @@ export default {
       this.showPassword = !this.showPassword
     },
     handlePhoneInput(event) {
-      // Get current input value
+      
       const inputValue = event.target.value;
       
-      // Extract only digits and + symbol
+      
       let cleanedValue = inputValue.replace(/[^\d+]/g, '');
       
-      // If user entered just digits without +, handle special cases
+      
       if (!cleanedValue.startsWith('+')) {
         if (cleanedValue.startsWith('380')) {
-          // If user typed 380, add the +
+          
           cleanedValue = '+' + cleanedValue;
         } else if (cleanedValue.startsWith('80')) {
-          // If user typed 80, add +3
+          
           cleanedValue = '+3' + cleanedValue;
         } else if (cleanedValue.startsWith('0')) {
-          // If user starts with 0 (Ukrainian number), replace with +380
+          
           cleanedValue = '+380' + cleanedValue.substring(1);
         } else if (cleanedValue.length > 0) {
-          // For any other digit start, assume it's after +380
+          
           cleanedValue = '+380' + cleanedValue;
         }
       }
       
-      // Ensure it doesn't exceed the expected length
+      
       if (cleanedValue.startsWith('+380')) {
-        // Extract the part after +380
+        
         const nationalNumber = cleanedValue.substring(4);
         if (nationalNumber.length > 9) {
-          // Limit to 9 digits after +380
+          
           cleanedValue = '+380' + nationalNumber.substring(0, 9);
         }
       }
       
-      // Update the model value
+      
       this.$emit('update:modelValue', cleanedValue);
     },
     validatePhone() {
       if (this.value) {
-        // Clean the phone number for validation (remove all non-digits except the leading +)
+        
         const cleanPhone = this.value.replace(/[^\d+]/g, '');
         
-        // Phone should start with +380 followed by 9 digits
+        
         const phoneRegex = /^\+380\d{9}$/;
         if (!phoneRegex.test(cleanPhone)) {
-          // If the number doesn't start with +380, automatically format it
+          
           let formattedNumber = cleanPhone;
           
-          // If it starts with 0, assume it's a Ukrainian number without country code
+          
           if (cleanPhone.startsWith('0')) {
             formattedNumber = '+380' + cleanPhone.substring(1);
           } 
-          // If it doesn't have a + but starts with 380
+          
           else if (!cleanPhone.startsWith('+') && cleanPhone.startsWith('380')) {
             formattedNumber = '+' + cleanPhone;
           }
-          // If it starts with 80, add +3 prefix
+          
           else if (cleanPhone.startsWith('80')) {
             formattedNumber = '+380' + cleanPhone.substring(2);
           }
-          // If it doesn't start with +380, and has 9 digits, assume it needs the +380 prefix
+          
           else if (!cleanPhone.startsWith('+380') && /^\d{9}$/.test(cleanPhone)) {
             formattedNumber = '+380' + cleanPhone;
           }
           
-          // Check if our auto-formatting fixed the issue
+          
           if (phoneRegex.test(formattedNumber)) {
             this.$emit('update:modelValue', formattedNumber);
             this.phoneError = '';
           } else {
-            // Still invalid, show error
+            
             this.phoneError = 'Номер телефону має бути у форматі +380 XX XXX-XX-XX. Ви можете ввести номер в формате 0XXXXXXXXX и он будет автоматически преобразован.';
             this.$emit('update:error', this.phoneError);
           }
         } else {
-          // Valid phone number
+          
           this.phoneError = '';
         }
       }

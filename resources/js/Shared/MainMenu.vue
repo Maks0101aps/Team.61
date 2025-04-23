@@ -76,42 +76,13 @@
         <div class="text-sm font-medium">{{ __('reports', language === 'uk' ? 'Звіти' : 'Reports') }}</div>
       </Link>
     </div>
-    
-    <!-- Mobile Language Switcher -->
-    <div class="md:hidden mt-12 menu-item" :style="{ animationDelay: '0.8s' }">
-      <div class="px-4">
-        <p class="text-blue-100 text-xs uppercase font-bold tracking-wider mb-4 flex items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-          </svg>
-          {{ language === 'uk' ? 'Мова' : 'Language' }}
-        </p>
-        <div class="inline-flex rounded-full bg-blue-800/50 p-1 shadow-inner">
-          <button @click="setLanguage('uk')" 
-                  class="relative px-6 py-2 text-sm font-medium rounded-full transition-all duration-300 overflow-hidden" 
-                  :class="language === 'uk' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
-                    : 'text-blue-100 hover:text-white hover:bg-blue-700/30'">
-            <span class="relative z-10">UA</span>
-            <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
-          </button>
-          <button @click="setLanguage('en')" 
-                  class="relative px-6 py-2 text-sm font-medium rounded-full transition-all duration-300 overflow-hidden" 
-                  :class="language === 'en' 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-lg' 
-                    : 'text-blue-100 hover:text-white hover:bg-blue-700/30'">
-            <span class="relative z-10">EN</span>
-            <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
-          </button>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import { Link } from '@inertiajs/vue3'
 import Icon from '@/Shared/Icon.vue'
+import { ref } from 'vue'
 
 export default {
   components: {
@@ -135,26 +106,26 @@ export default {
       this.language = lang
       localStorage.setItem('language', lang)
       
-      // Set a cookie for server-side language detection
+      
       const date = new Date()
-      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) // Expires in one year
+      date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)) 
       document.cookie = `language=${lang}; path=/; expires=${date.toUTCString()}; SameSite=Lax`;
       
-      // Use the event bus for language change events (it will handle dispatching the custom event)
+      
       if (this.$languageEventBus) {
         this.$languageEventBus.emit('language-changed', lang)
       }
     }
   },
   mounted() {
-    // Listen for language changes from other components
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang
       })
     }
     
-    // Also listen for storage events for backward compatibility
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue
@@ -196,5 +167,53 @@ export default {
   100% {
     transform: scale(1);
   }
+}
+
+
+@media (max-width: 768px) {
+  .group {
+    @apply bg-blue-600/30 text-blue-100 dark:bg-gray-700/30 dark:text-gray-200;
+  }
+  
+  .group:hover {
+    @apply bg-blue-500/50 text-white dark:bg-gray-600/50 dark:text-white;
+  }
+  
+  .group svg {
+    @apply fill-blue-300 dark:fill-gray-300;
+  }
+  
+  .group:hover svg {
+    @apply fill-white dark:fill-white;
+  }
+}
+
+
+.dark .menu-container {
+    @apply bg-gray-800;
+}
+
+.dark .menu-header {
+    @apply bg-gray-800 text-white;
+}
+
+.dark .menu-item {
+    @apply text-gray-300;
+}
+
+.dark .menu-item:hover {
+    @apply text-white;
+}
+
+.dark .group:not(.bg-gradient-to-r) {
+    @apply text-gray-300 hover:bg-gray-700 hover:text-white;
+}
+
+.dark .group.bg-gradient-to-r {
+    @apply from-blue-600 to-blue-800 text-white shadow-blue-900/50;
+}
+
+.dark .text-blue-100 {
+    @apply text-blue-300;
 }
 </style>

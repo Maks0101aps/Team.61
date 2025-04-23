@@ -51,6 +51,84 @@
               {{ language === 'uk' ? 'Особисті дані' : 'Personal Information' }}
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div class="md:col-span-2 mb-4">
+                <label class="form-label block mb-2 text-sm font-medium text-gray-700">{{ language === 'uk' ? 'Аватар' : 'Avatar' }}</label>
+                <div class="flex justify-center">
+                  <div 
+                    class="w-24 h-24 overflow-hidden rounded-full border border-gray-200 shadow-sm relative cursor-pointer transition-transform hover:scale-105"
+                    @click="showImageModal = true"
+                  >
+                    <img 
+                      v-if="avatarUrl" 
+                      :src="avatarUrl" 
+                      class="w-full h-full object-cover" 
+                      alt="Avatar" 
+                      @error="handleAvatarError"
+                    />
+                    <div v-else class="w-full h-full flex items-center justify-center bg-blue-100 text-blue-500 text-xl font-bold">
+                      {{ parent.first_name ? parent.first_name.charAt(0).toUpperCase() : '' }}{{ parent.last_name ? parent.last_name.charAt(0).toUpperCase() : '' }}
+                    </div>
+                  </div>
+                </div>
+                <p class="text-center text-xs text-gray-500 mt-2">
+                  {{ language === 'uk' ? 'Аватар можна змінити через користувацький профіль' : 'Avatar can be changed through the user profile' }}
+                </p>
+              </div>
+              
+              <!-- Модальное окно для просмотра аватара -->
+              <teleport to="body">
+                <div v-if="showImageModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                  <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <!-- Затемнение фона -->
+                    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showImageModal = false"></div>
+
+                    <!-- Модальное окно -->
+                    <div class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="flex justify-between items-center pb-3">
+                          <h3 class="text-lg font-medium text-gray-900">
+                            {{ language === 'uk' ? 'Фото користувача' : 'User Photo' }}
+                          </h3>
+                          <button 
+                            @click="showImageModal = false" 
+                            class="text-gray-400 hover:text-gray-500 focus:outline-none"
+                          >
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        <div class="flex justify-center">
+                          <div class="relative w-64 h-64 overflow-hidden rounded-lg">
+                            <img 
+                              v-if="enlargedAvatarUrl" 
+                              :src="enlargedAvatarUrl" 
+                              class="w-full h-full object-cover" 
+                              alt="Avatar Enlarged" 
+                              @error="handleEnlargedAvatarError"
+                            />
+                            <div v-else class="w-full h-full flex items-center justify-center bg-blue-100 text-blue-700 text-4xl font-bold">
+                              {{ parent.first_name ? parent.first_name.charAt(0).toUpperCase() : '' }}{{ parent.last_name ? parent.last_name.charAt(0).toUpperCase() : '' }}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button 
+                          type="button" 
+                          class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                          @click="showImageModal = false"
+                        >
+                          {{ language === 'uk' ? 'Закрити' : 'Close' }}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </teleport>
+              
               <select-input 
                 v-model="form.parent_type" 
                 :error="form.errors.parent_type" 
@@ -145,7 +223,7 @@
               >
                 <option :value="null">{{ cities.length ? (language === 'uk' ? 'Оберіть місто' : 'Select city') : (language === 'uk' ? 'Спочатку оберіть область' : 'First select a region') }}</option>
                 <option v-for="city in cities" :key="city" :value="city">{{ city }}</option>
-        </select-input>
+              </select-input>
               
               <div class="form-group">
                 <label class="form-label block mb-2 text-sm font-medium text-gray-700">{{ currentLanguageLabels.country }}</label>
@@ -259,9 +337,11 @@ export default {
         country: "UA",
         postal_code: this.parent.postal_code,
         children: this.parent.children || [],
+        avatar: null,
       }),
       cities: [],
       language: localStorage.getItem('language') || 'uk',
+      showImageModal: false,
     }
   },
   mounted() {
@@ -275,6 +355,8 @@ export default {
   },
   methods: {
     update() {
+      this.form.avatar = null;
+      
       this.form.put(`/parents/${this.parent.id}`);
     },
     destroy() {
@@ -301,9 +383,66 @@ export default {
     },
     updateLanguage(event) {
       this.language = event.detail.language;
+    },
+    handleAvatarError(e) {
+      const fallbackUrl = 'https://ui-avatars.com/api/?name=' + 
+        encodeURIComponent(this.parent.first_name + ' ' + this.parent.last_name) + 
+        '&color=7F9CF5&background=EBF4FF';
+      
+      if (!e.target.src.includes('ui-avatars.com')) {
+        e.target.src = fallbackUrl;
+      } else {
+        e.target.style.display = 'none';
+      }
+    },
+    handleEnlargedAvatarError(e) {
+      const fallbackUrl = 'https://ui-avatars.com/api/?name=' + 
+        encodeURIComponent(this.parent.first_name + ' ' + this.parent.last_name) + 
+        '&color=7F9CF5&background=EBF4FF&size=256';
+      
+      if (!e.target.src.includes('ui-avatars.com')) {
+        e.target.src = fallbackUrl;
+      } else {
+        e.target.style.display = 'none';
+      }
     }
   },
   computed: {
+    avatarUrl() {
+      if (this.parent.photo) {
+        return this.parent.photo;
+      }
+      
+      if (this.parent.photo_path) {
+        return `/storage/${this.parent.photo_path}`;
+      }
+      
+      const possibleProps = ['avatar_url', 'avatar', 'photo_url', 'image_url'];
+      for (const prop of possibleProps) {
+        if (this.parent[prop]) {
+          if (this.parent[prop].startsWith('/')) {
+            return window.location.origin + this.parent[prop];
+          }
+          if (this.parent[prop].startsWith('http')) {
+            return this.parent[prop];
+          }
+          return this.parent[prop];
+        }
+      }
+      
+      return 'https://ui-avatars.com/api/?name=' + 
+        encodeURIComponent(this.parent.first_name + ' ' + this.parent.last_name) + 
+        '&color=7F9CF5&background=EBF4FF';
+    },
+    enlargedAvatarUrl() {
+      const baseUrl = this.avatarUrl;
+      
+      if (baseUrl.includes('ui-avatars.com')) {
+        return baseUrl + '&size=256';
+      }
+      
+      return baseUrl;
+    },
     currentLanguageLabels() {
       return {
         en: {

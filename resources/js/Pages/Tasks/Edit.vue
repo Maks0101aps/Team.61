@@ -150,6 +150,10 @@ export default {
       type: Array,
       required: true,
     },
+    language: {
+      type: String,
+      default: 'uk'
+    }
   },
   remember: 'form',
   data() {
@@ -164,7 +168,7 @@ export default {
         teachers: this.task.teachers || [],
         parents: this.task.parents || [],
       }),
-      language: localStorage.getItem('language') || 'uk',
+      language: this.language || localStorage.getItem('language') || 'uk',
     }
   },
   mounted() {

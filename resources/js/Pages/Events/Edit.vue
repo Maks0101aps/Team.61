@@ -2,25 +2,25 @@
   <div>
     <Head :title="form.title" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/events">Події</Link>
+      <Link class="text-indigo-400 hover:text-indigo-600" href="/events">{{ language === 'uk' ? 'Події' : 'Events' }}</Link>
       <span class="text-indigo-400 font-medium">/</span>
       {{ form.title }}
     </h1>
     <trashed-message v-if="event.deleted_at" class="mb-6" @restore="restore">
-      Цю подію було видалено.
+      {{ language === 'uk' ? 'Цю подію було видалено.' : 'This event has been deleted.' }}
     </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.title" :error="form.errors.title" class="pb-8 pr-6 w-full lg:w-1/2" label="Назва" />
+          <text-input v-model="form.title" :error="form.errors.title" class="pb-8 pr-6 w-full lg:w-1/2" :label="language === 'uk' ? 'Назва' : 'Title'" />
           <div v-if="isStudent" class="pb-8 pr-6 w-full lg:w-1/2">
             <div class="border border-amber-200 bg-amber-50 rounded-md p-4">
-              <div class="text-sm font-medium text-amber-800 mb-1">Тип події</div>
+              <div class="text-sm font-medium text-amber-800 mb-1">{{ language === 'uk' ? 'Тип події' : 'Event Type' }}</div>
               <div class="text-sm text-amber-700">
-                Учні можуть створювати тільки особисті події.
+                {{ language === 'uk' ? 'Учні можуть створювати тільки особисті події.' : 'Students can only create personal events.' }}
               </div>
               <div class="mt-2 font-semibold">
-                Тип: Особиста подія
+                {{ language === 'uk' ? 'Тип: Особиста подія' : 'Type: Personal event' }}
               </div>
             </div>
             <input type="hidden" v-model="form.type" />
@@ -30,7 +30,7 @@
             v-model="form.type" 
             :error="form.errors.type" 
             class="pb-8 pr-6 w-full lg:w-1/2" 
-            label="Тип"
+            :label="language === 'uk' ? 'Тип' : 'Type'"
           >
             <option :value="null" />
             <option v-for="(label, value) in types" :key="value" :value="value">{{ label }}</option>
@@ -39,50 +39,50 @@
             v-model="form.start_date"
             :error="form.errors.start_date"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Дата початку"
+            :label="language === 'uk' ? 'Дата початку' : 'Start Date'"
             type="datetime-local"
           />
           <text-input
             v-model="form.duration"
             :error="form.errors.duration"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Тривалість (хв.)"
+            :label="language === 'uk' ? 'Тривалість (хв.)' : 'Duration (min.)'"
             type="number"
           />
           <text-area
             v-model="form.content"
             :error="form.errors.content"
             class="pb-8 pr-6 w-full lg:w-full"
-            label="Контент"
+            :label="language === 'uk' ? 'Контент' : 'Content'"
           />
           <checkbox-input
             v-model="form.is_content_hidden"
             :error="form.errors.is_content_hidden"
             class="pb-8 pr-6 w-full lg:w-full"
-            label="Приховати контент до початку події"
+            :label="language === 'uk' ? 'Приховати контент до початку події' : 'Hide content until event starts'"
           />
           <text-input
             v-model="form.location"
             :error="form.errors.location"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Місце проведення"
+            :label="language === 'uk' ? 'Місце проведення' : 'Location'"
           />
           <text-input
             v-model="form.online_link"
             :error="form.errors.online_link"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Посилання на онлайн-зустріч"
+            :label="language === 'uk' ? 'Посилання на онлайн-зустріч' : 'Online Meeting Link'"
           />
           <text-area
             v-model="form.tasks"
             :error="form.errors.tasks"
             class="pb-8 pr-6 w-full lg:w-full"
-            label="Завдання"
+            :label="language === 'uk' ? 'Завдання' : 'Tasks'"
           />
           
           <!-- Attachments -->
           <div class="pb-8 pr-6 w-full lg:w-full">
-            <label class="form-label">Прикріплені файли:</label>
+            <label class="form-label">{{ language === 'uk' ? 'Прикріплені файли:' : 'Attached Files:' }}</label>
             <div class="mt-2">
               <input 
                 type="file" 
@@ -107,10 +107,10 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                   </svg>
                   <p class="mt-2 text-sm text-gray-600">
-                    Перетягніть файли сюди або клікніть для вибору
+                    {{ language === 'uk' ? 'Перетягніть файли сюди або клікніть для вибору' : 'Drag files here or click to select' }}
                   </p>
                   <p class="mt-1 text-xs text-gray-500">
-                    Максимальний розмір файлу: 100MB
+                    {{ language === 'uk' ? 'Максимальний розмір файлу: 100MB' : 'Maximum file size: 100MB' }}
                   </p>
                 </div>
               </div>
@@ -118,7 +118,7 @@
             
             <!-- File List - New files to upload -->
             <div v-if="form.attachments && form.attachments.length > 0" class="mt-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Нові файли:</h4>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">{{ language === 'uk' ? 'Нові файли:' : 'New Files:' }}</h4>
               <ul class="space-y-2">
                 <li v-for="(file, index) in form.attachments" :key="'new-' + index" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div class="flex items-center">
@@ -145,7 +145,7 @@
             
             <!-- Existing Attachments -->
             <div v-if="event.attachments && event.attachments.length > 0" class="mt-4">
-              <h4 class="text-sm font-medium text-gray-700 mb-2">Існуючі файли:</h4>
+              <h4 class="text-sm font-medium text-gray-700 mb-2">{{ language === 'uk' ? 'Існуючі файли:' : 'Existing Files:' }}</h4>
               <ul class="space-y-2">
                 <li v-for="attachment in event.attachments" :key="attachment.id" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <div class="flex items-center">
@@ -163,14 +163,14 @@
                       class="px-3 py-1 text-xs font-medium bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200"
                       download
                     >
-                      Завантажити
+                      {{ language === 'uk' ? 'Завантажити' : 'Download' }}
                     </a>
                     <button 
                       type="button" 
                       @click="deleteAttachment(attachment.id)" 
                       class="px-3 py-1 text-xs font-medium bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
                     >
-                      Видалити
+                      {{ language === 'uk' ? 'Видалити' : 'Delete' }}
                     </button>
                   </div>
                 </li>
@@ -187,8 +187,8 @@
             :options="students"
             :error="form.errors.student_ids"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Студенти"
-            placeholder="Оберіть студентів"
+            :label="language === 'uk' ? 'Студенти' : 'Students'"
+            :placeholder="language === 'uk' ? 'Оберіть студентів' : 'Choose students'"
             track-by="id"
             label-prop="name"
           >
@@ -199,9 +199,9 @@
             </template>
           </multi-select>
           <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4 pb-8 pr-6 w-full lg:w-1/2">
-            <div class="text-sm font-medium text-amber-800 mb-1">Вчителі</div>
+            <div class="text-sm font-medium text-amber-800 mb-1">{{ language === 'uk' ? 'Вчителі' : 'Teachers' }}</div>
             <div class="text-sm text-amber-700">
-              Учні не можуть запрошувати вчителів на події. Це обмеження встановлено системою.
+              {{ language === 'uk' ? 'Учні не можуть запрошувати вчителів на події' : 'Students cannot invite teachers to events' }}
             </div>
           </div>
           <multi-select
@@ -210,8 +210,8 @@
             :options="teachers"
             :error="form.errors.teacher_ids"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Вчителі"
-            placeholder="Оберіть вчителів"
+            :label="language === 'uk' ? 'Вчителі' : 'Teachers'"
+            :placeholder="language === 'uk' ? 'Оберіть вчителів' : 'Choose teachers'"
             track-by="id"
             label-prop="name"
           >
@@ -222,9 +222,9 @@
             </template>
           </multi-select>
           <div v-if="isStudent" class="border border-amber-200 bg-amber-50 rounded-md p-4 pb-8 pr-6 w-full lg:w-full">
-            <div class="text-sm font-medium text-amber-800 mb-1">Батьки</div>
+            <div class="text-sm font-medium text-amber-800 mb-1">{{ language === 'uk' ? 'Батьки' : 'Parents' }}</div>
             <div class="text-sm text-amber-700">
-              Учні не можуть запрошувати батьків на події. Це обмеження встановлено системою.
+              {{ language === 'uk' ? 'Учні не можуть запрошувати батьків на події' : 'Students cannot invite parents to events' }}
             </div>
           </div>
           <multi-select
@@ -233,8 +233,8 @@
             :options="parents"
             :error="form.errors.parent_ids"
             class="pb-8 pr-6 w-full lg:w-full"
-            label="Батьки"
-            placeholder="Оберіть батьків"
+            :label="language === 'uk' ? 'Батьки' : 'Parents'"
+            :placeholder="language === 'uk' ? 'Оберіть батьків' : 'Choose parents'"
             track-by="id"
             label-prop="name"
           >
@@ -248,14 +248,28 @@
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
             v-if="isStudent && isOwnEvent"
+            class="px-4 py-2 text-red-700 hover:text-red-500 transition-colors duration-200 ml-auto"
+            tabindex="-1"
             type="button"
-            class="text-red-600 hover:text-red-800 font-medium focus:outline-none"
             @click="destroy"
           >
-            Видалити подію
+            {{ language === 'uk' ? 'Видалити' : 'Delete' }}
           </button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" buttonType="submit">
-            Оновити подію
+          <button
+            v-else-if="!event.deleted_at"
+            class="px-4 py-2 text-red-700 hover:text-red-500 transition-colors duration-200 ml-auto"
+            tabindex="-1"
+            type="button"
+            @click="destroy"
+          >
+            {{ language === 'uk' ? 'Видалити' : 'Delete' }}
+          </button>
+          <loading-button
+            class="ml-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded focus:outline-none"
+            :loading="form.processing"
+            type="submit"
+          >
+            {{ language === 'uk' ? 'Оновити' : 'Update' }}
           </loading-button>
         </div>
       </form>
@@ -265,6 +279,7 @@
 
 <script>
 import { Head, Link } from '@inertiajs/vue3'
+import Icon from '@/Shared/Icon.vue'
 import Layout from '@/Shared/Layout.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import TextArea from '@/Shared/TextArea.vue'
@@ -277,14 +292,15 @@ import MultiSelect from '@/Shared/MultiSelect.vue'
 export default {
   components: {
     Head,
+    Icon,
     Link,
     LoadingButton,
-    SelectInput,
-    TextInput,
-    TextArea,
-    CheckboxInput,
-    TrashedMessage,
     MultiSelect,
+    SelectInput,
+    TextArea,
+    TextInput,
+    TrashedMessage,
+    CheckboxInput,
   },
   layout: Layout,
   props: {
@@ -293,20 +309,24 @@ export default {
     students: Array,
     teachers: Array,
     parents: Array,
+    isStudent: Boolean,
+    isOwnEvent: Boolean,
   },
   remember: 'form',
   data() {
     return {
+      language: localStorage.getItem('language') || 'uk',
       form: this.$inertia.form({
+        _method: 'put',
         title: this.event.title,
-        type: this.isStudent ? 'personal' : this.event.type,
-        start_date: this.event.start_date,
+        type: this.event.type,
+        start_date: this.formatDateTimeForInput(this.event.start_date),
         duration: this.event.duration,
         content: this.event.content,
-        is_content_hidden: this.event.is_content_hidden,
+        tasks: this.event.tasks,
         location: this.event.location,
         online_link: this.event.online_link,
-        tasks: this.event.tasks,
+        is_content_hidden: this.event.is_content_hidden,
         student_ids: this.event.student_ids || [],
         teacher_ids: this.event.teacher_ids || [],
         parent_ids: this.event.parent_ids || [],
@@ -315,15 +335,23 @@ export default {
       dragover: false,
     }
   },
-  computed: {
-    isStudent() {
-      return this.$page.props.auth.user.role === 'student';
-    },
-    isOwnEvent() {
-      return this.event.created_by === this.$page.props.auth.user.id;
-    },
+  mounted() {
+    window.addEventListener('language-changed', this.updateLanguage);
+    
+    
+    if (this.$languageEventBus) {
+      this.$languageEventBus.on('language-changed', (lang) => {
+        this.language = lang;
+      });
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('language-changed', this.updateLanguage);
   },
   methods: {
+    updateLanguage(event) {
+      this.language = event.detail.language;
+    },
     update() {
       if (this.isStudent) {
         this.form.teacher_ids = [];
@@ -333,7 +361,7 @@ export default {
       this.form.post(`/events/${this.event.id}`, {
         method: 'put',
         onSuccess: () => {
-          // Clear attachments array after successful upload
+          
           this.form.attachments = [];
         }
       })
@@ -380,7 +408,7 @@ export default {
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Check file size (100MB limit)
+        
         if (file.size > 100 * 1024 * 1024) {
           alert(`Файл "${file.name}" перевищує ліміт 100MB`);
           continue;

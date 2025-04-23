@@ -200,6 +200,7 @@
           <loading-button 
             :loading="form.processing" 
             type="primary" 
+            buttonType="submit"
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
             {{ language === 'uk' ? 'Створити студента' : 'Create Student' }}
@@ -287,7 +288,16 @@ export default {
       this.form.post('/students')
     },
     updateLanguage(event) {
-      this.language = event.detail.language;
+      if (event.detail && event.detail.language) {
+        this.language = event.detail.language;
+      } else if (Array.isArray(event.detail) && event.detail.length > 0) {
+        this.language = event.detail[0];
+      } else if (typeof event === 'string') {
+        this.language = event;
+      } else {
+        
+        this.language = localStorage.getItem('language') || 'uk';
+      }
     },
     loadCities() {
       this.form.city = null;
@@ -300,7 +310,7 @@ export default {
           .then(response => {
             this.cities = response.data.cities;
             
-            // If any of the cities is Kyiv, check and handle it
+            
             const kyivCity = this.cities.find(city => 
               ['Київ', 'Киев', 'Kyiv'].includes(city)
             );
@@ -367,5 +377,5 @@ export default {
 </script>
 
 <style scoped>
-/* Add any specific styles needed for the form here */
+
 </style>

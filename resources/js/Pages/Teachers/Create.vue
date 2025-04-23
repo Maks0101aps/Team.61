@@ -183,6 +183,7 @@
           <loading-button 
             :loading="form.processing" 
             type="primary" 
+            buttonType="submit"
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
             {{ language === 'uk' ? 'Створити вчителя' : 'Create Teacher' }}
@@ -280,7 +281,7 @@ export default {
           .then(response => {
             this.cities = response.data.cities;
             
-            // If any of the cities is Kyiv, check and handle it
+            
             const kyivCity = this.cities.find(city => 
               ['Київ', 'Киев', 'Kyiv'].includes(city)
             );
@@ -300,7 +301,7 @@ export default {
       this.isKyivSelected = ['Київ', 'Киев', 'Kyiv'].includes(this.form.city);
     },
     updateLanguage(event) {
-      // Handle both formats: detail as array [lang] and detail as object {language: lang}
+      
       if (Array.isArray(event.detail)) {
         this.language = event.detail[0];
       } else if (event.detail && event.detail.language) {
@@ -348,5 +349,5 @@ export default {
 </script> 
 
 <style scoped>
-/* Add any specific styles needed for the form here */
+
 </style> 

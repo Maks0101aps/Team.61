@@ -2,7 +2,7 @@
   <Head title="Login" />
   <div class="flex items-center justify-center p-6 min-h-screen bg-gradient-to-br from-blue-50 to-gray-100">
     <div class="w-full max-w-xl">
-      <div class="flex justify-end mb-4">
+      <div class="flex justify-end mb-4 space-x-3">
         <div class="inline-flex rounded-full shadow-md overflow-hidden">
           <button @click="setLanguage('uk')" 
                   type="button" 
@@ -27,6 +27,7 @@
                   :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
           </button>
         </div>
+        <theme-toggle />
       </div>
       
       <logo class="block mx-auto w-full max-w-md" height="100" />
@@ -68,6 +69,7 @@ import { Head, Link } from '@inertiajs/vue3'
 import Logo from '@/Shared/Logo.vue'
 import TextInput from '@/Shared/TextInput.vue'
 import LoadingButton from '@/Shared/LoadingButton.vue'
+import ThemeToggle from '@/Components/ThemeToggle.vue'
 
 export default {
   components: {
@@ -76,10 +78,11 @@ export default {
     LoadingButton,
     Logo,
     TextInput,
+    ThemeToggle,
   },
   data() {
     return {
-      language: localStorage.getItem('language') || 'uk', // Default to Ukrainian, but check localStorage first
+      language: localStorage.getItem('language') || 'uk',
       form: this.$inertia.form({
         email: '',
         password: '',
@@ -91,17 +94,19 @@ export default {
     login() {
       this.form.post('/login', {
         onFinish: () => {
-          // Optionally reset form or handle completion
         },
       })
     },
     setLanguage(lang) {
       this.language = lang
       localStorage.setItem('language', lang)
+      
+      window.dispatchEvent(new CustomEvent('language-change', {
+        detail: { language: lang }
+      }))
     }
   },
   mounted() {
-    // Ensure we have a language set in localStorage
     if (!localStorage.getItem('language')) {
       localStorage.setItem('language', 'uk')
     }
@@ -137,7 +142,6 @@ export default {
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
-/* Анимация для формы логина */
 .login-form {
   animation: fadeIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -168,7 +172,6 @@ export default {
   }
 }
 
-/* Анимация при нажатии на ссылку регистрации */
 .register-link {
   position: relative;
   transition: all 0.3s ease;

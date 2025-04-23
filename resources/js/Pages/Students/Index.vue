@@ -267,14 +267,14 @@ export default {
     },
   },
   mounted() {
-    // Listen for language changes using the event bus
+    
     if (this.$languageEventBus) {
       this.$languageEventBus.on('language-changed', (lang) => {
         this.language = lang
       })
     }
     
-    // Also listen for storage events for backward compatibility
+    
     window.addEventListener('storage', (event) => {
       if (event.key === 'language') {
         this.language = event.newValue
@@ -285,14 +285,14 @@ export default {
 </script>
 
 <style scoped>
-/* Анимации для карточек и элементов */
+
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 300ms;
 }
 
-/* Стилизация пагинации */
+
 :deep(.pagination) {
   @apply flex justify-center;
 }
