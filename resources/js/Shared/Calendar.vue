@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
       <!-- Month name and view mode buttons -->
       <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-        <h2 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+        <h2 class="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-300 dark:to-blue-500 bg-clip-text text-transparent">
           {{ currentMonthName }}
         </h2>
         <div class="flex flex-wrap gap-1">
@@ -13,8 +13,8 @@
                   @click="switchView(mode.value)"
                   class="inline-flex items-center justify-center px-2 py-1 sm:px-3 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium transition-all duration-200"
                   :class="currentView === mode.value 
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white shadow-md' 
-                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300 shadow-sm'">
+                    ? 'bg-gradient-to-r from-blue-500 to-blue-700 dark:from-blue-400 dark:to-blue-600 text-white shadow-md' 
+                    : 'bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 shadow-sm'">
             <!-- Show icons on small screens -->
             <span class="hidden sm:inline">{{ mode.label }}</span>
             <!-- Icons for small screens -->
@@ -41,7 +41,7 @@
       <div class="flex flex-wrap items-center gap-1 sm:gap-2">
         <!-- Previous/Next buttons with icons -->
         <button @click="previousPeriod" 
-                class="inline-flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 bg-white border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm">
+                class="inline-flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
           </svg>
@@ -49,7 +49,7 @@
         </button>
         
         <button @click="nextPeriod" 
-                class="inline-flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 bg-white border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm">
+                class="inline-flex items-center justify-center p-1.5 sm:px-2 sm:py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
           </svg>
@@ -58,7 +58,7 @@
         
         <!-- Create Event button -->
         <Link href="/events/create"
-              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-md text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg"
+              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-md text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg dark:shadow-blue-500/20 dark:from-blue-400 dark:to-blue-600"
               @click.prevent="checkEventAccess">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
@@ -68,7 +68,7 @@
         
         <!-- Sync Settings button -->
         <Link href="/calendar/settings"
-              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-white border border-gray-300 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200 shadow-sm">
+              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
           </svg>
@@ -78,11 +78,11 @@
     </div>
 
     <!-- Monthly View -->
-    <div v-if="currentView === 'month'" class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
+    <div v-if="currentView === 'month'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800">
         <!-- Weekday headers -->
         <div v-for="day in weekDays" :key="day" 
-             class="bg-gradient-to-b from-blue-50 to-white py-3 text-center text-sm font-bold text-blue-900">
+             class="bg-gradient-to-b from-blue-50 to-white py-3 text-center text-sm font-bold text-blue-900 dark:text-blue-200">
           {{ day }}
         </div>
 
@@ -95,7 +95,7 @@
              }">
           <div class="flex justify-between items-start">
             <div class="text-sm font-bold mb-2" 
-                 :class="{ 'text-gray-400': !day.isCurrentMonth, 'text-blue-900': day.isCurrentMonth }">
+                 :class="{ 'text-gray-400': !day.isCurrentMonth, 'text-blue-900 dark:text-blue-200': day.isCurrentMonth }">
               {{ day.dayNumber }}
             </div>
             <!-- Add Event Button -->
@@ -122,18 +122,18 @@
     </div>
 
     <!-- Weekly View -->
-    <div v-else-if="currentView === 'week'" class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
+    <div v-else-if="currentView === 'week'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800">
         <!-- Weekday headers -->
         <div v-for="day in weekDays" :key="day" 
-             class="bg-gradient-to-b from-blue-50 to-white py-3 text-center text-sm font-bold text-blue-900">
+             class="bg-gradient-to-b from-blue-50 to-white py-3 text-center text-sm font-bold text-blue-900 dark:text-blue-200">
           {{ day }}
         </div>
 
         <!-- Week days -->
         <div v-for="day in weekDays" :key="day" 
              class="bg-white min-h-[200px] p-3 transition-all duration-200 hover:bg-blue-50">
-          <div class="text-sm font-bold mb-2 text-blue-900">
+          <div class="text-sm font-bold mb-2 text-blue-900 dark:text-blue-200">
             {{ getWeekDayDate(day) }}
           </div>
           <div class="space-y-1.5">
@@ -149,10 +149,10 @@
     </div>
 
     <!-- Daily View -->
-    <div v-else-if="currentView === 'day'" class="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div class="grid grid-cols-1 gap-px bg-gradient-to-r from-blue-100 to-blue-200">
-        <div class="bg-white p-6">
-          <div class="text-xl font-bold mb-6 text-blue-900">
+    <div v-else-if="currentView === 'day'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+      <div class="grid grid-cols-1 gap-px bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800">
+        <div class="bg-white dark:bg-gray-800 p-6">
+          <div class="text-xl font-bold mb-6 text-blue-900 dark:text-blue-200">
             {{ formatFullDate(currentDate) }}
           </div>
           <div class="space-y-4">
@@ -169,17 +169,17 @@
     </div>
 
     <!-- Annual View -->
-    <div v-else-if="currentView === 'year'" class="bg-white rounded-xl shadow-lg overflow-hidden">
+    <div v-else-if="currentView === 'year'" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
         <div v-for="month in 12" :key="month" 
-             class="month-card border rounded-lg p-2 sm:p-3 transition-all duration-200 hover:bg-blue-50">
-          <div class="text-sm font-medium mb-2 text-blue-900 cursor-pointer hover:text-blue-600 hover:underline text-center"
+             class="month-card border rounded-lg p-2 sm:p-3 transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:border-gray-700">
+          <div class="text-sm font-medium mb-2 text-blue-900 dark:text-blue-300 cursor-pointer hover:text-blue-600 hover:underline text-center"
                @click="switchToMonth(month - 1)">
             {{ getMonthName(month - 1) }}
           </div>
           <!-- Add weekday headers for better orientation -->
           <div class="year-month-headers">
-            <div v-for="(day, index) in weekDays" :key="index" class="text-xs text-gray-500">
+            <div v-for="(day, index) in weekDays" :key="index" class="text-xs text-gray-500 dark:text-gray-300">
               {{ day.charAt(0) }}
             </div>
           </div>
@@ -202,15 +202,15 @@
               <!-- Event tooltip on hover -->
               <div v-if="getEventsForDay(day.date).length > 0 && day.isCurrentMonth" 
                    class="year-day-tooltip">
-                <p class="text-xs font-semibold text-gray-700 border-b pb-1 mb-2">
+                <p class="text-xs font-semibold text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-600 pb-1 mb-2">
                   {{ formatShortDate(day.date) }}
                 </p>
                 <div v-for="event in getEventsForDay(day.date).slice(0, 3)" :key="event.id" 
                      class="mb-1.5 last:mb-0 text-left">
-                  <span class="block truncate text-xs font-medium">{{ event.title }}</span>
-                  <span class="block text-xs text-gray-500">{{ formatTime(event.start_date) }}</span>
+                  <span class="block truncate text-xs font-medium text-gray-900 dark:text-gray-200">{{ event.title }}</span>
+                  <span class="block text-xs text-gray-500 dark:text-gray-400">{{ formatTime(event.start_date) }}</span>
                 </div>
-                <div v-if="getEventsForDay(day.date).length > 3" class="text-blue-600 text-right mt-1 text-xs">
+                <div v-if="getEventsForDay(day.date).length > 3" class="text-blue-600 dark:text-blue-400 text-right mt-1 text-xs">
                   {{ language === 'uk' ? 'Ще ' : '+ ' }}{{ getEventsForDay(day.date).length - 3 }}
                 </div>
               </div>
@@ -221,7 +221,7 @@
     </div>
     
     <!-- Fallback View (during refresh) -->
-    <div v-else class="bg-white rounded-xl shadow-lg overflow-hidden min-h-[400px] flex items-center justify-center">
+    <div v-else class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden min-h-[400px] flex items-center justify-center">
       <div class="text-blue-500">
         <svg class="animate-spin h-10 w-10 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -234,9 +234,9 @@
     <!-- Event Details Modal -->
     <div v-if="selectedEvent" 
          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 backdrop-blur-sm">
-      <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl transform transition-all duration-300">
+      <div class="bg-white dark:bg-gray-800 rounded-xl max-w-lg w-full p-6 shadow-2xl transform transition-all duration-300">
         <div class="flex justify-between items-start mb-6">
-          <h3 class="text-xl font-bold text-blue-900">{{ selectedEvent.title }}</h3>
+          <h3 class="text-xl font-bold text-blue-900 dark:text-blue-200">{{ selectedEvent.title }}</h3>
           <button @click="selectedEvent = null" 
                   class="text-gray-400 hover:text-gray-500 transition-colors duration-200">
             <span class="sr-only">Close</span>
@@ -248,42 +248,42 @@
         
         <div class="space-y-6">
           <div>
-            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Час' : 'Time' }}</h4>
-            <p class="mt-1 text-sm text-gray-900">
+            <h4 class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ language === 'uk' ? 'Час' : 'Time' }}</h4>
+            <p class="mt-1 text-sm text-gray-900 dark:text-gray-200">
               {{ formatDateTime(selectedEvent.start_date) }}
             </p>
           </div>
           
           <div>
-            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Тип' : 'Type' }}</h4>
-            <p class="mt-1 text-sm text-gray-900">{{ selectedEvent.type }}</p>
+            <h4 class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ language === 'uk' ? 'Тип' : 'Type' }}</h4>
+            <p class="mt-1 text-sm text-gray-900 dark:text-gray-200">{{ selectedEvent.type }}</p>
           </div>
           
           <div v-if="selectedEvent.location">
-            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Місце' : 'Location' }}</h4>
-            <p class="mt-1 text-sm text-gray-900">{{ selectedEvent.location }}</p>
+            <h4 class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ language === 'uk' ? 'Місце' : 'Location' }}</h4>
+            <p class="mt-1 text-sm text-gray-900 dark:text-gray-200">{{ selectedEvent.location }}</p>
           </div>
           
           <div v-if="selectedEvent.online_link">
-            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Онлайн посилання' : 'Online Link' }}</h4>
+            <h4 class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ language === 'uk' ? 'Онлайн посилання' : 'Online Link' }}</h4>
             <a :href="selectedEvent.online_link" 
                target="_blank" 
-               class="mt-1 text-sm text-blue-600 hover:text-blue-900 transition-colors duration-200">
+               class="mt-1 text-sm text-blue-600 hover:text-blue-900 dark:text-blue-300 dark:hover:text-blue-200 transition-colors duration-200">
               {{ selectedEvent.online_link }}
             </a>
           </div>
 
           <!-- Display attachments if available -->
           <div v-if="selectedEvent.attachments && selectedEvent.attachments.length > 0">
-            <h4 class="text-sm font-medium text-blue-700">{{ language === 'uk' ? 'Файли' : 'Attachments' }}</h4>
+            <h4 class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ language === 'uk' ? 'Файли' : 'Attachments' }}</h4>
             <ul class="mt-2 space-y-2">
               <li v-for="attachment in selectedEvent.attachments" :key="attachment.id" 
-                  class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                  class="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div class="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 dark:text-gray-300 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  <span class="text-sm text-gray-700 truncate">{{ attachment.original_filename }}</span>
+                  <span class="text-sm text-gray-700 dark:text-gray-200 truncate">{{ attachment.original_filename }}</span>
                 </div>
                 <a :href="attachment.download_url" 
                    class="text-xs px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-200" 
@@ -307,7 +307,7 @@
             {{ language === 'uk' ? 'Детальніше' : 'View Details' }}
           </a>
           <button @click="selectedEvent = null" 
-                  class="px-4 py-2 bg-white border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 hover:bg-blue-50 hover:border-blue-300 transition-all duration-200">
+                  class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200">
             {{ language === 'uk' ? 'Закрити' : 'Close' }}
           </button>
         </div>
@@ -753,7 +753,7 @@ export default {
 
 <style scoped>
 .calendar-container {
-  @apply bg-white rounded-xl shadow-lg p-4 sm:p-6;
+  @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-6;
 }
 
 
@@ -827,6 +827,12 @@ export default {
   font-weight: 500;
 }
 
+/* Update for dark mode */
+:root.dark .year-day-active {
+  color: #93c5fd;
+  font-weight: 600;
+}
+
 .year-day-inactive {
   color: #9ca3af;
   cursor: default;
@@ -835,6 +841,11 @@ export default {
 
 .year-day-with-events {
   background-color: #eff6ff;
+  font-weight: 600;
+}
+
+:root.dark .year-day-with-events {
+  background-color: rgba(59, 130, 246, 0.2); /* blue-500 with opacity */
   font-weight: 600;
 }
 
@@ -876,6 +887,12 @@ export default {
   pointer-events: none;
 }
 
+:root.dark .year-day-tooltip {
+  background-color: #1f2937; /* gray-800 */
+  border-color: #374151; /* gray-700 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
 .year-day-cell:hover .year-day-tooltip {
   visibility: visible;
   opacity: 1;
@@ -896,6 +913,9 @@ export default {
   border-top: 5px solid white;
 }
 
+:root.dark .year-day-tooltip:after {
+  border-top-color: #1f2937; /* gray-800, same as tooltip background */
+}
 
 .year-month-grid > div:nth-child(7n) .year-day-tooltip,
 .year-month-grid > div:nth-child(7n-1) .year-day-tooltip {

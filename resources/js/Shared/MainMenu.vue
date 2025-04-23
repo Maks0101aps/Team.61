@@ -1,8 +1,8 @@
 <template>
   <div class="py-4">
     <div class="mb-6 menu-item" :style="{ animationDelay: '0.1s' }">
-      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+      <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
+            :class="isUrl('') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/">
         <icon name="dashboard" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
@@ -12,8 +12,8 @@
     </div>
 
     <div class="mb-6 menu-item" :style="{ animationDelay: '0.2s' }">
-      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('students') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+      <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
+            :class="isUrl('students') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/students">
         <icon name="user-group" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
@@ -23,8 +23,8 @@
     </div>
 
     <div class="mb-6 menu-item" :style="{ animationDelay: '0.3s' }">
-      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('parents') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+      <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
+            :class="isUrl('parents') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/parents">
         <icon name="home" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
@@ -34,8 +34,8 @@
     </div>
 
     <div class="mb-6 menu-item" :style="{ animationDelay: '0.4s' }">
-      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('teachers') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+      <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
+            :class="isUrl('teachers') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/teachers">
         <icon name="book-open" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
@@ -45,8 +45,8 @@
     </div>
 
     <div class="mb-6 menu-item" :style="{ animationDelay: '0.5s' }">
-      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('events') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+      <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
+            :class="isUrl('events') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/events">
         <icon name="calendar" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
@@ -56,8 +56,8 @@
     </div>
 
     <div class="mb-6 menu-item" :style="{ animationDelay: '0.6s' }">
-      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('tasks') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+      <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
+            :class="isUrl('tasks') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/tasks">
         <icon name="list" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
@@ -67,8 +67,8 @@
     </div>
     
     <div class="mb-6 menu-item" :style="{ animationDelay: '0.7s' }">
-      <Link class="group flex items-center py-3 px-4 rounded-xl transition-all duration-200" 
-            :class="isUrl('reports') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
+      <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
+            :class="isUrl('reports') ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white' : 'text-blue-100 hover:bg-blue-700/50 hover:text-white'" 
             href="/reports">
         <icon name="printer" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
@@ -169,10 +169,20 @@ export default {
   }
 }
 
+/* Remove all borders, outlines, and rounded corners */
+.group {
+  border: none !important;
+  outline: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
 
 @media (max-width: 768px) {
   .group {
     @apply bg-blue-600/30 text-blue-100 dark:bg-gray-700/30 dark:text-gray-200;
+    border: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
   }
   
   .group:hover {
@@ -187,7 +197,6 @@ export default {
     @apply fill-white dark:fill-white;
   }
 }
-
 
 .dark .menu-container {
     @apply bg-gray-800;
@@ -210,7 +219,8 @@ export default {
 }
 
 .dark .group.bg-gradient-to-r {
-    @apply from-blue-600 to-blue-800 text-white shadow-blue-900/50;
+    @apply from-blue-600 to-blue-800 text-white;
+    box-shadow: none !important;
 }
 
 .dark .text-blue-100 {
