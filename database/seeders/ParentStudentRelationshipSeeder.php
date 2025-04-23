@@ -19,59 +19,66 @@ class ParentStudentRelationshipSeeder extends Seeder
         // Empty the parent_student table to start fresh
         DB::table('parent_student')->truncate();
         
-        // Get all parent users
-        $parentUsers = User::where('role', User::ROLE_PARENT)->get();
-        echo "Found " . $parentUsers->count() . " parent users\n";
-        
-        // For each parent user, find or create appropriate student relationships
-        foreach ($parentUsers as $parentUser) {
-            // Find the parent model
-            $parent = ParentModel::where('email', $parentUser->email)->first();
+        // Define the relationships between parents and students based on last name
+        $relationships = [
+            // Петренко family
+            ['last_name' => 'Петренко', 'parent_type' => ParentModel::TYPE_FATHER], // Петро Петренко
+            ['last_name' => 'Петренко', 'parent_type' => ParentModel::TYPE_MOTHER], // Олена Петренко
             
+            // Іваненко family
+            ['last_name' => 'Іваненко', 'parent_type' => ParentModel::TYPE_FATHER], // Андрій Іваненко
+            ['last_name' => 'Іваненко', 'parent_type' => ParentModel::TYPE_MOTHER], // Марія Іваненко
+            
+            // Коваленко family
+            ['last_name' => 'Коваленко', 'parent_type' => ParentModel::TYPE_FATHER], // Сергій Коваленко
+            ['last_name' => 'Коваленко', 'parent_type' => ParentModel::TYPE_MOTHER], // Ольга Коваленко
+            
+            // Мельник family
+            ['last_name' => 'Мельник', 'parent_type' => ParentModel::TYPE_FATHER], // Віктор Мельник
+            ['last_name' => 'Мельник', 'parent_type' => ParentModel::TYPE_MOTHER], // Наталія Мельник
+            
+            // Бондаренко family
+            ['last_name' => 'Бондаренко', 'parent_type' => ParentModel::TYPE_FATHER], // Олег Бондаренко
+            ['last_name' => 'Бондаренко', 'parent_type' => ParentModel::TYPE_MOTHER], // Тетяна Бондаренко
+            
+            // Шевченко family
+            ['last_name' => 'Шевченко', 'parent_type' => ParentModel::TYPE_FATHER], // Михайло Шевченко
+            ['last_name' => 'Шевченко', 'parent_type' => ParentModel::TYPE_MOTHER], // Ірина Шевченко
+            
+            // Савченко family
+            ['last_name' => 'Савченко', 'parent_type' => ParentModel::TYPE_FATHER], // Григорій Савченко
+            ['last_name' => 'Савченко', 'parent_type' => ParentModel::TYPE_MOTHER], // Катерина Савченко
+        ];
+        
+        foreach ($relationships as $relation) {
+            // Find parent
+            $parent = ParentModel::where('last_name', $relation['last_name'])
+                ->where('parent_type', $relation['parent_type'])
+                ->first();
+                
             if (!$parent) {
-                echo "Warning: No parent model found for user {$parentUser->first_name} {$parentUser->last_name} ({$parentUser->email})\n";
+                echo "Warning: No parent found with last name {$relation['last_name']} and type {$relation['parent_type']}\n";
                 continue;
             }
             
-            echo "Processing parent: {$parent->first_name} {$parent->last_name} (ID: {$parent->id})\n";
+            // Find students with the same last name
+            $students = Student::where('last_name', $relation['last_name'])->get();
             
-            // Find students with a matching last name - this is a heuristic approach
-            // In a real system, you'd have proper family relationships defined
-            $matchingStudents = Student::where('last_name', $parentUser->last_name)->get();
+            if ($students->isEmpty()) {
+                echo "Warning: No students found with last name {$relation['last_name']}\n";
+                continue;
+            }
             
-            if ($matchingStudents->count() > 0) {
-                echo "Found {$matchingStudents->count()} students with matching last name\n";
+            // Create relationships for each student
+            foreach ($students as $student) {
+                DB::table('parent_student')->insert([
+                    'parent_model_id' => $parent->id,
+                    'student_id' => $student->id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
                 
-                foreach ($matchingStudents as $student) {
-                    echo "Creating relationship between parent {$parent->id} and student {$student->id}\n";
-                    
-                    // Create the relationship
-                    DB::table('parent_student')->insert([
-                        'parent_model_id' => $parent->id,
-                        'student_id' => $student->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-            } else {
-                echo "No students found with matching last name for parent {$parent->first_name} {$parent->last_name}\n";
-                
-                // Get a student for this parent based on the parent's ID
-                // This is a fallback approach to ensure each parent has at least one student
-                $studentId = $parent->id % Student::count() + 1;
-                $student = Student::find($studentId);
-                
-                if ($student) {
-                    echo "Using fallback: Creating relationship between parent {$parent->id} and student {$student->id}\n";
-                    
-                    // Create the relationship
-                    DB::table('parent_student')->insert([
-                        'parent_model_id' => $parent->id,
-                        'student_id' => $student->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
+                echo "Created relationship: Parent {$parent->first_name} {$parent->last_name} ({$parent->parent_type_name}) -> Student {$student->first_name} {$student->last_name}\n";
             }
         }
         
