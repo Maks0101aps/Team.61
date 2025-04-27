@@ -279,6 +279,11 @@ class EventsController extends Controller
         // Load attachments
         $event->load('attachments');
         
+        // Fix for empty relationships - ensure they're initialized as empty arrays
+        $studentIds = $event->students->isNotEmpty() ? $event->students->map->only('id') : [];
+        $teacherIds = $event->teachers->isNotEmpty() ? $event->teachers->map->only('id') : [];
+        $parentIds = $event->parents->isNotEmpty() ? $event->parents->map->only('id') : [];
+        
         return Inertia::render('Events/Edit', [
             'event' => [
                 'id' => $event->id,
@@ -292,9 +297,9 @@ class EventsController extends Controller
                 'online_link' => $event->online_link,
                 'tasks' => $event->tasks,
                 'deleted_at' => $event->deleted_at,
-                'student_ids' => $event->students->map->only('id'),
-                'teacher_ids' => $event->teachers->map->only('id'),
-                'parent_ids' => $event->parents->map->only('id'),
+                'student_ids' => $studentIds,
+                'teacher_ids' => $teacherIds,
+                'parent_ids' => $parentIds,
                 'created_by' => $event->created_by,
                 'attachments' => $event->attachments->map(function ($attachment) {
                     return [
@@ -377,9 +382,14 @@ class EventsController extends Controller
             'tasks' => $validated['tasks'],
         ]);
 
-        $event->students()->sync(collect($validated['student_ids'] ?? [])->pluck('id'));
-        $event->teachers()->sync(collect($validated['teacher_ids'] ?? [])->pluck('id'));
-        $event->parents()->sync(collect($validated['parent_ids'] ?? [])->pluck('id'));
+        // Ensure we have arrays even if they're null or missing
+        $studentIds = isset($validated['student_ids']) ? collect($validated['student_ids'])->pluck('id') : collect([]);
+        $teacherIds = isset($validated['teacher_ids']) ? collect($validated['teacher_ids'])->pluck('id') : collect([]);
+        $parentIds = isset($validated['parent_ids']) ? collect($validated['parent_ids'])->pluck('id') : collect([]);
+
+        $event->students()->sync($studentIds);
+        $event->teachers()->sync($teacherIds);
+        $event->parents()->sync($parentIds);
 
         // Upload attachments if any
         if (request()->hasFile('attachments')) {

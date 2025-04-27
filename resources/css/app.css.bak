@@ -1081,3 +1081,62 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
     color: #ffffff !important;
     font-weight: 600 !important;
 }
+
+.badge,
+.badge-role,
+[class*="badge"],
+.role-badge,
+span.bg-blue-100.text-blue-800,
+.badge.bg-blue-100.text-blue-800 {
+  background-color: #dbeafe !important;
+  color: #1e40af !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 0 1px rgba(30, 64, 175, 0.2) !important;
+  text-shadow: 0 0 1px rgba(30, 64, 175, 0.2) !important;
+}
+
+body.dark-version .badge,
+body.dark-version .badge-role,
+body.dark-version [class*="badge"],
+body.dark-version .role-badge,
+body.dark-version span.bg-blue-100.text-blue-800,
+body.dark-version .badge.bg-blue-100.text-blue-800,
+.dark .bg-blue-100.text-blue-800 {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3), 0 0 5px rgba(37, 99, 235, 0.5) !important;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+.lang-selector,
+.lang-switch,
+[class*="lang-"],
+.dropdown-language,
+.language-dropdown {
+  font-weight: 600 !important;
+  color: #1e40af !important;
+}
+
+body.dark-version .lang-selector,
+body.dark-version .lang-switch,
+body.dark-version [class*="lang-"],
+body.dark-version .dropdown-language,
+body.dark-version .language-dropdown {
+  color: #ffffff !important;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.fc-day-other .fc-daygrid-day-number,
+.fc-day-other .fc-daygrid-day-top a,
+.fc .fc-day-other .fc-daygrid-day-number {
+  color: #4b5563 !important;
+  font-weight: 500 !important;
+  opacity: 0.85 !important;
+}
+
+.fc-day-today .fc-daygrid-day-number,
+.fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  color: #1e3a8a !important;
+  font-weight: 700 !important;
+}
