@@ -374,15 +374,10 @@ export default {
     ])
 
     const currentMonthName = computed(() => {
-      updateLocale()
-      const month = currentDate.value.format('MMMM')
-      const year = currentDate.value.format('YYYY')
-      
-      
-      dayjs.locale(props.language)
-      
-      
-      const localizedMonth = currentDate.value.format('MMMM')
+      // Create a new date with explicit locale to ensure correct month name
+      const localizedDate = dayjs(currentDate.value).locale(props.language)
+      const year = localizedDate.format('YYYY')
+      const localizedMonth = localizedDate.format('MMMM')
       
       if (props.language === 'uk') {
         return `${localizedMonth.charAt(0).toUpperCase()}${localizedMonth.slice(1)} ${year}`
@@ -442,16 +437,16 @@ export default {
     }
 
     const getMonthName = (monthIndex) => {
-      
-      dayjs.locale(props.language)
-      
-      
-      const date = dayjs().month(monthIndex).date(1)
+      // Create a new date with the specific language locale
+      const date = dayjs().locale(props.language).month(monthIndex).date(1)
       const month = date.format('MMMM')
       
+      // Always capitalize the first letter for Ukrainian months
       if (props.language === 'uk') {
-        return `${month.charAt(0).toUpperCase()}${month.slice(1)}`
+        return month.charAt(0).toUpperCase() + month.slice(1)
       }
+      
+      // For English, just return the month name (already capitalized)
       return month
     }
 
