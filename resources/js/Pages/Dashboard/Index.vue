@@ -78,9 +78,11 @@
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Calendar Section -->
-        <div class="lg:col-span-2 transform transition-all duration-300 hover:scale-[1.02] dashboard-calendar">
-          <Calendar :events="events" :language="localLanguage" />
+        <!-- Calendar Section - Fixed styles for better responsiveness -->
+        <div class="lg:col-span-2 transform transition-all duration-300 hover:scale-[1.01] dashboard-calendar">
+          <div class="calendar-wrapper overflow-hidden">
+            <Calendar :events="events" :language="localLanguage" />
+          </div>
         </div>
 
         <!-- Today's Tasks Section -->
@@ -283,59 +285,26 @@ export default {
 </script>
 
 <style scoped>
-.bg-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-
-
-.transition-all {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
-}
-
-
-.hover\:shadow-lg:hover {
+/* Added styles for calendar responsiveness */
+.calendar-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 1rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-
-.dashboard-calendar {
-  animation: fadeInFromLeft 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
-  opacity: 0;
-  transform: translateX(-50px) scale(0.95);
+.dashboard-calendar :deep(.calendar-container) {
+  min-width: 800px;
+  width: 100%;
 }
 
-@keyframes fadeInFromLeft {
-  0% {
-    opacity: 0;
-    transform: translateX(-50px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
+@media (max-width: 1023px) {
+  .dashboard-calendar :deep(.calendar-container) {
+    min-width: 700px;
   }
 }
 
-
-.dashboard-tasks {
-  animation: fadeInFromRight 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s forwards;
-  opacity: 0;
-  transform: translateX(50px) scale(0.95);
-}
-
-@keyframes fadeInFromRight {
-  0% {
-    opacity: 0;
-    transform: translateX(50px) scale(0.95);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
-
-
+/* Add animation for task items */
 .task-item {
   opacity: 0;
   transform: translateY(10px);
@@ -343,11 +312,11 @@ export default {
 }
 
 @keyframes fadeInUp {
-  0% {
+  from {
     opacity: 0;
     transform: translateY(10px);
   }
-  100% {
+  to {
     opacity: 1;
     transform: translateY(0);
   }

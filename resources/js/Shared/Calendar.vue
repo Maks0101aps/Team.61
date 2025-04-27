@@ -82,16 +82,16 @@
       <div class="grid grid-cols-7 gap-px bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800">
         <!-- Weekday headers -->
         <div v-for="day in weekDays" :key="day" 
-             class="bg-gradient-to-b from-blue-50 to-white py-3 text-center text-sm font-bold text-blue-900 dark:text-blue-200">
+             class="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-700 py-3 text-center text-sm font-bold text-blue-900 dark:text-blue-200">
           {{ day }}
         </div>
 
         <!-- Calendar days -->
         <div v-for="day in calendarDays" :key="day.date" 
-             class="bg-white min-h-[120px] p-3 relative transition-all duration-200 hover:bg-blue-50 group"
+             class="bg-white dark:bg-gray-800 min-h-[120px] p-3 relative transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 group"
              :class="{
-               'bg-gray-50': !day.isCurrentMonth,
-               'bg-red-50': hasConflicts(day.date)
+               'bg-gray-50 dark:bg-gray-900': !day.isCurrentMonth,
+               'bg-red-50 dark:bg-red-900/20': hasConflicts(day.date)
              }">
           <div class="flex justify-between items-start">
             <div class="text-sm font-bold mb-2" 
@@ -989,6 +989,123 @@ export default {
   .year-day-cell {
     height: 16px;
     font-size: 10px;
+  }
+}
+
+/* Responsive styles for the calendar */
+@media (max-width: 768px) {
+  .calendar-container {
+    min-width: 100%;
+    overflow-x: auto;
+  }
+  
+  .grid-cols-7 > div {
+    min-width: 60px;
+  }
+}
+
+/* Fix for Month view in dark mode */
+.dark .bg-white {
+  background-color: #1e293b;
+}
+
+.dark .from-blue-50 {
+  --tw-gradient-from: #1e293b;
+}
+
+.dark .to-white {
+  --tw-gradient-to: #1e293b;
+}
+
+/* Year view fixes */
+.year-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  font-size: 0.7rem;
+}
+
+.year-month-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.year-day-cell {
+  height: 20px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  font-size: 0.7rem;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+}
+
+.year-day-active {
+  color: #1a365d;
+}
+
+.dark .year-day-active {
+  color: #93c5fd;
+}
+
+.year-day-inactive {
+  color: #9ca3af;
+}
+
+.year-day-cell:disabled {
+  cursor: default;
+}
+
+.year-day-with-events {
+  font-weight: bold;
+}
+
+.year-day-indicator {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #3b82f6;
+}
+
+.year-day-tooltip {
+  display: none;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  width: 200px;
+  z-index: 50;
+}
+
+.dark .year-day-tooltip {
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.year-day-cell:hover .year-day-tooltip {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .year-day-tooltip {
+    width: 150px;
+    font-size: 0.7rem;
   }
 }
 </style> 

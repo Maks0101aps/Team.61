@@ -34,16 +34,16 @@
                               type="button" 
                               class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
                               :class="language === 'uk' 
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
-                                : 'bg-white text-gray-700 hover:bg-blue-50'">
+                                ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                         <span class="relative z-10">UA</span>
                       </button>
                       <button @click="setLanguage('en')" 
                               type="button" 
                               class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
                               :class="language === 'en' 
-                                ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
-                                : 'bg-white text-gray-700 hover:bg-blue-50'">
+                                ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                         <span class="relative z-10">EN</span>
                       </button>
                     </div>
@@ -54,8 +54,8 @@
             </dropdown>
           </div>
           <div class="md:text-md flex items-center justify-between p-4 w-full bg-white border-b shadow-sm md:px-12 md:py-0">
-            <div class="mr-4 mt-1 text-blue-900 font-medium">
-              <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">
+            <div class="mr-4 mt-1">
+              <span class="bg-gradient-to-r from-blue-600 to-blue-800 text-white px-3 py-1.5 rounded-lg text-sm font-medium shadow-md">
                 {{ auth.user.role ? (language === 'uk' ? 
                     (auth.user.role === 'teacher' ? 'Вчитель' : 
                      auth.user.role === 'student' ? 'Учень' : 
@@ -72,23 +72,17 @@
                           type="button" 
                           class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'uk' 
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
-                            : 'bg-white text-gray-700 hover:bg-blue-50'">
+                            ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                     <span class="relative z-10">UA</span>
-                    <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
-                    <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
-                          :class="language === 'uk' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                   <button @click="setLanguage('en')" 
                           type="button" 
                           class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'en' 
-                            ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
-                            : 'bg-white text-gray-700 hover:bg-blue-50'">
+                            ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                     <span class="relative z-10">EN</span>
-                    <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
-                    <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
-                          :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
                   </button>
                 </div>
                 <!-- Theme Toggle Button -->
@@ -220,7 +214,6 @@ export default {
 </script>
 
 <style>
-
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -266,5 +259,23 @@ export default {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #4A90E2;
+}
+
+/* Dark mode language selector enhancements */
+.dark button[class*="from-blue-300"] {
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+  border: 1px solid rgba(96, 165, 250, 0.3);
+}
+
+.dark button.dark\:bg-gray-800 {
+  border: 1px solid rgba(55, 65, 81, 0.8);
+}
+
+.dark button.dark\:bg-gray-800:hover {
+  box-shadow: 0 0 5px rgba(96, 165, 250, 0.2);
+}
+
+.dark .bg-white {
+  background-color: #1e293b;
 }
 </style>
