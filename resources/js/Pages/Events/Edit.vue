@@ -352,6 +352,30 @@ export default {
     updateLanguage(event) {
       this.language = event.detail.language;
     },
+    formatDateTimeForInput(dateTimeString) {
+      // Если входная дата - строка без "T" (только дата), добавляем текущее время
+      if (typeof dateTimeString === 'string' && !dateTimeString.includes('T')) {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        return `${dateTimeString}T${hours}:${minutes}`;
+      }
+      
+      // Преобразуем входные данные в объект Date
+      const d = new Date(dateTimeString);
+      
+      // Если дата недействительна, возвращаем пустую строку
+      if (isNaN(d.getTime())) return '';
+      
+      // Форматируем дату в формате YYYY-MM-DDThh:mm
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    },
     update() {
       if (this.isStudent) {
         this.form.teacher_ids = [];

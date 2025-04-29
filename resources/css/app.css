@@ -622,6 +622,8 @@ dropdown .group span,
 .dark .bg-blue-100.text-blue-800 {
   background-color: #1E3A8A !important; /* bg-blue-900 */
   color: #BFDBFE !important; /* text-blue-200 */
+  border: 1px solid #93C5FD !important; /* border-blue-300 - добавляем светлую обводку для лучшего контраста */
+  box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.2) !important; /* дополнительная тень для улучшения видимости */
 }
 
 /* Calendar month text in dark mode */
@@ -1080,4 +1082,396 @@ body.dark-version .g-sidenav-show .sidenav .navbar-nav .nav-link span,
 body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
     color: #ffffff !important;
     font-weight: 600 !important;
+}
+
+/* Calendar size adjustments */
+.fc {
+  font-family: system-ui, -apple-system, sans-serif !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  margin: 0 auto !important;
+}
+
+.fc .fc-toolbar {
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.2rem !important;
+}
+
+.fc .fc-button {
+  padding: 0.3rem 0.5rem !important;
+  font-size: 0.8rem !important;
+}
+
+.fc .fc-daygrid-day {
+  min-height: auto !important;
+}
+
+.fc .fc-daygrid-day-frame {
+  padding: 2px !important;
+  min-height: 50px !important;
+}
+
+.fc .fc-daygrid-day-number {
+  font-size: 0.7rem !important;
+  padding: 1px 3px !important;
+}
+
+.fc .fc-daygrid-day-events {
+  margin-top: 1px !important;
+}
+
+.fc .fc-daygrid-event {
+  padding: 0.5px 2px !important;
+  font-size: 0.7rem !important;
+  margin-top: 0.5px !important;
+  margin-bottom: 0.5px !important;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border-collapse: collapse !important;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 768px) {
+  .fc-header-toolbar {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem !important;
+    text-align: center !important;
+  }
+  
+  .fc .fc-daygrid-day-frame {
+    min-height: 40px !important;
+  }
+}
+
+/* Make sure buttons are visible in both themes */
+.fc .fc-button-primary {
+  background-color: #3B82F6 !important;
+  border-color: #2563EB !important;
+  color: white !important;
+}
+
+.fc .fc-button-primary:not(:disabled):hover {
+  background-color: #2563EB !important;
+  border-color: #1D4ED8 !important;
+}
+
+.dark .fc .fc-button-primary {
+  background-color: #3B82F6 !important;
+  border-color: #2563EB !important;
+  color: white !important;
+}
+
+.dark .fc .fc-button-primary:not(:disabled):hover {
+  background-color: #2563EB !important;
+  border-color: #1D4ED8 !important;
+}
+
+/* Fix today button */
+.fc .fc-button-primary.fc-today-button:not(:disabled) {
+  background-color: #16A34A !important;
+  border-color: #15803D !important;
+}
+
+.fc .fc-button-primary.fc-today-button:not(:disabled):hover {
+  background-color: #15803D !important;
+  border-color: #166534 !important;
+}
+
+/* Reduce the size of the calendar dates */
+.fc .fc-daygrid-day-number {
+  font-size: 0.7rem !important;
+  padding: 1px 3px !important;
+}
+
+.fc .fc-daygrid-day-frame {
+  min-height: 40px !important;
+}
+
+.fc .fc-daygrid-day-events {
+  margin-top: 1px !important;
+}
+
+.fc .fc-daygrid-event {
+  padding: 0.5px 2px !important;
+  font-size: 0.7rem !important;
+  margin-top: 0.5px !important;
+  margin-bottom: 0.5px !important;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 768px) {
+  .fc .fc-daygrid-day-frame {
+    min-height: 35px !important;
+  }
+  
+  .fc .fc-daygrid-day-number {
+    font-size: 0.65rem !important;
+    padding: 1px 2px !important;
+  }
+}
+
+/* Enhanced responsiveness for small screens */
+@media (max-width: 992px) {
+  /* Make calendar fit screen width */
+  .fc {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: 0.8rem !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Improve toolbar layout */
+  .fc-header-toolbar {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 5px !important;
+    margin-bottom: 0.5rem !important;
+    padding: 5px !important;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+    margin: 3px 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Smaller title */
+  .fc .fc-toolbar-title {
+    font-size: 1rem !important;
+    text-align: center !important;
+  }
+  
+  /* Smaller buttons */
+  .fc .fc-button {
+    padding: 0.2rem 0.4rem !important;
+    font-size: 0.7rem !important;
+    margin: 0 2px !important;
+  }
+  
+  /* Adjust table layout */
+  .fc-scrollgrid-sync-table {
+    width: 100% !important;
+  }
+  
+  /* Weekday headers */
+  .fc-col-header-cell {
+    padding: 2px 0 !important;
+  }
+  
+  .fc-col-header-cell-cushion {
+    font-size: 0.75rem !important;
+    padding: 2px !important;
+  }
+  
+  /* Compact day cells */
+  .fc-daygrid-day {
+    max-height: 40px !important;
+  }
+  
+  /* Center day numbers */
+  .fc-daygrid-day-top {
+    justify-content: center !important;
+  }
+  
+  .fc-daygrid-day-number {
+    float: none !important;
+    text-align: center !important;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 576px) {
+  .fc {
+    font-size: 0.7rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: scale(0.9) !important;
+    transform-origin: top center !important;
+    width: 110% !important;
+    margin-left: -5% !important;
+  }
+  
+  /* Even smaller title */
+  .fc .fc-toolbar-title {
+    font-size: 0.9rem !important;
+  }
+  
+  /* Tiny buttons */
+  .fc .fc-button {
+    padding: 0.15rem 0.3rem !important;
+    font-size: 0.65rem !important;
+    margin: 0 1px !important;
+  }
+  
+  /* Minimal day cells */
+  .fc-daygrid-day {
+    max-height: 30px !important;
+  }
+  
+  .fc .fc-daygrid-day-frame {
+    min-height: 30px !important;
+    padding: 1px !important;
+  }
+  
+  .fc .fc-daygrid-day-events {
+    margin-top: 0 !important;
+    max-height: 8px !important;
+    overflow: hidden !important;
+  }
+  
+  .fc .fc-daygrid-day-number {
+    font-size: 0.7rem !important;
+    padding: 1px !important;
+    margin: 0 !important;
+  }
+  
+  /* Minimal weekday headers */
+  .fc-col-header-cell-cushion {
+    font-size: 0.7rem !important;
+    padding: 1px !important;
+  }
+  
+  /* Remove borders to save space */
+  .fc th, .fc td {
+    border-width: 1px !important;
+  }
+
+  /* Adjust month name and controls */
+  .fc-header-toolbar {
+    padding: 0 !important;
+    margin-bottom: 0.3rem !important;
+  }
+  
+  /* Make today button smaller */
+  .fc-today-button {
+    display: none !important; /* Hide on very small screens */
+  }
+}
+
+/* Container adjustments for modern compact calendar */
+.calendar-container,
+div[class*="calendar-container"],
+[class*="calendar-wrapper"],
+.calendar-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Minimalist calendar styling */
+@media (max-width: 480px) {
+  .fc {
+    transform: scale(0.85) !important;
+    width: 118% !important;
+    margin-left: -9% !important;
+  }
+  
+  .fc-col-header-cell-cushion {
+    font-size: 0.65rem !important;
+  }
+  
+  .fc .fc-daygrid-day-number {
+    font-size: 0.65rem !important;
+    padding-right: 2px !important;
+    padding-left: 2px !important;
+  }
+  
+  .fc-toolbar-chunk:first-child {
+    order: 2 !important;
+  }
+  
+  .fc-toolbar-chunk:nth-child(2) {
+    order: 1 !important;
+    width: 100% !important;
+  }
+  
+  .fc-toolbar-chunk:last-child {
+    order: 3 !important;
+  }
+  
+  .fc-daygrid-day-events {
+    display: none !important; /* Hide events completely on very small screens */
+  }
+  
+  /* Make buttons visually cleaner */
+  .fc .fc-button {
+    border-radius: 4px !important;
+    padding: 0.1rem 0.3rem !important;
+  }
+  
+  /* Improve the display of day cells */
+  .fc-daygrid-day {
+    border-width: 1px !important;
+  }
+  
+  /* Reduce month name font weight for better readability */
+  .fc .fc-toolbar-title {
+    font-weight: 500 !important;
+  }
+  
+  /* Keep month/year text at a readable size */
+  .fc-toolbar-title {
+    font-size: 1rem !important;
+    white-space: nowrap !important;
+  }
+}
+
+/* Extreme small screens (mobile portrait) */
+@media (max-width: 360px) {
+  .fc {
+    transform: scale(0.8) !important;
+    width: 125% !important;
+    margin-left: -12.5% !important;
+  }
+  
+  .fc-toolbar-chunk button {
+    padding: 0.1rem 0.2rem !important;
+    font-size: 0.6rem !important;
+  }
+  
+  .fc-daygrid-day-number {
+    font-size: 0.6rem !important;
+    padding: 1px !important;
+  }
+  
+  .fc-col-header-cell-cushion {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 20px !important;
+    font-size: 0.6rem !important;
+  }
+  
+  /* Simplify weekday headings to first letter only */
+  .fc-col-header-cell-cushion {
+    font-size: 0.6rem !important;
+  }
+  
+  /* Make sure the overflow is handled */
+  .calendar-container {
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+  }
 }

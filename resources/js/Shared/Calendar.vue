@@ -344,26 +344,17 @@ export default {
     const selectedEvent = ref(null)
     const currentView = ref('month')
     
-    const updateLocale = () => {
-      
-      if (props.language === 'uk') {
+    // Слежение за изменениями языка
+    watch(() => props.language, (newLanguage) => {
+      // Сначала установим новую локаль
+      if (newLanguage === 'uk') {
         dayjs.locale('uk')
       } else {
         dayjs.locale('en')
       }
       
-      
-      
-      currentDate.value = dayjs(currentDate.value)
-    }
-    
-    
-    watch(() => props.language, (newLanguage) => {
-      updateLocale()
-      
-      
-      
-      currentDate.value = dayjs(currentDate.value)
+      // Затем создаём новый объект для текущей даты с применённой локалью
+      currentDate.value = dayjs(currentDate.value.toDate())
     }, { immediate: true })
 
     const viewModes = computed(() => [
@@ -374,19 +365,16 @@ export default {
     ])
 
     const currentMonthName = computed(() => {
-      updateLocale()
-      const month = currentDate.value.format('MMMM')
+      // Получаем месяц и год в текущей локали
+      const localizedMonth = currentDate.value.format('MMMM')
       const year = currentDate.value.format('YYYY')
       
-      
-      dayjs.locale(props.language)
-      
-      
-      const localizedMonth = currentDate.value.format('MMMM')
-      
+      // Для украинского языка делаем первую букву месяца заглавной
       if (props.language === 'uk') {
         return `${localizedMonth.charAt(0).toUpperCase()}${localizedMonth.slice(1)} ${year}`
       }
+      
+      // Для английского возвращаем как есть
       return `${localizedMonth} ${year}`
     })
 
@@ -428,31 +416,35 @@ export default {
     }
 
     const getWeekDayDate = (weekDay) => {
-      
-      dayjs.locale(props.language)
-      
+      // Получаем индекс дня недели и соответствующую дату
       const dayIndex = weekDays.value.indexOf(weekDay)
       const date = currentDate.value.startOf('week').add(dayIndex, 'day')
+      
+      // Форматируем дату и месяц в текущей локали
       const formatted = date.format('DD MMMM')
+      
+      // Для украинского языка делаем первую букву месяца заглавной
       if (props.language === 'uk') {
         const [day, month] = formatted.split(' ')
         return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`
       }
+      
+      // Для английского возвращаем как есть
       return formatted
     }
 
     const getMonthName = (monthIndex) => {
-      
-      dayjs.locale(props.language)
-      
-      
+      // Создаем дату для указанного месяца и получаем его название в текущей локали
       const date = dayjs().month(monthIndex).date(1)
-      const month = date.format('MMMM')
+      const localizedMonth = date.format('MMMM')
       
+      // Для украинского языка делаем первую букву заглавной
       if (props.language === 'uk') {
-        return `${month.charAt(0).toUpperCase()}${month.slice(1)}`
+        return `${localizedMonth.charAt(0).toUpperCase()}${localizedMonth.slice(1)}`
       }
-      return month
+      
+      // Для английского возвращаем как есть
+      return localizedMonth
     }
 
     const getMonthDays = (monthIndex) => {
@@ -525,8 +517,6 @@ export default {
     }
 
     const formatDateTime = (date) => {
-      
-      dayjs.locale(props.language)
       
       return dayjs(date).format('DD.MM.YYYY HH:mm')
     }
@@ -601,38 +591,28 @@ export default {
     }
 
     const previousPeriod = () => {
-      
-      dayjs.locale(props.language)
-      
+      // Обрабатываем разные режимы просмотра
       if (currentView.value === 'year') {
-        currentDate.value = dayjs(currentDate.value).subtract(1, 'year')
-      } else {
-        
-        if (currentView.value === 'month') {
-          currentDate.value = dayjs(currentDate.value).subtract(1, 'month')
-        } else if (currentView.value === 'week') {
-          currentDate.value = dayjs(currentDate.value).subtract(1, 'week')
-        } else if (currentView.value === 'day') {
-          currentDate.value = dayjs(currentDate.value).subtract(1, 'day')
-        }
+        currentDate.value = dayjs(currentDate.value.toDate()).subtract(1, 'year')
+      } else if (currentView.value === 'month') {
+        currentDate.value = dayjs(currentDate.value.toDate()).subtract(1, 'month')
+      } else if (currentView.value === 'week') {
+        currentDate.value = dayjs(currentDate.value.toDate()).subtract(1, 'week')
+      } else if (currentView.value === 'day') {
+        currentDate.value = dayjs(currentDate.value.toDate()).subtract(1, 'day')
       }
     }
 
     const nextPeriod = () => {
-      
-      dayjs.locale(props.language)
-      
+      // Обрабатываем разные режимы просмотра
       if (currentView.value === 'year') {
-        currentDate.value = dayjs(currentDate.value).add(1, 'year')
-      } else {
-        
-        if (currentView.value === 'month') {
-          currentDate.value = dayjs(currentDate.value).add(1, 'month')
-        } else if (currentView.value === 'week') {
-          currentDate.value = dayjs(currentDate.value).add(1, 'week')
-        } else if (currentView.value === 'day') {
-          currentDate.value = dayjs(currentDate.value).add(1, 'day')
-        }
+        currentDate.value = dayjs(currentDate.value.toDate()).add(1, 'year')
+      } else if (currentView.value === 'month') {
+        currentDate.value = dayjs(currentDate.value.toDate()).add(1, 'month')
+      } else if (currentView.value === 'week') {
+        currentDate.value = dayjs(currentDate.value.toDate()).add(1, 'week')
+      } else if (currentView.value === 'day') {
+        currentDate.value = dayjs(currentDate.value.toDate()).add(1, 'day')
       }
     }
 
@@ -666,10 +646,20 @@ export default {
     }
 
     const formatFullDate = (date) => {
+      // Форматируем полную дату в текущей локали
+      const formatted = date.format('DD MMMM YYYY')
       
-      dayjs.locale(props.language)
+      // Для украинского языка делаем первую букву месяца заглавной
+      if (props.language === 'uk') {
+        const parts = formatted.split(' ')
+        if (parts.length === 3) {
+          const [day, month, year] = parts
+          return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)} ${year}`
+        }
+      }
       
-      return date.format('DD MMMM YYYY')
+      // Для английского возвращаем как есть
+      return formatted
     }
 
     
@@ -680,25 +670,24 @@ export default {
 
     
     const switchToMonth = (monthIndex) => {
+      // Создаем новую дату с правильной локалью
+      currentDate.value = dayjs(currentDate.value.toDate()).month(monthIndex);
       
-      currentDate.value = dayjs(currentDate.value).month(monthIndex);
-      
+      // Переключаемся на просмотр месяца
       currentView.value = 'month';
     }
 
     
     const goToDay = (date) => {
-      
       axios.get('/events/create-permissions', { 
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => {
-        
         window.location.href = `/events/create?date=${date}`
       })
       .catch(error => {
-        
-        currentDate.value = dayjs(date);
+        // Создаем новую дату с правильной локалью
+        currentDate.value = dayjs(date).locale(props.language);
         currentView.value = 'day';
       });
     }
@@ -708,8 +697,17 @@ export default {
 
     
     const formatShortDate = (date) => {
-      dayjs.locale(props.language);
-      return dayjs(date).format('DD MMM');
+      // Форматируем короткую дату в текущей локали
+      const formatted = dayjs(date).format('DD MMM');
+      
+      // Для украинского языка делаем первую букву месяца заглавной
+      if (props.language === 'uk') {
+        const [day, month] = formatted.split(' ')
+        return `${day} ${month.charAt(0).toUpperCase()}${month.slice(1)}`;
+      }
+      
+      // Для английского возвращаем как есть
+      return formatted;
     }
 
     const formatTime = (datetime) => {
