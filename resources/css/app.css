@@ -86,8 +86,8 @@ a[href="/teachers"].bg-gradient-to-r::before,
 a[href="/events"].bg-gradient-to-r::before,
 a[href="/tasks"].bg-gradient-to-r::before,
 a[href="/reports"].bg-gradient-to-r::before {
-  background-color: #3B82F6 !important; /* Сплошной синий цвет вместо градиента */
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5) !important; /* Мягкая тень для эффекта свечения */
+  background-color: #4A90E2 !important; /* Цвет шкільний календар */
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.5) !important; /* Мягкая тень для эффекта свечения */
 }
 
 /* Стили для темной темы */
@@ -117,8 +117,8 @@ a[href="/reports"].bg-gradient-to-r::before {
 .dark a[href="/events"].bg-gradient-to-r::before,
 .dark a[href="/tasks"].bg-gradient-to-r::before,
 .dark a[href="/reports"].bg-gradient-to-r::before {
-  background-color: #2563EB !important; /* Темно-синий для темной темы */
-  box-shadow: 0 0 10px rgba(37, 99, 235, 0.7) !important; /* Более сильное свечение для темной темы */
+  background-color: #4A90E2 !important; /* Цвет шкільний календар для темной темы */
+  box-shadow: 0 0 10px rgba(74, 144, 226, 0.7) !important; /* Более сильное свечение для темной темы */
 }
 
 /* Фиксируем текст внутри вкладок */
@@ -146,7 +146,7 @@ a[href="/reports"].bg-gradient-to-r::before {
 .menu-item .group:not(.bg-gradient-to-r) .text-sm,
 .menu-item a:not(.bg-gradient-to-r) div,
 .menu-item .group:not(.bg-gradient-to-r) div {
-  color: #60A5FA !important; /* Синий текст для неактивных вкладок */
+  color: #6CB4EE !important; /* Голубой текст как шкільний календар */
 }
 
 /* Текст для неактивных вкладок - темная тема */
@@ -154,7 +154,7 @@ a[href="/reports"].bg-gradient-to-r::before {
 .dark .menu-item .group:not(.bg-gradient-to-r) .text-sm,
 .dark .menu-item a:not(.bg-gradient-to-r) div,
 .dark .menu-item .group:not(.bg-gradient-to-r) div {
-  color: #93C5FD !important; /* Светло-синий текст для неактивных вкладок в темной теме */
+  color: #6CB4EE !important; /* Светло-голубой текст для неактивных вкладок в темной теме */
 }
 
 /* Исправление отображения имени пользователя в шапке */
@@ -1344,4 +1344,25 @@ div[class*="calendar-container"],
   overflow-x: hidden !important;
   padding: 0 !important;
   margin: 0 auto !important;
+}
+
+/* Стили для неактивных вкладок при наведении */
+.menu-item a:not(.bg-gradient-to-r):hover::before,
+.menu-item .group:not(.bg-gradient-to-r):hover::before,
+[class*="menu"] a:not(.bg-gradient-to-r):hover::before,
+[class*="menu"] .group:not(.bg-gradient-to-r):hover::before,
+a[href="/"]:not(.bg-gradient-to-r):hover::before,
+a[href="/students"]:not(.bg-gradient-to-r):hover::before,
+a[href="/parents"]:not(.bg-gradient-to-r):hover::before,
+a[href="/teachers"]:not(.bg-gradient-to-r):hover::before,
+a[href="/events"]:not(.bg-gradient-to-r):hover::before,
+a[href="/tasks"]:not(.bg-gradient-to-r):hover::before,
+a[href="/reports"]:not(.bg-gradient-to-r):hover::before {
+  background-color: rgba(108, 180, 238, 0.3) !important; /* Цвет шкільний календар с прозрачностью */
+}
+
+/* Обновление кода для hover в MainMenu.vue */
+.text-blue-50.hover\:bg-blue-600\/70:hover {
+  background-color: rgba(108, 180, 238, 0.3) !important;
+  color: #FFFFFF !important;
 }
