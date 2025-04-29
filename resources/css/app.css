@@ -1081,3 +1081,110 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
     color: #ffffff !important;
     font-weight: 600 !important;
 }
+
+/* Calendar size adjustments */
+.fc {
+  max-width: 100% !important;
+  font-size: 0.9rem !important;
+}
+
+.fc .fc-toolbar {
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+}
+
+.fc .fc-toolbar-title {
+  font-size: 1.2rem !important;
+}
+
+.fc .fc-button {
+  padding: 0.3rem 0.5rem !important;
+  font-size: 0.8rem !important;
+}
+
+.fc .fc-daygrid-day {
+  min-height: auto !important;
+}
+
+.fc .fc-daygrid-day-frame {
+  padding: 2px !important;
+  min-height: 50px !important;
+}
+
+.fc .fc-daygrid-day-number {
+  font-size: 0.8rem !important;
+  padding: 2px 4px !important;
+}
+
+.fc .fc-daygrid-day-events {
+  margin-top: 2px !important;
+}
+
+.fc .fc-daygrid-event {
+  padding: 1px 3px !important;
+  font-size: 0.75rem !important;
+  margin-top: 1px !important;
+  margin-bottom: 1px !important;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border-collapse: collapse !important;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 768px) {
+  .fc-header-toolbar {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  .fc-toolbar-chunk {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1.1rem !important;
+    text-align: center !important;
+  }
+  
+  .fc .fc-daygrid-day-frame {
+    min-height: 40px !important;
+  }
+}
+
+/* Make sure buttons are visible in both themes */
+.fc .fc-button-primary {
+  background-color: #3B82F6 !important;
+  border-color: #2563EB !important;
+  color: white !important;
+}
+
+.fc .fc-button-primary:not(:disabled):hover {
+  background-color: #2563EB !important;
+  border-color: #1D4ED8 !important;
+}
+
+.dark .fc .fc-button-primary {
+  background-color: #3B82F6 !important;
+  border-color: #2563EB !important;
+  color: white !important;
+}
+
+.dark .fc .fc-button-primary:not(:disabled):hover {
+  background-color: #2563EB !important;
+  border-color: #1D4ED8 !important;
+}
+
+/* Fix today button */
+.fc .fc-button-primary.fc-today-button:not(:disabled) {
+  background-color: #16A34A !important;
+  border-color: #15803D !important;
+}
+
+.fc .fc-button-primary.fc-today-button:not(:disabled):hover {
+  background-color: #15803D !important;
+  border-color: #166534 !important;
+}
