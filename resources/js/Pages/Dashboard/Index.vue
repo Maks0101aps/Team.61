@@ -27,7 +27,7 @@
         <div class="mt-12 max-w-sm mx-auto sm:max-w-none sm:flex sm:justify-center">
           <div class="space-y-4 sm:space-y-0 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-6">
             <a href="/events" 
-               class="flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl shadow-lg text-blue-700 bg-white hover:bg-blue-50 transition-all duration-300 transform hover:scale-105">
+               class="flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-300 transform hover:scale-105">
               {{ localLanguage === 'uk' ? 'Переглянути події' : 'View Events' }}
             </a>
             <a href="/tasks" 
