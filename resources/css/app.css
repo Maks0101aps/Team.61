@@ -1188,3 +1188,36 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
   background-color: #15803D !important;
   border-color: #166534 !important;
 }
+
+/* Reduce the size of the calendar dates */
+.fc .fc-daygrid-day-number {
+  font-size: 0.7rem !important;
+  padding: 1px 3px !important;
+}
+
+.fc .fc-daygrid-day-frame {
+  min-height: 40px !important;
+}
+
+.fc .fc-daygrid-day-events {
+  margin-top: 1px !important;
+}
+
+.fc .fc-daygrid-event {
+  padding: 0.5px 2px !important;
+  font-size: 0.7rem !important;
+  margin-top: 0.5px !important;
+  margin-bottom: 0.5px !important;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 768px) {
+  .fc .fc-daygrid-day-frame {
+    min-height: 35px !important;
+  }
+  
+  .fc .fc-daygrid-day-number {
+    font-size: 0.65rem !important;
+    padding: 1px 2px !important;
+  }
+}
