@@ -146,7 +146,7 @@ a[href="/reports"].bg-gradient-to-r::before {
 .menu-item .group:not(.bg-gradient-to-r) .text-sm,
 .menu-item a:not(.bg-gradient-to-r) div,
 .menu-item .group:not(.bg-gradient-to-r) div {
-  color: #60A5FA !important; /* Синий текст для неактивных вкладок */
+  color: #2563EB !important; /* Более яркий синий для неактивных вкладок */
 }
 
 /* Текст для неактивных вкладок - темная тема */

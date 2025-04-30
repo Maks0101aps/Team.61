@@ -488,15 +488,15 @@ export default {
     }
 
     const getEventClasses = (event) => {
-      const baseClasses = 'block truncate'
+      const baseClasses = 'block truncate font-medium'
       const typeClasses = {
-        exam: 'bg-red-100 text-red-800',
-        test: 'bg-yellow-100 text-yellow-800',
-        school_event: 'bg-green-100 text-green-800',
-        parent_meeting: 'bg-blue-100 text-blue-800',
-        personal: 'bg-purple-100 text-purple-800'
+        exam: 'bg-red-200 text-red-800',
+        test: 'bg-yellow-200 text-yellow-800',
+        school_event: 'bg-green-200 text-green-800',
+        parent_meeting: 'bg-blue-200 text-blue-800',
+        personal: 'bg-purple-200 text-purple-800'
       }
-      return `${baseClasses} ${typeClasses[event.type] || 'bg-gray-100 text-gray-800'}`
+      return `${baseClasses} ${typeClasses[event.type] || 'bg-gray-200 text-gray-800'}`
     }
 
     const showEventDetails = (event) => {
