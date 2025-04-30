@@ -49,3 +49,26 @@ await page.getByRole('textbox', { name: 'Поштовий індекс' }).fill(
 await page.getByRole('button', { name: 'Створити батьків' }).click();
 await expect(page.getByText('Батьків створено')).toBeVisible();
 });
+
+test('Створення події', async ({ page }) => {await page.getByRole('link', { name: 'Події', exact: true }).click();
+await page.getByRole('link', { name: 'Створити подію' }).click();
+await page.getByRole('textbox', { name: 'Назва події' }).fill('Прибирання классу');
+await page.getByLabel('Тип події').selectOption('personal');
+await page.getByRole('textbox', { name: 'Дата початку' }).click();
+await page.getByRole('button', { name: 'Створити подію' }).click();
+await expect(page.locator('div').filter({ hasText: /^Подію створено\.$/ }).nth(1)).toBeVisible();
+});
+
+test('Створення завдання', async ({ page }) => {await page.getByRole('link', { name: 'Завдання', exact: true }).click();await page.getByRole('link', { name: 'Створити завдання' }).click();
+await page.getByLabel('Подія').selectOption('1');
+await page.getByRole('textbox', { name: 'Назва завдання' }).click();
+await page.getByRole('textbox', { name: 'Термін виконання' }).click();
+await page.getByRole('textbox', { name: 'Термін виконання' }).click();
+await page.getByRole('textbox', { name: 'Термін виконання' }).fill('2025-05-01T12:00');
+await page.getByRole('textbox', { name: 'Термін виконання' }).click();
+await page.getByLabel('Пріоритет').selectOption('high');
+await page.getByRole('textbox', { name: 'Назва завдання' }).click();
+await page.getByRole('textbox', { name: 'Назва завдання' }).fill('qwqw')
+await page.getByRole('button', { name: 'Створити завдання' }).click();
+await expect(page.locator('div').filter({ hasText: /^Task created successfully\.$/ }).nth(1)).toBeVisible();
+});

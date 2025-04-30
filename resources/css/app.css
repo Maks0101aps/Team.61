@@ -86,8 +86,8 @@ a[href="/teachers"].bg-gradient-to-r::before,
 a[href="/events"].bg-gradient-to-r::before,
 a[href="/tasks"].bg-gradient-to-r::before,
 a[href="/reports"].bg-gradient-to-r::before {
-  background-color: #4A90E2 !important; /* Цвет шкільний календар */
-  box-shadow: 0 0 10px rgba(74, 144, 226, 0.5) !important; /* Мягкая тень для эффекта свечения */
+  background-color: #3B82F6 !important; /* Сплошной синий цвет вместо градиента */
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5) !important; /* Мягкая тень для эффекта свечения */
 }
 
 /* Стили для темной темы */
@@ -117,8 +117,8 @@ a[href="/reports"].bg-gradient-to-r::before {
 .dark a[href="/events"].bg-gradient-to-r::before,
 .dark a[href="/tasks"].bg-gradient-to-r::before,
 .dark a[href="/reports"].bg-gradient-to-r::before {
-  background-color: #4A90E2 !important; /* Цвет шкільний календар для темной темы */
-  box-shadow: 0 0 10px rgba(74, 144, 226, 0.7) !important; /* Более сильное свечение для темной темы */
+  background-color: #2563EB !important; /* Темно-синий для темной темы */
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.7) !important; /* Более сильное свечение для темной темы */
 }
 
 /* Фиксируем текст внутри вкладок */
@@ -146,7 +146,7 @@ a[href="/reports"].bg-gradient-to-r::before {
 .menu-item .group:not(.bg-gradient-to-r) .text-sm,
 .menu-item a:not(.bg-gradient-to-r) div,
 .menu-item .group:not(.bg-gradient-to-r) div {
-  color: #6CB4EE !important; /* Голубой текст как шкільний календар */
+  color: #2563EB !important; /* Более яркий синий для неактивных вкладок */
 }
 
 /* Текст для неактивных вкладок - темная тема */
@@ -154,7 +154,7 @@ a[href="/reports"].bg-gradient-to-r::before {
 .dark .menu-item .group:not(.bg-gradient-to-r) .text-sm,
 .dark .menu-item a:not(.bg-gradient-to-r) div,
 .dark .menu-item .group:not(.bg-gradient-to-r) div {
-  color: #6CB4EE !important; /* Светло-голубой текст для неактивных вкладок в темной теме */
+  color: #93C5FD !important; /* Светло-синий текст для неактивных вкладок в темной теме */
 }
 
 /* Исправление отображения имени пользователя в шапке */
@@ -622,6 +622,8 @@ dropdown .group span,
 .dark .bg-blue-100.text-blue-800 {
   background-color: #1E3A8A !important; /* bg-blue-900 */
   color: #BFDBFE !important; /* text-blue-200 */
+  border: 1px solid #93C5FD !important; /* border-blue-300 - добавляем светлую обводку для лучшего контраста */
+  box-shadow: 0 0 0 1px rgba(147, 197, 253, 0.2) !important; /* дополнительная тень для улучшения видимости */
 }
 
 /* Calendar month text in dark mode */
@@ -1084,8 +1086,10 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
 
 /* Calendar size adjustments */
 .fc {
+  font-family: system-ui, -apple-system, sans-serif !important;
   max-width: 100% !important;
-  font-size: 0.9rem !important;
+  overflow-x: hidden !important;
+  margin: 0 auto !important;
 }
 
 .fc .fc-toolbar {
@@ -1244,6 +1248,7 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
   .fc-toolbar-chunk {
     display: flex !important;
     justify-content: center !important;
+    flex-wrap: wrap !important;
     gap: 5px !important;
     margin: 3px 0 !important;
     width: 100% !important;
@@ -1281,6 +1286,16 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
   .fc-daygrid-day {
     max-height: 40px !important;
   }
+  
+  /* Center day numbers */
+  .fc-daygrid-day-top {
+    justify-content: center !important;
+  }
+  
+  .fc-daygrid-day-number {
+    float: none !important;
+    text-align: center !important;
+  }
 }
 
 /* Extra small screens */
@@ -1289,6 +1304,10 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
     font-size: 0.7rem !important;
     margin: 0 !important;
     padding: 0 !important;
+    transform: scale(0.9) !important;
+    transform-origin: top center !important;
+    width: 110% !important;
+    margin-left: -5% !important;
   }
   
   /* Even smaller title */
@@ -1314,17 +1333,20 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
   }
   
   .fc .fc-daygrid-day-events {
-    display: none !important; /* Hide events on very small screens */
+    margin-top: 0 !important;
+    max-height: 8px !important;
+    overflow: hidden !important;
   }
   
   .fc .fc-daygrid-day-number {
-    font-size: 0.6rem !important;
+    font-size: 0.7rem !important;
     padding: 1px !important;
+    margin: 0 !important;
   }
   
   /* Minimal weekday headers */
   .fc-col-header-cell-cushion {
-    font-size: 0.65rem !important;
+    font-size: 0.7rem !important;
     padding: 1px !important;
   }
   
@@ -1332,9 +1354,20 @@ body.dark-version .g-sidenav-show .navbar-vertical .navbar-brand span {
   .fc th, .fc td {
     border-width: 1px !important;
   }
+
+  /* Adjust month name and controls */
+  .fc-header-toolbar {
+    padding: 0 !important;
+    margin-bottom: 0.3rem !important;
+  }
+  
+  /* Make today button smaller */
+  .fc-today-button {
+    display: none !important; /* Hide on very small screens */
+  }
 }
 
-/* Container adjustments */
+/* Container adjustments for modern compact calendar */
 .calendar-container,
 div[class*="calendar-container"],
 [class*="calendar-wrapper"],
@@ -1344,25 +1377,101 @@ div[class*="calendar-container"],
   overflow-x: hidden !important;
   padding: 0 !important;
   margin: 0 auto !important;
+  box-sizing: border-box !important;
 }
 
-/* Стили для неактивных вкладок при наведении */
-.menu-item a:not(.bg-gradient-to-r):hover::before,
-.menu-item .group:not(.bg-gradient-to-r):hover::before,
-[class*="menu"] a:not(.bg-gradient-to-r):hover::before,
-[class*="menu"] .group:not(.bg-gradient-to-r):hover::before,
-a[href="/"]:not(.bg-gradient-to-r):hover::before,
-a[href="/students"]:not(.bg-gradient-to-r):hover::before,
-a[href="/parents"]:not(.bg-gradient-to-r):hover::before,
-a[href="/teachers"]:not(.bg-gradient-to-r):hover::before,
-a[href="/events"]:not(.bg-gradient-to-r):hover::before,
-a[href="/tasks"]:not(.bg-gradient-to-r):hover::before,
-a[href="/reports"]:not(.bg-gradient-to-r):hover::before {
-  background-color: rgba(108, 180, 238, 0.3) !important; /* Цвет шкільний календар с прозрачностью */
+/* Minimalist calendar styling */
+@media (max-width: 480px) {
+  .fc {
+    transform: scale(0.85) !important;
+    width: 118% !important;
+    margin-left: -9% !important;
+  }
+  
+  .fc-col-header-cell-cushion {
+    font-size: 0.65rem !important;
+  }
+  
+  .fc .fc-daygrid-day-number {
+    font-size: 0.65rem !important;
+    padding-right: 2px !important;
+    padding-left: 2px !important;
+  }
+  
+  .fc-toolbar-chunk:first-child {
+    order: 2 !important;
+  }
+  
+  .fc-toolbar-chunk:nth-child(2) {
+    order: 1 !important;
+    width: 100% !important;
+  }
+  
+  .fc-toolbar-chunk:last-child {
+    order: 3 !important;
+  }
+  
+  .fc-daygrid-day-events {
+    display: none !important; /* Hide events completely on very small screens */
+  }
+  
+  /* Make buttons visually cleaner */
+  .fc .fc-button {
+    border-radius: 4px !important;
+    padding: 0.1rem 0.3rem !important;
+  }
+  
+  /* Improve the display of day cells */
+  .fc-daygrid-day {
+    border-width: 1px !important;
+  }
+  
+  /* Reduce month name font weight for better readability */
+  .fc .fc-toolbar-title {
+    font-weight: 500 !important;
+  }
+  
+  /* Keep month/year text at a readable size */
+  .fc-toolbar-title {
+    font-size: 1rem !important;
+    white-space: nowrap !important;
+  }
 }
 
-/* Обновление кода для hover в MainMenu.vue */
-.text-blue-50.hover\:bg-blue-600\/70:hover {
-  background-color: rgba(108, 180, 238, 0.3) !important;
-  color: #FFFFFF !important;
+/* Extreme small screens (mobile portrait) */
+@media (max-width: 360px) {
+  .fc {
+    transform: scale(0.8) !important;
+    width: 125% !important;
+    margin-left: -12.5% !important;
+  }
+  
+  .fc-toolbar-chunk button {
+    padding: 0.1rem 0.2rem !important;
+    font-size: 0.6rem !important;
+  }
+  
+  .fc-daygrid-day-number {
+    font-size: 0.6rem !important;
+    padding: 1px !important;
+  }
+  
+  .fc-col-header-cell-cushion {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 20px !important;
+    font-size: 0.6rem !important;
+  }
+  
+  /* Simplify weekday headings to first letter only */
+  .fc-col-header-cell-cushion {
+    font-size: 0.6rem !important;
+  }
+  
+  /* Make sure the overflow is handled */
+  .calendar-container {
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+  }
 }

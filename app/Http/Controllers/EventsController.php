@@ -146,6 +146,7 @@ class EventsController extends Controller
     public function create()
     {
         $user = Auth::user();
+        $selectedDate = request()->query('date');
         
         // Для учнів зробимо спеціальний інтерфейс
         if ($user->isStudent()) {
@@ -159,6 +160,7 @@ class EventsController extends Controller
                 'types' => Event::getTypes(),
                 'eventTypes' => Event::getTypes(),
                 'isStudent' => true,
+                'selectedDate' => $selectedDate,
             ]);
         }
         
@@ -183,6 +185,7 @@ class EventsController extends Controller
             'types' => Event::getTypes(),
             'eventTypes' => Event::getTypes(),
             'isStudent' => false,
+            'selectedDate' => $selectedDate,
         ]);
     }
 
