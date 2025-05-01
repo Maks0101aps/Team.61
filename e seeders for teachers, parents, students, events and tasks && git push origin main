@@ -1,5 +1,0 @@
-[33mcommit bde1cac623d6aa4341b96db4fe3979738f8740a9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
-Author: Maks0101aps <school61project@example.com>
-Date:   Wed Apr 23 09:36:14 2025 +0300
-
-    Project cleanup: remove test scripts and add files for test data generation
