@@ -218,5 +218,30 @@ class ParentSeeder extends Seeder
                 'postal_code' => $data['postal_code'],
             ]);
         }
+        
+        // Check if test parent already exists
+        $existingTestParent = ParentModel::where('email', 'janedoe@example.com')->first();
+        
+        if (!$existingTestParent) {
+            // Create a test parent account
+            ParentModel::create([
+                'account_id' => $account->id,
+                'first_name' => 'Jane',
+                'middle_name' => 'Test',
+                'last_name' => 'Doe',
+                'email' => 'janedoe@example.com',
+                'parent_type' => ParentModel::TYPE_MOTHER,
+                'phone' => '380501234567',
+                'address' => 'Test Address',
+                'city' => 'Kyiv',
+                'region' => 'Kyiv Region',
+                'country' => 'UA',
+                'postal_code' => '01001',
+            ]);
+            
+            $this->command->info('Test parent created successfully. Email: janedoe@example.com');
+        } else {
+            $this->command->info('Test parent already exists. Skipping creation.');
+        }
     }
 }

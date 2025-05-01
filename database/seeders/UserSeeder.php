@@ -22,11 +22,11 @@ class UserSeeder extends Seeder
             ]);
         }
         
-        // Check if user already exists
-        $existingUser = User::where('email', 'johndoe@example.com')->first();
+        // Test teacher account
+        $existingTeacher = User::where('email', 'johndoe@example.com')->first();
         
-        if (!$existingUser) {
-            // Create a test user only if it doesn't exist
+        if (!$existingTeacher) {
+            // Create a test teacher only if it doesn't exist
             User::create([
                 'account_id' => $account->id,
                 'first_name' => 'John',
@@ -37,9 +37,49 @@ class UserSeeder extends Seeder
                 'role' => User::ROLE_TEACHER,
             ]);
             
-            $this->command->info('Test user created successfully. Email: johndoe@example.com, Password: secret');
+            $this->command->info('Test teacher created successfully. Email: johndoe@example.com, Password: secret');
         } else {
-            $this->command->info('Test user already exists. Skipping creation.');
+            $this->command->info('Test teacher already exists. Skipping creation.');
+        }
+        
+        // Test parent account
+        $existingParent = User::where('email', 'janedoe@example.com')->first();
+        
+        if (!$existingParent) {
+            // Create a test parent only if it doesn't exist
+            User::create([
+                'account_id' => $account->id,
+                'first_name' => 'Jane',
+                'last_name' => 'Doe',
+                'email' => 'janedoe@example.com',
+                'password' => Hash::make('secret'), // Plain text password is 'secret'
+                'owner' => false,
+                'role' => User::ROLE_PARENT,
+            ]);
+            
+            $this->command->info('Test parent created successfully. Email: janedoe@example.com, Password: secret');
+        } else {
+            $this->command->info('Test parent already exists. Skipping creation.');
+        }
+        
+        // Test student account
+        $existingStudent = User::where('email', 'jimmydoe@example.com')->first();
+        
+        if (!$existingStudent) {
+            // Create a test student only if it doesn't exist
+            User::create([
+                'account_id' => $account->id,
+                'first_name' => 'Jimmy',
+                'last_name' => 'Doe',
+                'email' => 'jimmydoe@example.com',
+                'password' => Hash::make('secret'), // Plain text password is 'secret'
+                'owner' => false,
+                'role' => User::ROLE_STUDENT,
+            ]);
+            
+            $this->command->info('Test student created successfully. Email: jimmydoe@example.com, Password: secret');
+        } else {
+            $this->command->info('Test student already exists. Skipping creation.');
         }
     }
 } 

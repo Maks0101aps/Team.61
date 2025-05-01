@@ -107,7 +107,17 @@ npm run build
 ```
 
 ### Default Login Credentials
+
+#### Teacher Account (Учитель)
 - **Email:** johndoe@example.com
+- **Password:** secret
+
+#### Parent Account (Родитель)
+- **Email:** janedoe@example.com
+- **Password:** secret
+
+#### Student Account (Ученик)
+- **Email:** jimmydoe@example.com
 - **Password:** secret
 
 ### Common Issues and Solutions

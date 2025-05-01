@@ -230,5 +230,30 @@ class StudentSeeder extends Seeder
                 'class' => $data['class'],
             ]);
         }
+        
+        // Check if test student already exists
+        $existingTestStudent = Student::where('email', 'jimmydoe@example.com')->first();
+        
+        if (!$existingTestStudent) {
+            // Create a test student account
+            Student::create([
+                'account_id' => $account->id,
+                'first_name' => 'Jimmy',
+                'middle_name' => 'Test',
+                'last_name' => 'Doe',
+                'email' => 'jimmydoe@example.com',
+                'phone' => '380501234567',
+                'address' => 'Test Address',
+                'city' => 'Kyiv',
+                'region' => 'Kyiv Region',
+                'country' => 'UA',
+                'postal_code' => '01001',
+                'class' => '8-A',
+            ]);
+            
+            $this->command->info('Test student created successfully. Email: jimmydoe@example.com');
+        } else {
+            $this->command->info('Test student already exists. Skipping creation.');
+        }
     }
 }
