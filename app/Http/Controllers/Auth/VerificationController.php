@@ -18,9 +18,12 @@ class VerificationController extends Controller
      */
     public function show(Request $request): Response
     {
+        $email = $request->session()->get('verification_email');
+        $user = auth()->user();
+        
         return Inertia::render('Auth/Verify', [
-            'email' => $request->session()->get('verification_email'),
-            'userRole' => auth()->user()->role,
+            'email' => $email,
+            'userRole' => $user->role,
         ]);
     }
 

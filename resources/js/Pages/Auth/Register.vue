@@ -56,7 +56,7 @@
               
               <select-input v-model="form.role" :error="form.errors.role" class="mt-8 text-lg register-form-item" :style="{ animationDelay: '0.6s' }" :label="language === 'uk' ? 'Роль' : 'Role'" @update:modelValue="onRoleChange">
                 <option value="" disabled>{{ language === 'uk' ? 'Оберіть роль' : 'Select a role' }}</option>
-                <option v-for="(label, value) in getLocalizedRoles" :key="value" :value="value" v-if="value !== 'student'">{{ label }}</option>
+                <option v-for="(label, roleKey) in getLocalizedRoles" :key="roleKey" :value="roleKey">{{ label }}</option>
               </select-input>
               
               <!-- Teacher fields (only visible for teacher role) -->
@@ -97,11 +97,7 @@
                     :error="form.errors.phone" 
                     class="mt-4 text-lg"
                     :label="language === 'uk' ? 'Телефон' : 'Phone'" 
-                    placeholder="+380"
-                    maxlength="13"
-                    @focus="ensurePhonePrefix"
-                    @input="formatPhoneNumber"
-                    @keypress="validatePhoneInput"
+                    type="phone"
                   />
                   
                   <select-input 
@@ -259,11 +255,7 @@
                     :error="form.errors.phone" 
                     class="mt-4 text-lg"
                     :label="language === 'uk' ? 'Телефон' : 'Phone'" 
-                    placeholder="+380"
-                    maxlength="13"
-                    @focus="ensurePhonePrefix"
-                    @input="formatPhoneNumber"
-                    @keypress="validatePhoneInput"
+                    type="phone"
                   />
                 </div>
               </div>
@@ -280,7 +272,7 @@
               <loading-button 
                 :loading="form.processing" 
                 class="btn-blue ml-auto" 
-                type="submit"
+                buttonType="submit"
                 :disabled="form.processing"
               >
                 {{ language === 'uk' ? 'Зареєструватися' : 'Register' }}
@@ -386,14 +378,21 @@ export default {
   },
   computed: {
     getLocalizedRoles() {
+      let localizedRoles = {};
       if (this.language === 'uk') {
-        const localizedRoles = {};
         for (const [key, value] of Object.entries(this.roles)) {
-          localizedRoles[key] = this.ukRoles[key] || value;
+          if (key !== 'student') {
+            localizedRoles[key] = this.ukRoles[key] || value;
+          }
         }
-        return localizedRoles;
+      } else {
+         for (const [key, value] of Object.entries(this.roles)) {
+          if (key !== 'student') {
+            localizedRoles[key] = value;
+          }
+        }
       }
-      return this.roles;
+      return localizedRoles;
     },
     getLocalizedParentTypes() {
       return this.parentTypes;
@@ -434,11 +433,6 @@ export default {
         return;
       }
       
-      if (this.form.phone && !this.validatePhoneNumber()) {
-        console.log('Phone validation failed');
-        return;
-      }
-      
       if (this.form.role === 'teacher') {
         if (!this.form.subject) {
           this.form.errors.subject = this.language === 'uk' ? 'Оберіть предмет' : 'Please select a subject';
@@ -466,22 +460,40 @@ export default {
         this.form.phone = this.form.phone.replace(/\s+/g, '').replace(/[()-]/g, '');
       }
       
-      console.log('Submitting form with data:', this.form);
+      console.log('Submitting form with data:', JSON.stringify(this.form));
+      console.log('Is form processing?', this.form.processing);
       
-      this.form.post('/register', {
-        onFinish: () => {
-          console.log('Form submission finished');
-          this.form.reset('password', 'password_confirmation');
-          this.form.phone = originalPhone;
-        },
-        onSuccess: () => {
-          console.log('Registration successful');
-        },
-        onError: (errors) => {
-          console.error('Registration failed with errors:', errors);
-          this.form.phone = originalPhone;
-        }
-      });
+      try {
+        this.form.post('/register', {
+          preserveScroll: true,
+          onStart: () => { 
+            console.log('Form submission started...'); 
+          },
+          onFinish: () => {
+            console.log('Form submission finished. Processing:', this.form.processing);
+            this.form.reset('password', 'password_confirmation');
+            if (this.form.phone !== originalPhone) {
+                this.form.phone = originalPhone;
+            }
+          },
+          onSuccess: (page) => {
+            console.log('Registration successful. Page:', page);
+          },
+          onError: (errors) => {
+            console.error('Registration failed with errors:', errors);
+            if (errors.email) {
+              console.error('Email error:', errors.email);
+            }
+            if (errors.phone) {
+              console.error('Phone error:', errors.phone); 
+            }
+            this.form.phone = originalPhone;
+          }
+        });
+      } catch (error) {
+        console.error('Error during form post call:', error);
+        this.form.processing = false;
+      }
     },
     setLanguage(lang) {
       this.language = lang
@@ -493,13 +505,11 @@ export default {
     },
     onRoleChange(role) {
       console.log('Role changed to:', role);
-      // Reset parent_id, parent_type, and invitation_code when changing roles
       this.form.parent_id = '';
       this.form.parent_type = '';
       this.form.invitation_code = '';
       this.parentAddress = null;
       
-      // Reset teacher fields when changing roles
       if (role !== 'teacher') {
         this.form.subject = '';
         this.form.qualification = '';
@@ -511,7 +521,6 @@ export default {
         this.form.postal_code = '';
         this.cities = [];
       } else {
-        // If switching to teacher role, make sure we have the city options if region is already selected
         if (this.form.region) {
           this.loadCities();
         }
@@ -523,18 +532,14 @@ export default {
       }
     },
     formatPostalCode() {
-      // Удаляем все нецифровые символы
       let digitsOnly = this.form.postal_code?.replace(/\D/g, '') || '';
       
-      // Ограничиваем до 5 цифр для украинского индекса
       if (digitsOnly.length > 5) {
         digitsOnly = digitsOnly.substring(0, 5);
       }
       
-      // Обновляем значение в форме
       this.form.postal_code = digitsOnly;
       
-      // Если у нас полный индекс (5 цифр), ищем адрес
       if (digitsOnly.length === 5) {
         this.lookupAddressByPostalCode(digitsOnly);
       }
@@ -633,82 +638,6 @@ export default {
           });
       }
       return Promise.resolve([]);
-    },
-    ensurePhonePrefix() {
-      if (!this.form.phone || this.form.phone.trim() === '') {
-        this.form.phone = '+380';
-      } 
-      else if (!this.form.phone.startsWith('+380')) {
-        this.form.phone = '+380' + this.form.phone.replace(/\D/g, '');
-      }
-    },
-    formatPhoneNumber() {
-      this.ensurePhonePrefix();
-      
-      let phoneValue = this.form.phone;
-      const hasPlus = phoneValue.startsWith('+');
-      
-      let digitsOnly = phoneValue.replace(/\D/g, '');
-      
-      if (digitsOnly.length > 12) {
-        digitsOnly = digitsOnly.substring(0, 12);
-      }
-      
-      let formatted = '+380';
-      
-      if (digitsOnly.length > 3) {
-        const numberPart = digitsOnly.substring(3);
-        formatted += numberPart;
-      }
-      
-      if (formatted.length > 4) {
-        const number = formatted.substring(4);
-        formatted = '+380';
-        
-        if (number.length >= 2) {
-          formatted += ' ' + number.substring(0, 2);
-        }
-        if (number.length >= 5) {
-          formatted += ' ' + number.substring(2, 5);
-        }
-        if (number.length >= 7) {
-          formatted += ' ' + number.substring(5, 7);
-        }
-        if (number.length >= 9) {
-          formatted += ' ' + number.substring(7, 9);
-        }
-      }
-      
-      this.form.phone = formatted;
-    },
-    validatePhoneInput(event) {
-      const char = String.fromCharCode(event.keyCode || event.which);
-      const phoneValue = this.form.phone;
-      
-      const currentDigits = phoneValue.replace(/\D/g, '');
-      
-      if (currentDigits.length >= 12) {
-        event.preventDefault();
-        return;
-      }
-      
-      if (phoneValue.startsWith('+380')) {
-        if (!/^\d$/.test(char)) {
-          event.preventDefault();
-        }
-      }
-    },
-    validatePhoneNumber() {
-      const phoneRegex = /^\+380[0-9]{9}$/;
-      const cleanPhone = this.form.phone.replace(/\s+/g, '').replace(/[()-]/g, '');
-      
-      if (!phoneRegex.test(cleanPhone)) {
-        this.form.errors.phone = this.language === 'uk' 
-          ? 'Номер телефону повинен відповідати формату +380XXXXXXXXX' 
-          : 'Phone number must match the format +380XXXXXXXXX';
-        return false;
-      }
-      return true;
     },
     onCityChange() {
       this.form.district = '';

@@ -164,7 +164,16 @@ class RegisterController extends Controller
 
         // Генерируем код верификации и отправляем его на почту
         $code = EmailVerification::generateCode($user->email);
-        $user->notify(new VerifyEmail($code, $user->first_name));
+        
+        try {
+            // Try to send the email notification
+            $user->notify(new VerifyEmail($code, $user->first_name));
+        } catch (\Exception $e) {
+            // Log the error but don't prevent registration
+            Log::error('Failed to send verification email: ' . $e->getMessage());
+            // Flash a message to the session
+            session()->flash('email_error', 'Your account was created, but we could not send a verification email. Please contact support.');
+        }
 
         // Сохраняем email в сессии для страницы верификации
         $request->session()->put('verification_email', $user->email);

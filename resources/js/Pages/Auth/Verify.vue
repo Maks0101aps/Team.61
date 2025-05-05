@@ -15,7 +15,7 @@
           <p class="mt-8 text-gray-600">
             {{ language === 'uk' ? 'Ми надіслали код підтвердження на вашу електронну пошту. Будь ласка, введіть його нижче для підтвердження вашого облікового запису.' : 'We have sent a verification code to your email. Please enter it below to verify your account.' }}
           </p>
-
+          
           <!-- Parent banner message -->
           <div v-if="isParent" class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500 text-blue-800 rounded-md flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">

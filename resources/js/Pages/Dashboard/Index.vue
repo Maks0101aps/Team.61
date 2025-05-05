@@ -65,7 +65,7 @@
           </p>
         </div>
         <div class="flex-shrink-0 mr-6">
-          <Link href="/students/create" class="whitespace-nowrap inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-white text-green-700 hover:bg-green-50 transition-all duration-300 shadow-sm">
+          <Link href="/students/create" class="whitespace-nowrap inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-green-700 text-white hover:bg-green-800 transition-all duration-300 shadow-sm">
             {{ localLanguage === 'uk' ? 'Додати учня' : 'Add student' }}
             <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 -mr-0.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
