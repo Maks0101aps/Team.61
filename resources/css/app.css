@@ -146,7 +146,7 @@ a[href="/reports"].bg-gradient-to-r::before {
 .menu-item .group:not(.bg-gradient-to-r) .text-sm,
 .menu-item a:not(.bg-gradient-to-r) div,
 .menu-item .group:not(.bg-gradient-to-r) div {
-  color: #2563EB !important; /* Более яркий синий для неактивных вкладок */
+  color: #FFFFFF !important; /* Белый цвет для лучшей видимости */
 }
 
 /* Текст для неактивных вкладок - темная тема */
@@ -154,7 +154,7 @@ a[href="/reports"].bg-gradient-to-r::before {
 .dark .menu-item .group:not(.bg-gradient-to-r) .text-sm,
 .dark .menu-item a:not(.bg-gradient-to-r) div,
 .dark .menu-item .group:not(.bg-gradient-to-r) div {
-  color: #93C5FD !important; /* Светло-синий текст для неактивных вкладок в темной теме */
+  color: #FFFFFF !important; /* Белый цвет для лучшей видимости в темной теме */
 }
 
 /* Исправление отображения имени пользователя в шапке */
@@ -893,10 +893,48 @@ nav .font-weight-bold {
   mix-blend-mode: difference !important;
 }
 
-/* Специфичные стили для значков и иконок */
-.navbar .navbar-nav .nav-link i.fa,
-.navbar .navbar-nav .nav-link i.material-icons {
-  color: inherit !important;
+/* Стили для иконок и других элементов в меню */
+.menu-item svg,
+.menu-item img,
+.menu-item i,
+.sidenav svg,
+.sidenav img,
+.sidenav i,
+a[href="/"] svg,
+a[href="/students"] svg,
+a[href="/parents"] svg,
+a[href="/teachers"] svg,
+a[href="/events"] svg,
+a[href="/tasks"] svg,
+a[href="/reports"] svg,
+[class*="menu"] svg,
+[class*="sidenav"] svg,
+[class*="navbar"] svg {
+  color: #FFFFFF !important; /* Белый цвет для иконок */
+  fill: #FFFFFF !important; /* Белый цвет для SVG иконок */
+  stroke: #FFFFFF !important; /* Белый цвет для SVG иконок с обводкой */
+}
+
+/* Стили для иконок и других элементов в меню - темная тема */
+.dark .menu-item svg,
+.dark .menu-item img,
+.dark .menu-item i,
+.dark .sidenav svg,
+.dark .sidenav img,
+.dark .sidenav i,
+.dark a[href="/"] svg,
+.dark a[href="/students"] svg,
+.dark a[href="/parents"] svg,
+.dark a[href="/teachers"] svg,
+.dark a[href="/events"] svg,
+.dark a[href="/tasks"] svg,
+.dark a[href="/reports"] svg,
+.dark [class*="menu"] svg,
+.dark [class*="sidenav"] svg,
+.dark [class*="navbar"] svg {
+  color: #FFFFFF !important; /* Белый цвет для иконок в темной теме */
+  fill: #FFFFFF !important; /* Белый цвет для SVG иконок в темной теме */
+  stroke: #FFFFFF !important; /* Белый цвет для SVG иконок с обводкой в темной теме */
 }
 
 /* Исправления для контраста в мобильном меню */
@@ -1474,4 +1512,44 @@ div[class*="calendar-container"],
     overflow-x: hidden !important;
     overflow-y: hidden !important;
   }
+}
+
+/* Дополнительные селекторы для навигации - светлая тема */
+.sidenav a,
+.navbar-collapse a,
+.sidenav .nav-item a,
+[class*="sidenav"] a,
+[class*="sidenav"] .nav-item a,
+[class*="nav"] a span,
+a[href="/"] span,
+a[href="/students"] span,
+a[href="/parents"] span,
+a[href="/teachers"] span,
+a[href="/events"] span,
+a[href="/tasks"] span,
+a[href="/reports"] span {
+  color: #FFFFFF !important; /* Белый цвет для всех элементов навигации */
+}
+
+/* Дополнительные селекторы для навигации - темная тема */
+.dark .sidenav a,
+.dark .navbar-collapse a,
+.dark .sidenav .nav-item a,
+.dark [class*="sidenav"] a,
+.dark [class*="sidenav"] .nav-item a,
+.dark [class*="nav"] a span,
+.dark a[href="/"] span,
+.dark a[href="/students"] span,
+.dark a[href="/parents"] span,
+.dark a[href="/teachers"] span,
+.dark a[href="/events"] span,
+.dark a[href="/tasks"] span,
+.dark a[href="/reports"] span {
+  color: #FFFFFF !important; /* Белый цвет для всех элементов навигации в темной теме */
+}
+
+/* Специфичные стили для значков и иконок */
+.navbar .navbar-nav .nav-link i.fa,
+.navbar .navbar-nav .nav-link i.material-icons {
+  color: #FFFFFF !important;
 }
