@@ -254,8 +254,8 @@
                 :options="students" 
                 :error="form.errors.children"
                 :label="currentLanguageLabels.children"
-                option-label="full_name"
-                option-value="id"
+                :option-label="'full_name'"
+                :option-value="'id'"
                 :placeholder="language === 'uk' ? 'Оберіть учнів, які є дітьми цих батьків' : 'Select students who are children of this parent'"
                 :help-text="language === 'uk' ? 'Оберіть учнів зі списку, які пов\'язані з цими батьками' : 'Select students from the list who are related to this parent'"
               />

@@ -53,7 +53,15 @@ class ParentsController extends Controller
         }
         
         return Inertia::render('Parents/Create', [
-            'students' => Student::all()->map->only('id', 'first_name', 'middle_name', 'last_name', 'full_name'),
+            'students' => Student::all()->map(function($student) {
+                return [
+                    'id' => $student->id, 
+                    'first_name' => $student->first_name, 
+                    'middle_name' => $student->middle_name, 
+                    'last_name' => $student->last_name, 
+                    'full_name' => $student->first_name . ' ' . $student->middle_name . ' ' . $student->last_name
+                ];
+            }),
             'regions' => Teacher::getRegions(),
         ]);
     }
@@ -125,7 +133,15 @@ class ParentsController extends Controller
                 'photo_path' => $photoPath,
                 'has_avatar' => (bool)$photoPath,
             ],
-            'students' => Student::all()->map->only('id', 'first_name', 'middle_name', 'last_name', 'full_name'),
+            'students' => Student::all()->map(function($student) {
+                return [
+                    'id' => $student->id, 
+                    'first_name' => $student->first_name, 
+                    'middle_name' => $student->middle_name, 
+                    'last_name' => $student->last_name, 
+                    'full_name' => $student->first_name . ' ' . $student->middle_name . ' ' . $student->last_name
+                ];
+            }),
             'regions' => Teacher::getRegions(),
         ]);
     }

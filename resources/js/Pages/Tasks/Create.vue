@@ -122,8 +122,8 @@
               <multi-select
                 v-model="form.teacher_ids"
                 :options="teachers"
-                option-label="full_name"
-                option-value="id"
+                :option-label="'full_name'"
+                :option-value="'id'"
                 :label="currentLanguageLabels.teachers"
                 :placeholder="currentLanguageLabels.choose_teachers"
                 :error="form.errors.teacher_ids"
@@ -133,8 +133,8 @@
               <multi-select
                 v-model="form.student_ids"
                 :options="students"
-                option-label="full_name"
-                option-value="id"
+                :option-label="'full_name'"
+                :option-value="'id'"
                 :label="currentLanguageLabels.students"
                 :placeholder="currentLanguageLabels.choose_students"
                 :error="form.errors.student_ids"
@@ -144,8 +144,8 @@
               <multi-select
                 v-model="form.parent_ids"
                 :options="parents"
-                option-label="full_name"
-                option-value="id"
+                :option-label="'full_name'"
+                :option-value="'id'"
                 :label="currentLanguageLabels.parents"
                 :placeholder="currentLanguageLabels.choose_parents"
                 :error="form.errors.parent_ids"

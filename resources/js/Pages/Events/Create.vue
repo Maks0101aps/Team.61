@@ -245,8 +245,8 @@
                 <multi-select
                   v-model="form.teachers"
                   :options="teachers"
-                  option-label="name"
-                  option-value="id"
+                  :option-label="'name'"
+                  :option-value="'id'"
                   :label="language === 'uk' ? 'Вчителі' : 'Teachers'"
                   :placeholder="language === 'uk' ? 'Оберіть вчителів для події' : 'Choose teachers for the event'"
                   :error="form.errors.teachers"
@@ -257,8 +257,8 @@
               <multi-select
                 v-model="form.students"
                 :options="students"
-                option-label="name"
-                option-value="id"
+                :option-label="'name'"
+                :option-value="'id'"
                 :label="language === 'uk' ? 'Учні' : 'Students'"
                 :placeholder="language === 'uk' ? 'Оберіть учнів для події' : 'Choose students for the event'"
                 :error="form.errors.students"
@@ -275,8 +275,8 @@
                 <multi-select
                   v-model="form.parents"
                   :options="parents"
-                  option-label="name"
-                  option-value="id"
+                  :option-label="'name'"
+                  :option-value="'id'"
                   :label="language === 'uk' ? 'Батьки' : 'Parents'"
                   :placeholder="language === 'uk' ? 'Оберіть батьків для події' : 'Choose parents for the event'"
                   :error="form.errors.parents"

@@ -14,8 +14,8 @@
       :placeholder="placeholder"
       :preselect-first="false"
       :loading="loading"
-      :label="labelProp"
-      :track-by="trackBy"
+      :label="computedLabelProp"
+      :track-by="computedTrackBy"
       class="mt-1"
       @update:modelValue="$emit('update:modelValue', $event)"
     >
@@ -63,6 +63,14 @@ export default {
       type: String,
       default: 'name',
     },
+    optionLabel: {
+      type: String,
+      default: null
+    },
+    optionValue: {
+      type: String,
+      default: null
+    },
     trackBy: {
       type: String,
       default: 'id',
@@ -82,7 +90,13 @@ export default {
         this.$emit('update:modelValue', value)
       },
     },
-  },
+    computedLabelProp() {
+      return this.optionLabel || this.labelProp
+    },
+    computedTrackBy() {
+      return this.optionValue || this.trackBy
+    }
+  }
 }
 </script>
 
