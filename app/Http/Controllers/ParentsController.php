@@ -110,6 +110,21 @@ class ParentsController extends Controller
 
     public function edit(ParentModel $parent): Response
     {
+        $user = Auth::user();
+        
+        // Prevent students from editing parents
+        if ($user->isStudent()) {
+            return Redirect::route('parents.index')->with('error', 'Учні не можуть редагувати батьків.');
+        }
+        
+        // If the user is a parent, they can only edit their own profile
+        if ($user->isParent()) {
+            $currentParent = ParentModel::where('email', $user->email)->first();
+            if (!$currentParent || $currentParent->id !== $parent->id) {
+                return Redirect::route('parents.index')->with('error', 'У вас немає доступу до редагування інших батьків.');
+            }
+        }
+        
         $user = User::where('email', $parent->email)->first();
         $photoPath = $user && $user->photo_path ? $user->photo_path : null;
         
@@ -148,6 +163,21 @@ class ParentsController extends Controller
 
     public function update(ParentModel $parent): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Prevent students from updating parents
+        if ($user->isStudent()) {
+            return Redirect::route('parents.index')->with('error', 'Учні не можуть оновлювати батьків.');
+        }
+        
+        // If the user is a parent, they can only update their own profile
+        if ($user->isParent()) {
+            $currentParent = ParentModel::where('email', $user->email)->first();
+            if (!$currentParent || $currentParent->id !== $parent->id) {
+                return Redirect::route('parents.index')->with('error', 'У вас немає доступу до оновлення інших батьків.');
+            }
+        }
+        
         $validated = Request::validate([
             'first_name' => ['required', 'max:50'],
             'middle_name' => ['required', 'max:50'],
@@ -198,6 +228,21 @@ class ParentsController extends Controller
 
     public function destroy(ParentModel $parent): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Prevent students from deleting parents
+        if ($user->isStudent()) {
+            return Redirect::route('parents.index')->with('error', 'Учні не можуть видаляти батьків.');
+        }
+        
+        // If the user is a parent, they can only delete their own profile
+        if ($user->isParent()) {
+            $currentParent = ParentModel::where('email', $user->email)->first();
+            if (!$currentParent || $currentParent->id !== $parent->id) {
+                return Redirect::route('parents.index')->with('error', 'У вас немає доступу до видалення інших батьків.');
+            }
+        }
+        
         $parent->delete();
 
         return Redirect::back()->with('success', 'Батьків видалено.');
@@ -205,6 +250,21 @@ class ParentsController extends Controller
 
     public function restore(ParentModel $parent): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Prevent students from restoring parents
+        if ($user->isStudent()) {
+            return Redirect::route('parents.index')->with('error', 'Учні не можуть відновлювати батьків.');
+        }
+        
+        // If the user is a parent, they can only restore their own profile
+        if ($user->isParent()) {
+            $currentParent = ParentModel::where('email', $user->email)->first();
+            if (!$currentParent || $currentParent->id !== $parent->id) {
+                return Redirect::route('parents.index')->with('error', 'У вас немає доступу до відновлення інших батьків.');
+            }
+        }
+        
         $parent->restore();
 
         return Redirect::back()->with('success', 'Батьків відновлено.');

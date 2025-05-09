@@ -56,16 +56,6 @@
           <span class="hidden sm:inline ml-1">{{ language === 'uk' ? 'Наступний' : 'Next' }}</span>
         </button>
         
-        <!-- Create Event button -->
-        <Link href="/events/create"
-              class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-md text-xs sm:text-sm font-medium transition-all duration-200 shadow-md hover:shadow-lg dark:shadow-blue-500/20 dark:from-blue-400 dark:to-blue-600"
-              @click.prevent="checkEventAccess">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          <span class="hidden sm:inline ml-1">{{ language === 'uk' ? 'Створити' : 'Create' }}</span>
-        </Link>
-        
         <!-- Sync Settings button -->
         <Link href="/calendar/settings"
               class="inline-flex items-center justify-center p-1.5 sm:px-3 sm:py-1.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 shadow-sm">

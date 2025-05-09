@@ -99,6 +99,13 @@ class TeachersController extends Controller
 
     public function edit(Teacher $teacher): Response
     {
+        $user = Auth::user();
+        
+        // Prevent students and parents from editing teachers
+        if ($user->isStudent() || $user->isParent()) {
+            return Redirect::route('teachers.index')->with('error', 'У вас немає доступу до редагування вчителів.');
+        }
+        
         // Get cities based on the teacher's region if region is set
         $cities = $teacher->region ? Teacher::getCitiesByRegion($teacher->region) : [];
         
@@ -130,6 +137,13 @@ class TeachersController extends Controller
 
     public function update(Teacher $teacher): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Prevent students and parents from updating teachers
+        if ($user->isStudent() || $user->isParent()) {
+            return Redirect::route('teachers.index')->with('error', 'У вас немає доступу до оновлення вчителів.');
+        }
+        
         $validatedData = Request::validate([
             'first_name' => ['required', 'max:50'],
             'middle_name' => ['required', 'max:50'],
@@ -178,6 +192,13 @@ class TeachersController extends Controller
 
     public function destroy(Teacher $teacher): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Prevent students and parents from deleting teachers
+        if ($user->isStudent() || $user->isParent()) {
+            return Redirect::route('teachers.index')->with('error', 'У вас немає доступу до видалення вчителів.');
+        }
+        
         $teacher->delete();
 
         return Redirect::back()->with('success', 'Teacher deleted.');
@@ -185,6 +206,13 @@ class TeachersController extends Controller
 
     public function restore(Teacher $teacher): RedirectResponse
     {
+        $user = Auth::user();
+        
+        // Prevent students and parents from restoring teachers
+        if ($user->isStudent() || $user->isParent()) {
+            return Redirect::route('teachers.index')->with('error', 'У вас немає доступу до відновлення вчителів.');
+        }
+        
         $teacher->restore();
 
         return Redirect::back()->with('success', 'Teacher restored.');

@@ -55,7 +55,10 @@
         v-for="student in students.data" 
         :key="student.id" 
         class="bg-white rounded-xl shadow-md p-4 transition-all duration-300 hover:shadow-lg hover:scale-[1.01]"
-        :class="{ 'border-l-4 border-red-400': student.deleted_at }"
+        :class="{ 
+          'border-l-4 border-red-400': student.deleted_at,
+          'border-l-4 border-green-400': $page.props.auth.user.role === 'parent' && student.is_own_child
+        }"
       >
         <div class="flex justify-between items-start">
           <div class="flex">
@@ -74,8 +77,14 @@
               <Link 
                 class="text-lg font-bold text-blue-800 hover:text-blue-600 transition-colors duration-200" 
                 :href="`/students/${student.id}/edit`"
+                :class="{ 
+                  'pointer-events-none opacity-60': ($page.props.auth.user.role === 'parent' && !student.is_own_child) || 
+                                                   ($page.props.auth.user.role === 'student' && student.email !== $page.props.auth.user.email) 
+                }"
               >
                 {{ student.name }}
+                <span v-if="$page.props.auth.user.role === 'parent' && student.is_own_child" class="ml-2 text-xs text-green-600">({{ language === 'uk' ? 'Ваша дитина' : 'Your child' }})</span>
+                <span v-if="$page.props.auth.user.role === 'student' && student.email === $page.props.auth.user.email" class="ml-2 text-xs text-green-600">({{ language === 'uk' ? 'Ви' : 'You' }})</span>
               </Link>
               <div class="mt-2 space-y-1">
                 <div v-if="student.organization" class="flex items-center text-sm text-gray-600">
@@ -101,6 +110,8 @@
           </div>
           <div class="flex space-x-2">
             <Link 
+              v-if="($page.props.auth.user.role !== 'parent' || student.is_own_child) && 
+                   ($page.props.auth.user.role !== 'student' || student.email === $page.props.auth.user.email)"
               :href="`/students/${student.id}/edit`" 
               class="p-2 text-blue-600 hover:text-blue-800 transition-colors duration-200"
             >
@@ -108,7 +119,20 @@
                 <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
               </svg>
             </Link>
+            <div 
+              v-else
+              class="p-2 text-gray-400 cursor-not-allowed"
+              :title="$page.props.auth.user.role === 'parent' ? 
+                (language === 'uk' ? 'Ви можете редагувати тільки своїх дітей' : 'You can only edit your own children') :
+                (language === 'uk' ? 'Ви можете редагувати тільки свій профіль' : 'You can only edit your own profile')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+              </svg>
+            </div>
             <button 
+              v-if="($page.props.auth.user.role !== 'parent' || student.is_own_child) && 
+                   ($page.props.auth.user.role !== 'student' || student.email === $page.props.auth.user.email)"
               @click="destroy(student)" 
               class="p-2 text-red-600 hover:text-red-800 transition-colors duration-200"
             >
@@ -116,6 +140,17 @@
                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
             </button>
+            <div 
+              v-else
+              class="p-2 text-gray-400 cursor-not-allowed"
+              :title="$page.props.auth.user.role === 'parent' ? 
+                (language === 'uk' ? 'Ви можете видаляти тільки своїх дітей' : 'You can only delete your own children') :
+                (language === 'uk' ? 'Ви можете видаляти тільки свій профіль' : 'You can only delete your own profile')"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
@@ -141,12 +176,19 @@
             v-for="student in students.data" 
             :key="student.id" 
             class="border-t border-gray-100 transition-colors duration-200 hover:bg-blue-50"
-            :class="{ 'bg-red-50 hover:bg-red-100': student.deleted_at }"
+            :class="{ 
+              'bg-red-50 hover:bg-red-100': student.deleted_at,
+              'bg-green-50 hover:bg-green-100': $page.props.auth.user.role === 'parent' && student.is_own_child
+            }"
           >
             <td class="py-4 px-6">
               <Link 
                 class="font-medium text-blue-800 hover:text-blue-600 transition-colors duration-200 flex items-center" 
                 :href="`/students/${student.id}/edit`"
+                :class="{ 
+                  'pointer-events-none opacity-60': ($page.props.auth.user.role === 'parent' && !student.is_own_child) || 
+                                                   ($page.props.auth.user.role === 'student' && student.email !== $page.props.auth.user.email) 
+                }"
               >
                 <div class="mr-3 flex-shrink-0">
                   <img 
@@ -160,6 +202,8 @@
                   </div>
                 </div>
                 {{ student.name }}
+                <span v-if="$page.props.auth.user.role === 'parent' && student.is_own_child" class="ml-2 text-xs text-green-600">({{ language === 'uk' ? 'Ваша дитина' : 'Your child' }})</span>
+                <span v-if="$page.props.auth.user.role === 'student' && student.email === $page.props.auth.user.email" class="ml-2 text-xs text-green-600">({{ language === 'uk' ? 'Ви' : 'You' }})</span>
                 <svg v-if="student.deleted_at" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                   <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                 </svg>
@@ -182,6 +226,8 @@
             <td class="py-4 px-6">
               <div class="flex justify-center space-x-3">
                 <Link 
+                  v-if="($page.props.auth.user.role !== 'parent' || student.is_own_child) && 
+                       ($page.props.auth.user.role !== 'student' || student.email === $page.props.auth.user.email)"
                   :href="`/students/${student.id}/edit`" 
                   class="p-2 text-blue-600 hover:text-blue-800 transition-colors duration-200 rounded-full hover:bg-blue-100"
                 >
@@ -189,7 +235,20 @@
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
                 </Link>
+                <div 
+                  v-else
+                  class="p-2 text-gray-400 cursor-not-allowed rounded-full"
+                  :title="$page.props.auth.user.role === 'parent' ? 
+                    (language === 'uk' ? 'Ви можете редагувати тільки своїх дітей' : 'You can only edit your own children') :
+                    (language === 'uk' ? 'Ви можете редагувати тільки свій профіль' : 'You can only edit your own profile')"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                </div>
                 <button 
+                  v-if="($page.props.auth.user.role !== 'parent' || student.is_own_child) && 
+                       ($page.props.auth.user.role !== 'student' || student.email === $page.props.auth.user.email)"
                   @click="destroy(student)" 
                   class="p-2 text-red-600 hover:text-red-800 transition-colors duration-200 rounded-full hover:bg-red-100"
                 >
@@ -197,6 +256,17 @@
                     <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                   </svg>
                 </button>
+                <div 
+                  v-else
+                  class="p-2 text-gray-400 cursor-not-allowed rounded-full"
+                  :title="$page.props.auth.user.role === 'parent' ? 
+                    (language === 'uk' ? 'Ви можете видаляти тільки своїх дітей' : 'You can only delete your own children') :
+                    (language === 'uk' ? 'Ви можете видаляти тільки свій профіль' : 'You can only delete your own profile')"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                  </svg>
+                </div>
               </div>
             </td>
           </tr>

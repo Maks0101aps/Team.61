@@ -24,11 +24,15 @@ class StudentsController extends Controller
         $students = [];
         
         if ($user->role === User::ROLE_PARENT) {
-            // For parents, only show their students
+            // For parents, show all students but mark which ones are their children
             $parent = ParentModel::where('email', $user->email)->first();
             
             if ($parent) {
-                $students = $parent->children()
+                // Get IDs of the parent's children
+                $childrenIds = $parent->children()->pluck('student_id')->toArray();
+                
+                // Get all students
+                $students = Auth::user()->account->students()
                     ->orderByName()
                     ->filter(Request::only('search', 'trashed'))
                     ->paginate(10)
@@ -41,6 +45,7 @@ class StudentsController extends Controller
                         'class' => $student->class,
                         'deleted_at' => $student->deleted_at,
                         'photo' => $this->getStudentPhoto($student),
+                        'is_own_child' => in_array($student->id, $childrenIds), // Mark if this is parent's child
                     ]);
             }
         } else {
@@ -142,6 +147,15 @@ class StudentsController extends Controller
             }
         }
         
+        // If user is a student, they can only edit their own profile
+        if ($user->role === User::ROLE_STUDENT) {
+            $hasAccess = $student->email === $user->email;
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'Учні можуть редагувати тільки свій профіль.');
+            }
+        }
+        
         return Inertia::render('Students/Edit', [
             'student' => [
                 'id' => $student->id,
@@ -173,6 +187,15 @@ class StudentsController extends Controller
             
             if (!$hasAccess) {
                 return Redirect::route('students.index')->with('error', 'У вас немає доступу до цього учня.');
+            }
+        }
+        
+        // If user is a student, they can only update their own profile
+        if ($user->role === User::ROLE_STUDENT) {
+            $hasAccess = $student->email === $user->email;
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'Учні можуть оновлювати тільки свій профіль.');
             }
         }
         
@@ -233,6 +256,15 @@ class StudentsController extends Controller
             }
         }
         
+        // If user is a student, they can only delete their own profile
+        if ($user->role === User::ROLE_STUDENT) {
+            $hasAccess = $student->email === $user->email;
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'Учні можуть видаляти тільки свій профіль.');
+            }
+        }
+        
         $student->delete();
 
         return Redirect::back()->with('success', 'Учня видалено.');
@@ -249,6 +281,15 @@ class StudentsController extends Controller
             
             if (!$hasAccess) {
                 return Redirect::route('students.index')->with('error', 'У вас немає доступу до цього учня.');
+            }
+        }
+        
+        // If user is a student, they can only restore their own profile
+        if ($user->role === User::ROLE_STUDENT) {
+            $hasAccess = $student->email === $user->email;
+            
+            if (!$hasAccess) {
+                return Redirect::route('students.index')->with('error', 'Учні можуть відновлювати тільки свій профіль.');
             }
         }
         
