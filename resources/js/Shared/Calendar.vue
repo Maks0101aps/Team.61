@@ -313,6 +313,7 @@ import { Link } from '@inertiajs/vue3'
 import 'dayjs/locale/uk'
 import 'dayjs/locale/en'
 import axios from 'axios'
+import { usePage } from '@inertiajs/vue3'
 
 export default {
   components: {
@@ -516,10 +517,20 @@ export default {
       
       if (!event) return false
       
+      // Get the current user's role and ID from shared data
+      const userMeta = usePage().props.auth.user_meta;
+      if (!userMeta) return false;
       
+      // Parents cannot delete events
+      if (userMeta.role === 'parent') return false;
       
+      // Students can only delete their own events
+      if (userMeta.role === 'student') {
+        return String(event.created_by_id) === String(userMeta.id);
+      }
       
-      return true
+      // Teachers and admins can delete events
+      return true;
     }
     
     

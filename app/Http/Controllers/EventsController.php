@@ -166,7 +166,7 @@ class EventsController extends Controller
         
         // Перевіряємо, чи є користувач батьком
         if ($user->isParent()) {
-            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати події.');
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_create_events'));
         }
         
         return Inertia::render('Events/Create', [
@@ -195,7 +195,7 @@ class EventsController extends Controller
         
         // Якщо це батько, забороняємо створення подій
         if ($user->isParent()) {
-            return Redirect::route('dashboard')->with('error', 'Батьки не можуть створювати події.');
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_create_events'));
         }
         
         $validated = request()->validate([
@@ -269,13 +269,18 @@ class EventsController extends Controller
         $user = Auth::user();
         $types = Event::getTypes();
         
+        // Parents cannot edit events
+        if ($user->isParent()) {
+            return Redirect::back()->with('error', __('messages.parents_cannot_edit_events'));
+        }
+        
         // If user is a student, only allow personal events
         if ($user->isStudent()) {
             $types = [Event::TYPE_PERSONAL => $types[Event::TYPE_PERSONAL]];
             
             // Students can only edit their own events
             if ($event->created_by !== $user->id) {
-                return Redirect::back()->with('error', __('Учні можуть редагувати тільки власні події'));
+                return Redirect::back()->with('error', __('messages.students_can_only_edit_own_events'));
             }
         }
         
@@ -338,6 +343,16 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
+        // Parents cannot update events
+        if ($user->isParent()) {
+            return Redirect::back()->with('error', __('parents_cannot_edit_events'));
+        }
+        
+        // Students can only update their own events
+        if ($user->isStudent() && $event->created_by !== $user->id) {
+            return Redirect::back()->with('error', __('students_can_only_edit_own_events'));
+        }
+        
         $validated = Request::validate([
             'title' => ['required', 'max:100'],
             'type' => ['required', 'in:' . implode(',', array_keys(Event::getTypes()))],
@@ -357,21 +372,6 @@ class EventsController extends Controller
             'attachments' => ['nullable', 'array'],
             'attachments.*' => ['file', 'max:102400'], // 100MB limit (in KB)
         ]);
-
-        // For students, enforce that they can only create personal events and can't invite teachers or parents
-        if ($user->isStudent()) {
-            if ($validated['type'] !== Event::TYPE_PERSONAL) {
-                return back()->with('error', __('Учні можуть створювати тільки особисті події'));
-            }
-            
-            if (!empty($validated['teacher_ids'])) {
-                return back()->with('error', __('Учні не можуть запрошувати вчителів на події'));
-            }
-            
-            if (!empty($validated['parent_ids'])) {
-                return back()->with('error', __('Учні не можуть запрошувати батьків на події'));
-            }
-        }
 
         $event->update([
             'title' => $validated['title'],
@@ -414,15 +414,26 @@ class EventsController extends Controller
     {
         $user = Auth::user();
         
+        // Parents cannot delete events
+        if ($user->isParent()) {
+            if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
+                return response()->json([
+                    'message' => __('messages.parents_cannot_delete_events')
+                ], 403);
+            }
+            
+            return Redirect::back()->with('error', __('messages.parents_cannot_delete_events'));
+        }
+        
         // Students can only delete their own events
         if ($user->isStudent() && $event->created_by !== $user->id) {
             if (request()->ajax() || request()->wantsJson() || request()->header('X-Requested-With') === 'XMLHttpRequest') {
                 return response()->json([
-                    'message' => __('Учні можуть видаляти тільки власні події')
+                    'message' => __('messages.students_can_only_delete_own_events')
                 ], 403);
             }
             
-            return Redirect::back()->with('error', __('Учні можуть видаляти тільки власні події'));
+            return Redirect::back()->with('error', __('messages.students_can_only_delete_own_events'));
         }
         
         // Delete all attachments from storage
@@ -491,7 +502,7 @@ class EventsController extends Controller
         
         // Only the event creator or admins can delete attachments
         if ($user->id !== $event->created_by && !$user->isAdmin()) {
-            return Redirect::back()->with('error', __('You cannot delete attachments from this event.'));
+            return Redirect::back()->with('error', __('messages.cannot_delete_attachments'));
         }
 
         // Delete the file from storage
@@ -665,7 +676,7 @@ class EventsController extends Controller
         // Батьки не можуть створювати події
         if ($user->isParent()) {
             return response()->json([
-                'message' => __('Батьки не можуть створювати або змінювати події')
+                'message' => __('messages.parents_cannot_create_events')
             ], 403);
         }
         

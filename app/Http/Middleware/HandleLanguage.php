@@ -23,6 +23,9 @@ class HandleLanguage
         // Store language in session for controllers to use
         session(['language' => $language]);
         
+        // Set application locale for translations
+        app()->setLocale($language);
+        
         // Share language data with all Inertia responses
         Inertia::share('language', [
             'current' => $language,

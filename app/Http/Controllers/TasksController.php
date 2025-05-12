@@ -38,12 +38,12 @@ class TasksController extends Controller
         
         // Check if user is a student
         if ($user->isStudent()) {
-            return Redirect::route('dashboard')->with('error', __('Students cannot create tasks.'));
+            return Redirect::route('dashboard')->with('error', __('messages.students_cannot_create_tasks'));
         }
         
         // Check if user is a parent
         if ($user->isParent()) {
-            return Redirect::route('dashboard')->with('error', __('Parents cannot create tasks.'));
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_create_tasks'));
         }
         
         return Inertia::render('Tasks/Create', [
@@ -77,12 +77,12 @@ class TasksController extends Controller
         
         // Check if user is a student
         if ($user->isStudent()) {
-            return Redirect::route('dashboard')->with('error', __('Students cannot create tasks.'));
+            return Redirect::route('dashboard')->with('error', __('messages.students_cannot_create_tasks'));
         }
         
         // Check if user is a parent
         if ($user->isParent()) {
-            return Redirect::route('dashboard')->with('error', __('Parents cannot create tasks.'));
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_create_tasks'));
         }
         
         $validated = Request::validate([
@@ -123,6 +123,26 @@ class TasksController extends Controller
 
     public function edit(Task $task)
     {
+        $user = Auth::user();
+        
+        // Parents cannot edit tasks
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_edit_tasks'));
+        }
+        
+        // Students can only edit their own tasks
+        if ($user->isStudent()) {
+            $contactId = $user->contactId();
+            
+            // Check if task belongs to the student (was created by them or assigned to them)
+            $isOwnTask = $task->created_by === $user->id;
+            $isAssignedToStudent = $contactId && $task->students->contains('id', $contactId);
+            
+            if (!$isOwnTask && !$isAssignedToStudent) {
+                return Redirect::route('dashboard')->with('error', __('messages.students_can_only_edit_own_tasks'));
+            }
+        }
+        
         return Inertia::render('Tasks/Edit', [
             'task' => [
                 'id' => $task->id,
@@ -162,6 +182,38 @@ class TasksController extends Controller
 
     public function update(Task $task)
     {
+        $user = Auth::user();
+        
+        // Parents cannot update tasks
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_edit_tasks'));
+        }
+        
+        // Students can only update their own tasks or tasks assigned to them
+        if ($user->isStudent()) {
+            $contactId = $user->contactId();
+            
+            // Check if task belongs to the student (was created by them or assigned to them)
+            $isOwnTask = $task->created_by === $user->id;
+            $isAssignedToStudent = $contactId && $task->students->contains('id', $contactId);
+            
+            if (!$isOwnTask && !$isAssignedToStudent) {
+                return Redirect::route('dashboard')->with('error', __('messages.students_can_only_edit_own_tasks'));
+            }
+            
+            // Students can only update the completion status
+            $validated = Request::validate([
+                'completed' => ['boolean'],
+            ]);
+            
+            $task->update([
+                'completed' => $validated['completed'],
+            ]);
+            
+            return Redirect::back()->with('success', __('Task updated successfully.'));
+        }
+        
+        // Teachers and admins can update all fields
         $validated = Request::validate([
             'event_id' => ['nullable', 'exists:events,id'],
             'title' => ['sometimes', 'required', 'max:100'],
@@ -193,6 +245,20 @@ class TasksController extends Controller
 
     public function destroy(Task $task)
     {
+        $user = Auth::user();
+        
+        // Parents cannot delete tasks
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_delete_tasks'));
+        }
+        
+        // Students can only delete their own tasks
+        if ($user->isStudent()) {
+            if ($task->created_by !== $user->id) {
+                return Redirect::route('dashboard')->with('error', __('messages.students_can_only_delete_own_tasks'));
+            }
+        }
+        
         $task->delete();
 
         return Redirect::back()->with('success', __('Task deleted successfully.'));
@@ -200,6 +266,20 @@ class TasksController extends Controller
 
     public function restore(Task $task)
     {
+        $user = Auth::user();
+        
+        // Parents cannot restore tasks
+        if ($user->isParent()) {
+            return Redirect::route('dashboard')->with('error', __('messages.parents_cannot_restore_tasks'));
+        }
+        
+        // Students can only restore their own tasks
+        if ($user->isStudent()) {
+            if ($task->created_by !== $user->id) {
+                return Redirect::route('dashboard')->with('error', __('messages.students_can_only_restore_own_tasks'));
+            }
+        }
+        
         $task->restore();
 
         return Redirect::back()->with('success', __('Task restored successfully.'));
