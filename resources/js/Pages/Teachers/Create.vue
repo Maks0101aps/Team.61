@@ -167,7 +167,9 @@
               <text-input 
                 v-model="form.postal_code" 
                 :error="form.errors.postal_code" 
-                :label="currentLanguageLabels.postal_code" 
+                :label="currentLanguageLabels.postal_code"
+                maxlength="5"
+                @input="formatPostalCode" 
               />
             </div>
           </div>
@@ -307,6 +309,15 @@ export default {
       } else if (event.detail && event.detail.language) {
         this.language = event.detail.language;
       }
+    },
+    formatPostalCode() {
+      let digitsOnly = this.form.postal_code?.replace(/\D/g, '') || '';
+      
+      if (digitsOnly.length > 5) {
+        digitsOnly = digitsOnly.substring(0, 5);
+      }
+      
+      this.form.postal_code = digitsOnly;
     }
   },
   computed: {

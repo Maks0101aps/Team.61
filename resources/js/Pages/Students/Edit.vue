@@ -178,6 +178,8 @@
                 v-model="form.postal_code" 
                 :error="form.errors.postal_code" 
                 :label="language === 'uk' ? 'Поштовий індекс' : 'Postal Code'" 
+                maxlength="5"
+                @input="formatPostalCode"
               />
             </div>
           </div>
@@ -352,6 +354,15 @@ export default {
     },
     updateClass() {
       this.form.class = `${this.selectedGrade}${this.selectedLetter}`;
+    },
+    formatPostalCode() {
+      let digitsOnly = this.form.postal_code?.replace(/\D/g, '') || '';
+      
+      if (digitsOnly.length > 5) {
+        digitsOnly = digitsOnly.substring(0, 5);
+      }
+      
+      this.form.postal_code = digitsOnly;
     },
   },
 }

@@ -239,6 +239,8 @@
                 :error="form.errors.postal_code" 
                 :label="currentLanguageLabels.postal_code" 
                 :help-text="language === 'uk' ? 'Введіть поштовий індекс' : 'Enter postal code'"
+                maxlength="5"
+                @input="formatPostalCode"
               />
             </div>
           </div>
@@ -405,6 +407,15 @@ export default {
       } else {
         e.target.style.display = 'none';
       }
+    },
+    formatPostalCode() {
+      let digitsOnly = this.form.postal_code?.replace(/\D/g, '') || '';
+      
+      if (digitsOnly.length > 5) {
+        digitsOnly = digitsOnly.substring(0, 5);
+      }
+      
+      this.form.postal_code = digitsOnly;
     }
   },
   computed: {
