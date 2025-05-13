@@ -80,12 +80,12 @@
         <div v-for="day in calendarDays" :key="day.date" 
              class="bg-white min-h-[120px] p-3 relative transition-all duration-200 hover:bg-blue-50 group"
              :class="{
-               'bg-gray-50 dark:bg-gray-900/50': !day.isCurrentMonth,
+               'bg-gray-50': !day.isCurrentMonth,
                'bg-red-50': hasConflicts(day.date)
              }">
           <div class="flex justify-between items-start">
             <div class="text-sm font-bold mb-2" 
-                 :class="{ 'text-gray-400 dark:text-gray-500': !day.isCurrentMonth, 'text-blue-900 dark:text-blue-200': day.isCurrentMonth }">
+                 :class="{ 'text-gray-400': !day.isCurrentMonth, 'text-blue-900 dark:text-blue-200': day.isCurrentMonth }">
               {{ day.dayNumber }}
             </div>
             <!-- Add Event Button -->
@@ -102,7 +102,7 @@
           <div class="space-y-1.5">
             <div v-for="event in getEventsForDay(day.date)" :key="event.id"
                  class="text-xs p-2 rounded-lg cursor-pointer transition-all duration-200 transform hover:scale-105 shadow-sm"
-                 :class="[getEventClasses(event), !day.isCurrentMonth ? 'opacity-60' : '']"
+                 :class="getEventClasses(event)"
                  @click.stop="showEventDetails(event)">
               {{ event.title }}
             </div>
@@ -833,14 +833,9 @@ export default {
 }
 
 .year-day-inactive {
-  color: #d1d5db; /* Lighter gray for light mode */
+  color: #9ca3af;
   cursor: default;
   pointer-events: none;
-}
-
-/* Dark mode for inactive days */
-:root.dark .year-day-inactive {
-  color: #4b5563; /* A lighter shade of gray for dark mode */
 }
 
 .year-day-with-events {
