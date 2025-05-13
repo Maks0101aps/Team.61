@@ -37,7 +37,7 @@
       <Link class="group flex items-center py-3 px-4 transition-all duration-200 border-0 outline-none" 
             :class="isUrl('teachers') ? 'bg-gradient-to-r from-[#6CB4EE] to-[#4A90E2] text-white' : 'text-blue-50 hover:bg-blue-600/70 hover:text-white'" 
             href="/teachers">
-        <icon name="book-open" 
+        <icon name="teacher" 
               class="mr-3 w-5 h-5 transition-transform duration-300 group-hover:scale-110" 
               :class="isUrl('teachers') ? 'fill-white' : 'fill-blue-200 group-hover:fill-white'" />
         <div class="text-sm font-medium">{{ __('teachers', language === 'uk' ? 'Вчителі' : 'Teachers') }}</div>
