@@ -106,11 +106,9 @@
                   class="w-1/2"
                 >
                   <option :value="null">{{ language === 'uk' ? 'Виберіть' : 'Select' }}</option>
-                  <option value="A">А</option>
-                  <option value="B">Б</option>
-                  <option value="C">В</option>
-                  <option value="D">Г</option>
-                  <option value="E">Д</option>
+                  <option v-for="letterItem in computedDisplayClassLetters" :key="letterItem.value" :value="letterItem.value">
+                    {{ letterItem.display }}
+                  </option>
                 </select-input>
               </div>
               
@@ -339,15 +337,28 @@ export default {
         'D': 'Г',
         'E': 'Д',
       };
-      // Get the Ukrainian letter only if selectedLetter is a valid key in mapping
-      const ukrainianLetter = this.selectedLetter ? letterMapping[this.selectedLetter] : null;
 
-      if (this.selectedGrade && ukrainianLetter) {
-        // Both grade is present and letter is a valid, mapped one
-        this.form.class = `${this.selectedGrade}-${ukrainianLetter}`;
+      let displayLetter = null;
+
+      // Check if a letter is actually selected and is a mappable one for Ukrainian, or any valid letter for English
+      if (this.selectedLetter) {
+        if (this.language === 'uk') {
+          // For Ukrainian, only use mapped letters
+          displayLetter = letterMapping[this.selectedLetter] || null; 
+        } else {
+          // For English, use the selected letter directly if it's one of the expected Latin characters
+          if (['A', 'B', 'C', 'D', 'E'].includes(this.selectedLetter)) {
+            displayLetter = this.selectedLetter;
+          } else {
+            displayLetter = null; // If it's something else (e.g., placeholder value if logic changed)
+          }
+        }
+      }
+
+      if (this.selectedGrade && displayLetter) {
+        this.form.class = `${this.selectedGrade}-${displayLetter}`;
       } else {
-        // Either grade is missing, or letter is missing/invalid
-        this.form.class = null;
+        this.form.class = null; 
       }
     },
     formatPostalCode() {
@@ -361,6 +372,14 @@ export default {
     },
   },
   computed: {
+    computedDisplayClassLetters() {
+      const mapping = { 'A': 'А', 'B': 'Б', 'C': 'В', 'D': 'Г', 'E': 'Д' };
+      if (this.language === 'uk') {
+        return this.classLetters.map(letter => ({ value: letter, display: mapping[letter] || letter }));
+      } else {
+        return this.classLetters.map(letter => ({ value: letter, display: letter }));
+      }
+    },
     currentLanguageLabels() {
       return {
         en: {
