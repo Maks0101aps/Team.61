@@ -91,7 +91,7 @@ class ParentsController extends Controller
             'city' => ['nullable', 'max:50'],
             'region' => ['nullable', 'max:50'],
             'country' => ['nullable', 'max:2'],
-            'postal_code' => ['nullable', 'max:25'],
+            /*'postal_code' => ['nullable', 'max:25'],*/
             'children' => ['nullable', 'array'],
             'children.*.id' => ['exists:contacts,id'],
         ]);
@@ -189,7 +189,7 @@ class ParentsController extends Controller
             'city' => ['nullable', 'max:50'],
             'region' => ['nullable', 'max:50'],
             'country' => ['nullable', 'max:2'],
-            'postal_code' => ['nullable', 'max:25'],
+            /*'postal_code' => ['nullable', 'max:25'],*/
             'children' => ['nullable', 'array'],
             'children.*.id' => ['exists:contacts,id'],
             'avatar' => ['nullable', 'image', 'max:2048'],
