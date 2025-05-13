@@ -34,7 +34,7 @@
                               type="button" 
                               class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
                               :class="language === 'uk' 
-                                ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                                ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-600 dark:to-blue-800 text-white' 
                                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                         <span class="relative z-10">UA</span>
                       </button>
@@ -42,7 +42,7 @@
                               type="button" 
                               class="relative flex-1 py-2 text-sm font-medium transition-all duration-300"
                               :class="language === 'en' 
-                                ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                                ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-600 dark:to-blue-800 text-white' 
                                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                         <span class="relative z-10">EN</span>
                       </button>
@@ -72,7 +72,7 @@
                           type="button" 
                           class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'uk' 
-                            ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                            ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-600 dark:to-blue-800 text-white' 
                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                     <span class="relative z-10">UA</span>
                   </button>
@@ -80,7 +80,7 @@
                           type="button" 
                           class="relative px-5 py-2 text-sm font-medium transition-all duration-300 group overflow-hidden"
                           :class="language === 'en' 
-                            ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-300 dark:to-blue-500 text-white' 
+                            ? 'bg-gradient-to-r from-blue-400 to-blue-600 dark:from-blue-600 dark:to-blue-800 text-white' 
                             : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-gray-700'">
                     <span class="relative z-10">EN</span>
                   </button>
@@ -264,11 +264,10 @@ export default {
 /* Dark mode language selector enhancements */
 .dark button[class*="from-blue-300"] {
   box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
-  border: 1px solid rgba(96, 165, 250, 0.3);
 }
 
 .dark button.dark\:bg-gray-800 {
-  border: 1px solid rgba(55, 65, 81, 0.8);
+  border: none;
 }
 
 .dark button.dark\:bg-gray-800:hover {
