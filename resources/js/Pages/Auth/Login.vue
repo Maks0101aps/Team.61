@@ -11,7 +11,6 @@
                     ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
                     : 'bg-white text-gray-700 hover:bg-blue-50'">
             <span class="relative z-10">Українська</span>
-            <span v-if="language === 'uk'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
             <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
                   :class="language === 'uk' ? 'bg-white' : 'bg-blue-500'"></span>
           </button>
@@ -22,7 +21,6 @@
                     ? 'bg-gradient-to-r from-blue-500 to-blue-700 text-white' 
                     : 'bg-white text-gray-700 hover:bg-blue-50'">
             <span class="relative z-10">English</span>
-            <span v-if="language === 'en'" class="absolute inset-0 bg-blue-600 animate-pulse opacity-20"></span>
             <span class="absolute bottom-0 left-0 h-1 w-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"
                   :class="language === 'en' ? 'bg-white' : 'bg-blue-500'"></span>
           </button>
