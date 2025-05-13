@@ -26,7 +26,7 @@ a[href="/reports"] {
   
   /* Устраняем все что может вызывать артефакты */
   background-image: none !important;
-  background-color: transparent !important;
+  
   box-shadow: none !important;
   transition: none !important;
   
