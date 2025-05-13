@@ -301,10 +301,35 @@ export default {
     
     // Разбор существующего значения класса
     if (this.form.class) {
-      const match = this.form.class.match(/^(\d+)([A-E])$/);
+      const cyrillicToLatinMap = { 'А': 'A', 'Б': 'B', 'В': 'C', 'Г': 'D', 'Д': 'E' };
+      let grade = null;
+      let latinLetter = null;
+
+      // Try new format: "Number-UkrainianLetter"
+      let match = this.form.class.match(/^(\d+)-([АБВГД])$/);
       if (match) {
-        this.selectedGrade = parseInt(match[1]);
-        this.selectedLetter = match[2];
+        grade = parseInt(match[1]);
+        latinLetter = cyrillicToLatinMap[match[2]];
+      } else {
+        // Try intermediate format: "NumberUkrainianLetter"
+        match = this.form.class.match(/^(\d+)([АБВГД])$/);
+        if (match) {
+          grade = parseInt(match[1]);
+          latinLetter = cyrillicToLatinMap[match[2]];
+        } else {
+          // Try old format: "NumberLatinLetter"
+          match = this.form.class.match(/^(\d+)([A-E])$/);
+          if (match) {
+            grade = parseInt(match[1]);
+            latinLetter = match[2];
+          }
+        }
+      }
+
+      if (grade !== null && latinLetter !== null) {
+        this.selectedGrade = grade;
+        this.selectedLetter = latinLetter;
+        this.updateClass(); // Ensure form.class is updated to the new format
       }
     }
   },
@@ -353,7 +378,19 @@ export default {
       }
     },
     updateClass() {
-      this.form.class = `${this.selectedGrade}${this.selectedLetter}`;
+      const letterMapping = {
+        'A': 'А',
+        'B': 'Б',
+        'C': 'В',
+        'D': 'Г',
+        'E': 'Д',
+      };
+      const ukrainianLetter = letterMapping[this.selectedLetter] || this.selectedLetter;
+      if (this.selectedGrade && this.selectedLetter) {
+        this.form.class = `${this.selectedGrade}-${ukrainianLetter}`;
+      } else {
+        this.form.class = null;
+      }
     },
     formatPostalCode() {
       let digitsOnly = this.form.postal_code?.replace(/\D/g, '') || '';

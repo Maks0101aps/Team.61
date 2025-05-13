@@ -332,7 +332,19 @@ export default {
       this.isKyivSelected = ['Київ', 'Киев', 'Kyiv'].includes(this.form.city);
     },
     updateClass() {
-      this.form.class = `${this.selectedGrade}${this.selectedLetter}`;
+      const letterMapping = {
+        'A': 'А',
+        'B': 'Б',
+        'C': 'В',
+        'D': 'Г',
+        'E': 'Д',
+      };
+      const ukrainianLetter = letterMapping[this.selectedLetter] || this.selectedLetter;
+      if (this.selectedGrade && this.selectedLetter) {
+        this.form.class = `${this.selectedGrade}-${ukrainianLetter}`;
+      } else {
+        this.form.class = null; 
+      }
     },
     formatPostalCode() {
       let digitsOnly = this.form.postal_code?.replace(/\D/g, '') || '';
