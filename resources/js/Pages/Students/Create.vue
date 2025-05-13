@@ -38,7 +38,7 @@
           <h2 class="text-lg font-medium text-gray-900">
             {{ language === 'uk' ? 'Інформація про студента' : 'Student Information' }}
           </h2>
-          <p class="mt-1 text-sm text-gray-600">
+          <p class="mt-1 text-sm" style="color: black;">
             {{ language === 'uk' ? 'Заповніть особисті дані студента' : 'Fill in the student personal information' }}
           </p>
         </div>
@@ -339,11 +339,15 @@ export default {
         'D': 'Г',
         'E': 'Д',
       };
-      const ukrainianLetter = letterMapping[this.selectedLetter] || this.selectedLetter;
-      if (this.selectedGrade && this.selectedLetter) {
+      // Get the Ukrainian letter only if selectedLetter is a valid key in mapping
+      const ukrainianLetter = this.selectedLetter ? letterMapping[this.selectedLetter] : null;
+
+      if (this.selectedGrade && ukrainianLetter) {
+        // Both grade is present and letter is a valid, mapped one
         this.form.class = `${this.selectedGrade}-${ukrainianLetter}`;
       } else {
-        this.form.class = null; 
+        // Either grade is missing, or letter is missing/invalid
+        this.form.class = null;
       }
     },
     formatPostalCode() {

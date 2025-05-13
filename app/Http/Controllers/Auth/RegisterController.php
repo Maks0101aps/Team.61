@@ -81,7 +81,7 @@ class RegisterController extends Controller
             $rules['phone'] = 'nullable|string|regex:/^\+380[0-9]{9}$/|max:13';
             $rules['region'] = 'nullable|string|max:50';
             $rules['city'] = 'nullable|string|max:50';
-            $rules['postal_code'] = 'nullable|string|max:25';
+            /*$rules['postal_code'] = 'nullable|string|max:25';*/
         }
         
         // Add parent fields validation for parent role
@@ -92,7 +92,7 @@ class RegisterController extends Controller
             $rules['district'] = 'nullable|string|max:50';
             $rules['street'] = 'nullable|string|max:100';
             $rules['house_number'] = 'nullable|string|max:20';
-            $rules['postal_code'] = 'nullable|string|max:25';
+            /*$rules['postal_code'] = 'nullable|string|max:25';*/
         }
         
         $validator = Validator::make($request->all(), $rules);

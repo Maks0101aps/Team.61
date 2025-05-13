@@ -85,7 +85,7 @@ class TeachersController extends Controller
             'address' => ['nullable', 'max:150'],
             'city' => ['nullable', 'max:50'],
             'region' => ['nullable', 'max:50'],
-            'postal_code' => ['nullable', 'max:25'],
+            /*'postal_code' => ['nullable', 'max:25'],*/
         ]);
 
         // Always set the country to UA
@@ -155,7 +155,7 @@ class TeachersController extends Controller
             'address' => ['nullable', 'max:150'],
             'city' => ['nullable', 'max:50'],
             'region' => ['nullable', 'max:50'],
-            'postal_code' => ['nullable', 'max:25'],
+            /*'postal_code' => ['nullable', 'max:25'],*/
             'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
@@ -187,7 +187,7 @@ class TeachersController extends Controller
             }
         }
 
-        return Redirect::back()->with('success', 'Teacher updated.');
+        return Redirect::back()->with('success', 'Інформацію про вчителя оновлено.');
     }
 
     public function destroy(Teacher $teacher): RedirectResponse

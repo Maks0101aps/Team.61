@@ -38,7 +38,7 @@
           <h2 class="text-lg font-medium text-gray-900">
             {{ language === 'uk' ? 'Інформація про батьків' : 'Parent Information' }}
           </h2>
-          <p class="mt-1 text-sm text-gray-600">
+          <p class="mt-1" style="color: #000000 !important; opacity: 1 !important;">
             {{ language === 'uk' ? 'Оновіть дані батьків в системі' : 'Update parent information in the system' }}
           </p>
         </div>
@@ -275,16 +275,12 @@
             <span>{{ language === 'uk' ? 'Видалити батьків' : 'Delete Parent' }}</span>
         </button>
           <div class="flex-grow"></div>
-          <Link 
-            :href="`/parents/${parent.id}`" 
-            class="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">
-            {{ language === 'uk' ? 'Скасувати' : 'Cancel' }}
-          </Link>
           <loading-button 
             :loading="form.processing" 
             type="primary" 
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
-            size="md">
+            size="md"
+            @click="update">
             {{ language === 'uk' ? 'Оновити батьків' : 'Update Parent' }}
         </loading-button>
       </div>
@@ -362,7 +358,7 @@ export default {
       this.form.put(`/parents/${this.parent.id}`);
     },
     destroy() {
-      if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити ціх батьків?' : 'Are you sure you want to delete this parent?')) {
+      if (confirm(this.language === 'uk' ? 'Ви впевнені, що хочете видалити цих батьків?' : 'Are you sure you want to delete this parent?')) {
         this.$inertia.delete(`/parents/${this.parent.id}`);
       }
     },
