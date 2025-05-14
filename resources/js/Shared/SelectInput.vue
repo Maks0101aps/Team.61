@@ -22,7 +22,7 @@
       </div>
     </div>
     <div v-if="error" class="form-error mt-1 text-sm text-red-600">{{ error }}</div>
-    <div v-if="helpText" class="form-help mt-1 text-sm text-gray-500">{{ helpText }}</div>
+    <div v-if="helpText" class="text-xs mt-1" :class="helpTextClass || 'text-gray-500'">{{ helpText }}</div>
   </div>
 </template>
 
@@ -40,6 +40,7 @@ export default {
     multiple: Boolean,
     disabled: Boolean,
     helpText: String,
+    helpTextClass: String,
     id: {
       type: String,
       default() {

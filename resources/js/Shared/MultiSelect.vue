@@ -27,6 +27,7 @@
       </template>
     </multiselect>
     <div v-if="error" class="text-red-500 text-xs mt-1">{{ error }}</div>
+    <div v-if="helpText" class="text-xs mt-1" :class="helpTextClass || 'text-gray-500'">{{ helpText }}</div>
   </div>
 </template>
 
@@ -52,6 +53,14 @@ export default {
       default: '',
     },
     error: {
+      type: String,
+      default: '',
+    },
+    helpText: {
+      type: String,
+      default: '',
+    },
+    helpTextClass: {
       type: String,
       default: '',
     },

@@ -38,7 +38,7 @@
           <h2 class="text-lg font-medium text-gray-900">
             {{ currentLanguageLabels.task_information }}
           </h2>
-          <p class="mt-1 text-sm text-gray-600">
+          <p class="mt-1 text-black">
             {{ currentLanguageLabels.fill_task_info }}
           </p>
         </div>
@@ -56,6 +56,7 @@
                 :error="form.errors.event_id" 
                 :label="currentLanguageLabels.event_id"
                 :help-text="currentLanguageLabels.choose_event"
+                help-text-class="text-black"
               >
                 <option v-for="event in events" :key="event.id" :value="event.id">{{ event.title }}</option>
               </select-input>
@@ -65,6 +66,7 @@
                 :error="form.errors.title" 
                 :label="currentLanguageLabels.title" 
                 :help-text="currentLanguageLabels.enter_title"
+                help-text-class="text-black"
               />
             </div>
           </div>
@@ -81,6 +83,7 @@
                 :label="currentLanguageLabels.due_date" 
                 type="datetime-local"
                 :help-text="currentLanguageLabels.due_date_help"
+                help-text-class="text-black"
               />
               
               <select-input 
@@ -88,6 +91,7 @@
                 :error="form.errors.priority" 
                 :label="currentLanguageLabels.priority"
                 :help-text="currentLanguageLabels.priority_help"
+                help-text-class="text-black"
               >
                 <option value="low">{{ currentLanguageLabels.low }}</option>
                 <option value="medium">{{ currentLanguageLabels.medium }}</option>
@@ -108,6 +112,7 @@
                 :label="currentLanguageLabels.detailed_description" 
                 :rows="6"
                 :help-text="currentLanguageLabels.description_help"
+                help-text-class="text-black"
               />
             </div>
           </div>
@@ -128,6 +133,7 @@
                 :placeholder="currentLanguageLabels.choose_teachers"
                 :error="form.errors.teacher_ids"
                 :help-text="currentLanguageLabels.teachers_help"
+                help-text-class="text-black"
               />
               
               <multi-select
@@ -139,6 +145,7 @@
                 :placeholder="currentLanguageLabels.choose_students"
                 :error="form.errors.student_ids"
                 :help-text="currentLanguageLabels.students_help"
+                help-text-class="text-black"
               />
               
               <multi-select
@@ -150,6 +157,7 @@
                 :placeholder="currentLanguageLabels.choose_parents"
                 :error="form.errors.parent_ids"
                 :help-text="currentLanguageLabels.parents_help"
+                help-text-class="text-black"
               />
             </div>
             
@@ -159,6 +167,7 @@
                 :error="form.errors.notify_participants" 
                 :label="currentLanguageLabels.notify_participants" 
                 :help-text="currentLanguageLabels.notify_help"
+                help-text-class="text-black"
               />
             </div>
           </div>

@@ -12,7 +12,8 @@
         {{ label }}
       </label>
     </div>
-    <div v-if="error" class="form-error">{{ error }}</div>
+    <div v-if="error" class="form-error mt-1 text-sm text-red-600">{{ error }}</div>
+    <div v-if="helpText" class="text-xs mt-1 ml-6" :class="helpTextClass || 'text-gray-500'">{{ helpText }}</div>
   </div>
 </template>
 
@@ -24,6 +25,8 @@ export default {
     modelValue: Boolean,
     label: String,
     error: String,
+    helpText: String,
+    helpTextClass: String,
   },
   emits: ['update:modelValue'],
   computed: {
