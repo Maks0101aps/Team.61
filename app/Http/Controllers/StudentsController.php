@@ -199,51 +199,99 @@ class StudentsController extends Controller
             }
         }
         
-        $validatedData = Request::validate([
-            'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
-            'last_name' => ['required', 'max:50'],
-            'email' => ['nullable', 'max:50', 'email'],
-            'phone' => ['nullable', 'regex:/^\+380\d{9}$/', 'max:13'],
-            'address' => ['nullable', 'max:150'],
-            'city' => ['nullable', 'max:50'],
-            'region' => ['nullable', 'max:50'],
-            'country' => ['nullable', 'max:2'],
-            /*'postal_code' => ['nullable', 'max:25'],*/
-            'class' => ['nullable', 'max:10'],
-            'avatar' => ['nullable', 'image', 'max:2048'],
-        ]); 
-        
-        // Since validation is disabled, we'll use all request data, 
-        // but be careful as this is not secure for production.
-        $validatedData = Request::all();
-
-        // Remove avatar from validated data before updating student
-        unset($validatedData['avatar']);
-        
-        $student->update($validatedData);
-        
-        // Обработка загрузки аватарки
-        if (Request::file('avatar')) {
-            // Найдем пользователя с таким же email для хранения аватарки
-            $user = User::where('email', $student->email)->first();
+        try {
+            // Debug information to see what's being received
+            \Log::info('Student update request data:', [
+                'request_all' => Request::all(),
+                'student_before' => $student->toArray()
+            ]);
             
-            if ($user) {
-                // Удаляем старое фото, если оно существует
-                if ($user->photo_path) {
-                    $oldPath = storage_path('app/public/' . $user->photo_path);
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
-                }
-                
-                // Сохраняем новое фото
-                $path = Request::file('avatar')->store('students-avatars', 'public');
-                $user->update(['photo_path' => $path]);
-            }
-        }
+            // Validate input data
+            $validatedData = Request::validate([
+                'first_name' => ['required', 'max:50'],
+                'middle_name' => ['required', 'max:50'],
+                'last_name' => ['required', 'max:50'],
+                'email' => ['nullable', 'max:50', 'email'],
+                'phone' => ['nullable', 'regex:/^\+?380\d{9}$/', 'max:13'], // Made + optional
+                'address' => ['nullable', 'max:150'],
+                'city' => ['nullable', 'max:50'],
+                'region' => ['nullable', 'max:50'],
+                'country' => ['nullable', 'max:2'],
+                'postal_code' => ['nullable', 'max:25'],
+                'class' => ['nullable', 'max:10'],
+                'avatar' => ['nullable', 'image', 'max:2048'],
+            ]);
 
-        return Redirect::back()->with('success', 'Інформацію про учня оновлено.');
+            // Debug the validated data to see what's being passed to update
+            \Log::info('Validated data for student update:', $validatedData);
+
+            // Format phone with + if missing
+            if (!empty($validatedData['phone']) && strpos($validatedData['phone'], '+') !== 0) {
+                $validatedData['phone'] = '+' . $validatedData['phone'];
+            }
+
+            // Remove avatar from validated data before updating student
+            if (isset($validatedData['avatar'])) {
+                unset($validatedData['avatar']);
+            }
+            
+            // Force update with explicit field assignments to ensure changes are saved
+            $student->first_name = $validatedData['first_name'];
+            $student->middle_name = $validatedData['middle_name'];
+            $student->last_name = $validatedData['last_name'];
+            $student->email = $validatedData['email'] ?? $student->email;
+            $student->phone = $validatedData['phone'] ?? $student->phone;
+            $student->address = $validatedData['address'] ?? $student->address;
+            $student->city = $validatedData['city'] ?? $student->city;
+            $student->region = $validatedData['region'] ?? $student->region;
+            $student->country = $validatedData['country'] ?? $student->country;
+            $student->postal_code = $validatedData['postal_code'] ?? $student->postal_code;
+            $student->class = $validatedData['class'] ?? $student->class;
+            $student->save();
+            
+            // Debug student data after update to verify changes
+            \Log::info('Student after update:', [
+                'student_after' => $student->fresh()->toArray()
+            ]);
+            
+            // Обработка загрузки аватарки
+            if (Request::hasFile('avatar')) {
+                // Найдем пользователя с таким же email для хранения аватарки
+                $user = User::where('email', $student->email)->first();
+                
+                if ($user) {
+                    // Удаляем старое фото, если оно существует
+                    if ($user->photo_path) {
+                        $oldPath = storage_path('app/public/' . $user->photo_path);
+                        if (file_exists($oldPath)) {
+                            unlink($oldPath);
+                        }
+                    }
+                    
+                    // Сохраняем новое фото
+                    $path = Request::file('avatar')->store('students-avatars', 'public');
+                    $user->update(['photo_path' => $path]);
+                }
+            }
+
+            // Also update the corresponding user if email is the same
+            if ($student->email) {
+                $userToUpdate = User::where('email', $student->email)->first();
+                if ($userToUpdate) {
+                    $userToUpdate->first_name = $student->first_name;
+                    $userToUpdate->middle_name = $student->middle_name;
+                    $userToUpdate->last_name = $student->last_name;
+                    $userToUpdate->save();
+                }
+            }
+            
+            return Redirect::back()->with('success', 'Інформацію про учня оновлено.');
+            
+        } catch (\Exception $e) {
+            // Log any exceptions that occur during the update process
+            \Log::error('Error updating student:', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return Redirect::back()->with('error', 'Помилка при оновленні даних: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Student $student): RedirectResponse

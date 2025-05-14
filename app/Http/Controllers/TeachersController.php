@@ -144,50 +144,103 @@ class TeachersController extends Controller
             return Redirect::route('teachers.index')->with('error', 'У вас немає доступу до оновлення вчителів.');
         }
         
-        $validatedData = Request::validate([
-            'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
-            'last_name' => ['required', 'max:50'],
-            'email' => ['nullable', 'max:50', 'email'],
-            'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
-            'subject' => ['nullable', 'max:100'],
-            'qualification' => ['nullable', 'max:100'],
-            'address' => ['nullable', 'max:150'],
-            'city' => ['nullable', 'max:50'],
-            'region' => ['nullable', 'max:50'],
-            /*'postal_code' => ['nullable', 'max:25'],*/
-            'avatar' => ['nullable', 'image', 'max:2048'],
-        ]);
-
-        $validatedData['country'] = 'UA';
-        $validatedData['organization_id'] = null;
-        
-        unset($validatedData['avatar']);
-
-       
-        if (isset($validatedData['phone'])) {
-            $validatedData['phone'] = preg_replace('/[^0-9+]/', '', $validatedData['phone']);
-        }
-
-        $teacher->update($validatedData);
-
-        if (Request::file('avatar')) {
-            $user = User::where('email', $teacher->email)->first();
+        try {
+            // Log incoming data
+            \Log::info('Teacher update request data:', [
+                'request_all' => Request::all(),
+                'teacher_before' => $teacher->toArray()
+            ]);
             
-            if ($user) {
-                if ($user->photo_path) {
-                    $oldPath = storage_path('app/public/' . $user->photo_path);
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
-                }
+            $validatedData = Request::validate([
+                'first_name' => ['required', 'max:50'],
+                'middle_name' => ['required', 'max:50'],
+                'last_name' => ['required', 'max:50'],
+                'email' => ['nullable', 'max:50', 'email'],
+                'phone' => ['nullable', 'string', 'regex:/^\+?380[0-9]{9}$/', 'max:13'], // Made + optional
+                'subject' => ['nullable', 'max:100'],
+                'qualification' => ['nullable', 'max:100'],
+                'address' => ['nullable', 'max:150'],
+                'city' => ['nullable', 'max:50'],
+                'region' => ['nullable', 'max:50'],
+                'postal_code' => ['nullable', 'max:25'],
+                'avatar' => ['nullable', 'image', 'max:2048'],
+            ]);
 
-                $path = Request::file('avatar')->store('teachers-avatars', 'public');
-                $user->update(['photo_path' => $path]);
+            // Log validated data
+            \Log::info('Validated data for teacher update:', $validatedData);
+            
+            // Always set country to UA and organization_id to null
+            $validatedData['country'] = 'UA';
+            $validatedData['organization_id'] = null;
+            
+            // Remove avatar from validated data
+            if (isset($validatedData['avatar'])) {
+                unset($validatedData['avatar']);
             }
-        }
 
-        return Redirect::back()->with('success', 'Інформацію про вчителя оновлено.');
+            // Format phone with + if missing
+            if (!empty($validatedData['phone'])) {
+                if (strpos($validatedData['phone'], '+') !== 0) {
+                    $validatedData['phone'] = '+' . $validatedData['phone'];
+                }
+            }
+
+            // Force update with explicit field assignments
+            $teacher->first_name = $validatedData['first_name'];
+            $teacher->middle_name = $validatedData['middle_name'];
+            $teacher->last_name = $validatedData['last_name'];
+            $teacher->email = $validatedData['email'] ?? $teacher->email;
+            $teacher->phone = $validatedData['phone'] ?? $teacher->phone;
+            $teacher->subject = $validatedData['subject'] ?? $teacher->subject;
+            $teacher->qualification = $validatedData['qualification'] ?? $teacher->qualification;
+            $teacher->address = $validatedData['address'] ?? $teacher->address;
+            $teacher->city = $validatedData['city'] ?? $teacher->city;
+            $teacher->region = $validatedData['region'] ?? $teacher->region;
+            $teacher->country = $validatedData['country'];
+            $teacher->organization_id = $validatedData['organization_id'];
+            $teacher->postal_code = $validatedData['postal_code'] ?? $teacher->postal_code;
+            $teacher->save();
+            
+            // Log teacher data after update
+            \Log::info('Teacher after update:', [
+                'teacher_after' => $teacher->fresh()->toArray()
+            ]);
+
+            // Handle avatar upload
+            if (Request::hasFile('avatar')) {
+                $user = User::where('email', $teacher->email)->first();
+                
+                if ($user) {
+                    if ($user->photo_path) {
+                        $oldPath = storage_path('app/public/' . $user->photo_path);
+                        if (file_exists($oldPath)) {
+                            unlink($oldPath);
+                        }
+                    }
+
+                    $path = Request::file('avatar')->store('teachers-avatars', 'public');
+                    $user->update(['photo_path' => $path]);
+                }
+            }
+            
+            // Also update the corresponding user if email is the same
+            if ($teacher->email) {
+                $userToUpdate = User::where('email', $teacher->email)->first();
+                if ($userToUpdate) {
+                    $userToUpdate->first_name = $teacher->first_name;
+                    $userToUpdate->middle_name = $teacher->middle_name;
+                    $userToUpdate->last_name = $teacher->last_name;
+                    $userToUpdate->save();
+                }
+            }
+
+            return Redirect::back()->with('success', 'Інформацію про вчителя оновлено.');
+            
+        } catch (\Exception $e) {
+            // Log any exceptions
+            \Log::error('Error updating teacher:', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return Redirect::back()->with('error', 'Помилка при оновленні даних: ' . $e->getMessage());
+        }
     }
 
     public function destroy(Teacher $teacher): RedirectResponse

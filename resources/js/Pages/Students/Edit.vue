@@ -38,7 +38,7 @@
           <h2 class="text-lg font-medium text-gray-900">
             {{ language === 'uk' ? 'Інформація про студента' : 'Student Information' }}
           </h2>
-          <p class="mt-1 text-sm text-gray-600">
+          <p class="mt-1 text-sm" style="color: black !important;">
             {{ language === 'uk' ? 'Оновіть особисті дані студента' : 'Update the student personal information' }}
           </p>
         </div>
@@ -200,9 +200,10 @@
             class="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 text-center">
             {{ language === 'uk' ? 'Скасувати' : 'Cancel' }}
           </Link>
-          <loading-button 
-            :loading="form.processing" 
-            type="primary" 
+          <loading-button
+            :loading="form.processing"
+            buttonType="submit"
+            variant="primary"
             class="w-full sm:w-auto px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm focus:ring-blue-500"
             size="md">
             {{ language === 'uk' ? 'Оновити студента' : 'Update Student' }}
@@ -341,6 +342,7 @@ export default {
       // Avatar is not editable from this form
       this.form.avatar = null;
       
+      // Use the form.put method which is already set up with all the form fields
       this.form.put(`/students/${this.student.id}`);
     },
     destroy() {

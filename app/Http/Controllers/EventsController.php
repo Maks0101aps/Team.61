@@ -353,61 +353,83 @@ class EventsController extends Controller
             return Redirect::back()->with('error', __('students_can_only_edit_own_events'));
         }
         
-        $validated = Request::validate([
-            'title' => ['required', 'max:100'],
-            'type' => ['required', 'in:' . implode(',', array_keys(Event::getTypes()))],
-            'start_date' => ['required', 'date'],
-            'duration' => ['required', 'integer', 'min:1'],
-            'content' => ['nullable', 'string'],
-            'is_content_hidden' => ['boolean'],
-            'location' => ['nullable', 'string', 'max:100'],
-            'online_link' => ['nullable', 'url', 'max:200'],
-            'tasks' => ['nullable', 'string'],
-            'student_ids' => ['array'],
-            'student_ids.*.id' => ['exists:contacts,id'],
-            'teacher_ids' => ['array'],
-            'teacher_ids.*.id' => ['exists:teachers,id'],
-            'parent_ids' => ['array'],
-            'parent_ids.*.id' => ['exists:parent_models,id'],
-            'attachments' => ['nullable', 'array'],
-            'attachments.*' => ['file', 'max:102400'], // 100MB limit (in KB)
-        ]);
-
-        $event->update([
-            'title' => $validated['title'],
-            'type' => $validated['type'],
-            'start_date' => $validated['start_date'],
-            'duration' => $validated['duration'],
-            'content' => $validated['content'],
-            'is_content_hidden' => $validated['is_content_hidden'] ?? false,
-            'location' => $validated['location'],
-            'online_link' => $validated['online_link'],
-            'tasks' => $validated['tasks'],
-        ]);
-
-        // Ensure we have arrays even if they're null or missing
-        $studentIds = isset($validated['student_ids']) ? collect($validated['student_ids'])->pluck('id') : collect([]);
-        $teacherIds = isset($validated['teacher_ids']) ? collect($validated['teacher_ids'])->pluck('id') : collect([]);
-        $parentIds = isset($validated['parent_ids']) ? collect($validated['parent_ids'])->pluck('id') : collect([]);
-
-        $event->students()->sync($studentIds);
-        $event->teachers()->sync($teacherIds);
-        $event->parents()->sync($parentIds);
-
-        // Upload attachments if any
-        if (request()->hasFile('attachments')) {
-            foreach (request()->file('attachments') as $file) {
-                $path = $file->store('event-attachments');
-                $event->attachments()->create([
-                    'filename' => $path,
-                    'original_filename' => $file->getClientOriginalName(),
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                ]);
+        try {
+            // Log incoming data
+            \Log::info('Event update request data:', [
+                'request_all' => Request::all(),
+                'event_before' => $event->toArray()
+            ]);
+            
+            $validated = Request::validate([
+                'title' => ['required', 'max:100'],
+                'type' => ['required', 'in:' . implode(',', array_keys(Event::getTypes()))],
+                'start_date' => ['required', 'date'],
+                'duration' => ['required', 'integer', 'min:1'],
+                'content' => ['nullable', 'string'],
+                'is_content_hidden' => ['boolean'],
+                'location' => ['nullable', 'string', 'max:100'],
+                'online_link' => ['nullable', 'url', 'max:200'],
+                'tasks' => ['nullable', 'string'],
+                'student_ids' => ['array'],
+                'student_ids.*.id' => ['exists:contacts,id'],
+                'teacher_ids' => ['array'],
+                'teacher_ids.*.id' => ['exists:teachers,id'],
+                'parent_ids' => ['array'],
+                'parent_ids.*.id' => ['exists:parent_models,id'],
+                'attachments' => ['nullable', 'array'],
+                'attachments.*' => ['file', 'max:102400'], // 100MB limit (in KB)
+            ]);
+            
+            // Log validated data
+            \Log::info('Validated data for event update:', $validated);
+            
+            // Explicitly set fields and save instead of using mass update
+            $event->title = $validated['title'];
+            $event->type = $validated['type'];
+            $event->start_date = $validated['start_date'];
+            $event->duration = $validated['duration'];
+            $event->content = $validated['content'] ?? $event->content;
+            $event->is_content_hidden = $validated['is_content_hidden'] ?? false;
+            $event->location = $validated['location'] ?? $event->location;
+            $event->online_link = $validated['online_link'] ?? $event->online_link;
+            $event->tasks = $validated['tasks'] ?? $event->tasks;
+            $event->save();
+            
+            // Log event data after update
+            \Log::info('Event after update:', [
+                'event_after' => $event->fresh()->toArray()
+            ]);
+            
+            // Ensure we have arrays even if they're null or missing
+            $studentIds = isset($validated['student_ids']) ? collect($validated['student_ids'])->pluck('id') : collect([]);
+            $teacherIds = isset($validated['teacher_ids']) ? collect($validated['teacher_ids'])->pluck('id') : collect([]);
+            $parentIds = isset($validated['parent_ids']) ? collect($validated['parent_ids'])->pluck('id') : collect([]);
+            
+            // Sync relationships
+            $event->students()->sync($studentIds);
+            $event->teachers()->sync($teacherIds);
+            $event->parents()->sync($parentIds);
+            
+            // Upload attachments if any
+            if (request()->hasFile('attachments')) {
+                foreach (request()->file('attachments') as $file) {
+                    $path = $file->store('event-attachments');
+                    $event->attachments()->create([
+                        'filename' => $path,
+                        'original_filename' => $file->getClientOriginalName(),
+                        'mime_type' => $file->getMimeType(),
+                        'size' => $file->getSize(),
+                    ]);
+                }
             }
+            
+            return Redirect::back()->with('success', __('Event updated.'));
+            
+        } catch (\Exception $e) {
+            // Log any exceptions
+            \Log::error('Error updating event:', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return Redirect::back()->with('error', 'Помилка при оновленні події: ' . $e->getMessage());
         }
-
-        return Redirect::back()->with('success', __('Event updated.'));
     }
 
     public function destroy(Event $event)

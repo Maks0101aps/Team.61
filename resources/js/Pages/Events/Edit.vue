@@ -317,16 +317,16 @@ export default {
     return {
       language: localStorage.getItem('language') || 'uk',
       form: this.$inertia.form({
-        _method: 'put',
+        // Remove _method: 'put' as it's not needed when using form.put()
         title: this.event.title,
         type: this.event.type,
         start_date: this.formatDateTimeForInput(this.event.start_date),
         duration: this.event.duration,
-        content: this.event.content,
-        tasks: this.event.tasks,
-        location: this.event.location,
-        online_link: this.event.online_link,
-        is_content_hidden: this.event.is_content_hidden,
+        content: this.event.content || '',
+        tasks: this.event.tasks || '',
+        location: this.event.location || '',
+        online_link: this.event.online_link || '',
+        is_content_hidden: this.event.is_content_hidden || false,
         student_ids: this.event.student_ids || [],
         teacher_ids: this.event.teacher_ids || [],
         parent_ids: this.event.parent_ids || [],
@@ -377,18 +377,25 @@ export default {
       return `${year}-${month}-${day}T${hours}:${minutes}`;
     },
     update() {
+      // Clear teacher and parent fields for students
       if (this.isStudent) {
         this.form.teacher_ids = [];
         this.form.parent_ids = [];
       }
       
-      this.form.post(`/events/${this.event.id}`, {
-        method: 'put',
+      // Use Inertia's put method directly
+      this.form.put(`/events/${this.event.id}`, {
         onSuccess: () => {
-          
+          console.log('Event updated successfully');
           this.form.attachments = [];
-        }
-      })
+          
+          // No need to manually set success message as the server will provide it
+        },
+        onError: (errors) => {
+          console.error('Error updating event:', errors);
+        },
+        preserveScroll: true,
+      });
     },
     destroy() {
       if (confirm('Ви впевнені, що хочете видалити цю подію?')) {

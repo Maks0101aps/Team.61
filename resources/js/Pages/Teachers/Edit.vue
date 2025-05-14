@@ -38,7 +38,7 @@
           <h2 class="text-lg font-medium text-gray-900">
             {{ language === 'uk' ? 'Інформація про вчителя' : 'Teacher Information' }}
           </h2>
-          <p class="mt-1 text-sm text-gray-800">
+          <p class="mt-1 text-sm" style="color: black !important;">
             {{ language === 'uk' ? 'Оновіть інформацію для редагування вчителя в системі' : 'Update the teacher information in the system' }}
           </p>
         </div>

@@ -1,10 +1,10 @@
 <template>
   <button
     :disabled="loading"
-    :type="buttonType"
+    :type="type || buttonType"
     class="flex items-center justify-center transition-all duration-200 font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
     :class="[
-      buttonClass,
+      buttonClass || classes,
       { 'relative !text-transparent': loading }
     ]"
   >

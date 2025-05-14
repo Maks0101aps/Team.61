@@ -178,52 +178,101 @@ class ParentsController extends Controller
             }
         }
         
-        $validated = Request::validate([
-            'first_name' => ['required', 'max:50'],
-            'middle_name' => ['required', 'max:50'],
-            'last_name' => ['required', 'max:50'],
-            'email' => ['nullable', 'max:50', 'email'],
-            'parent_type' => ['required', 'in:mother,father'],
-            'phone' => ['nullable', 'string', 'regex:/^\+380[0-9]{9}$/', 'max:13'],
-            'address' => ['nullable', 'max:150'],
-            'city' => ['nullable', 'max:50'],
-            'region' => ['nullable', 'max:50'],
-            'country' => ['nullable', 'max:2'],
-            /*'postal_code' => ['nullable', 'max:25'],*/
-            'children' => ['nullable', 'array'],
-            'children.*.id' => ['exists:contacts,id'],
-            'avatar' => ['nullable', 'image', 'max:2048'],
-        ]);
-
-        $childrenIds = collect($validated['children'] ?? [])->pluck('id')->filter();
-        unset($validated['children']);
-        unset($validated['avatar']);
-
-        if (isset($validated['phone'])) {
-            $validated['phone'] = preg_replace('/[^0-9+]/', '', $validated['phone']);
-        }
-
-        $parent->update($validated);
-        
-        if (Request::file('avatar')) {
-            $user = User::where('email', $parent->email)->first();
+        try {
+            // Log incoming data
+            \Log::info('Parent update request data:', [
+                'request_all' => Request::all(),
+                'parent_before' => $parent->toArray()
+            ]);
             
-            if ($user) {
-                if ($user->photo_path) {
-                    $oldPath = storage_path('app/public/' . $user->photo_path);
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
-                }
-                
-                $path = Request::file('avatar')->store('parents-avatars', 'public');
-                $user->update(['photo_path' => $path]);
-            }
-        }
-        
-        $parent->children()->sync($childrenIds);
+            $validated = Request::validate([
+                'first_name' => ['required', 'max:50'],
+                'middle_name' => ['required', 'max:50'],
+                'last_name' => ['required', 'max:50'],
+                'email' => ['nullable', 'max:50', 'email'],
+                'parent_type' => ['required', 'in:mother,father'],
+                'phone' => ['nullable', 'string', 'regex:/^\+?380[0-9]{9}$/', 'max:13'], // Made + optional
+                'address' => ['nullable', 'max:150'],
+                'city' => ['nullable', 'max:50'],
+                'region' => ['nullable', 'max:50'],
+                'country' => ['nullable', 'max:2'],
+                'postal_code' => ['nullable', 'max:25'],
+                'children' => ['nullable', 'array'],
+                'children.*.id' => ['exists:contacts,id'],
+                'avatar' => ['nullable', 'image', 'max:2048'],
+            ]);
 
-        return Redirect::back()->with('success', 'Батьків оновлено.');
+            // Log validated data
+            \Log::info('Validated data for parent update:', $validated);
+            
+            $childrenIds = collect($validated['children'] ?? [])->pluck('id')->filter();
+            unset($validated['children']);
+            unset($validated['avatar']);
+
+            // Format phone with + if missing
+            if (!empty($validated['phone'])) {
+                if (strpos($validated['phone'], '+') !== 0) {
+                    $validated['phone'] = '+' . $validated['phone'];
+                }
+            }
+
+            // Force update with explicit field assignments
+            $parent->first_name = $validated['first_name'];
+            $parent->middle_name = $validated['middle_name'];
+            $parent->last_name = $validated['last_name'];
+            $parent->email = $validated['email'] ?? $parent->email;
+            $parent->parent_type = $validated['parent_type'];
+            $parent->phone = $validated['phone'] ?? $parent->phone;
+            $parent->address = $validated['address'] ?? $parent->address;
+            $parent->city = $validated['city'] ?? $parent->city;
+            $parent->region = $validated['region'] ?? $parent->region;
+            $parent->country = $validated['country'] ?? $parent->country;
+            $parent->postal_code = $validated['postal_code'] ?? $parent->postal_code;
+            $parent->save();
+            
+            // Log parent data after update
+            \Log::info('Parent after update:', [
+                'parent_after' => $parent->fresh()->toArray()
+            ]);
+            
+            // Handle avatar upload
+            if (Request::hasFile('avatar')) {
+                $user = User::where('email', $parent->email)->first();
+                
+                if ($user) {
+                    if ($user->photo_path) {
+                        $oldPath = storage_path('app/public/' . $user->photo_path);
+                        if (file_exists($oldPath)) {
+                            unlink($oldPath);
+                        }
+                    }
+                    
+                    $path = Request::file('avatar')->store('parents-avatars', 'public');
+                    $user->update(['photo_path' => $path]);
+                }
+            }
+            
+            // Sync children relationships
+            $parent->children()->sync($childrenIds);
+            
+            // Also update the corresponding user if email is the same
+            if ($parent->email) {
+                $userToUpdate = User::where('email', $parent->email)->first();
+                if ($userToUpdate) {
+                    $userToUpdate->first_name = $parent->first_name;
+                    $userToUpdate->middle_name = $parent->middle_name;
+                    $userToUpdate->last_name = $parent->last_name;
+                    $userToUpdate->save();
+                }
+            }
+
+            return Redirect::back()->with('success', 'Батьків оновлено.');
+            
+        } catch (\Exception $e) {
+            // Log any exceptions
+            \Log::error('Error updating parent:', ['exception' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return Redirect::back()->with('error', 'Помилка при оновленні даних: ' . $e->getMessage());
+        }
     }
 
     public function destroy(ParentModel $parent): RedirectResponse
