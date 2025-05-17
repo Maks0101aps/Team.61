@@ -1,4 +1,4 @@
-# School61 Project
+# Team.61     Project
 
 ## Installation Instructions
 
@@ -100,6 +100,24 @@ GOOGLE_CALENDAR_REDIRECT_URI=http://localhost/google-calendar/callback
 GOOGLE_CALENDAR_ORIGIN=http://localhost
 ```
 
+#### 11. Mailtrap Integration Setup
+
+To test email sending functionality, update your `.env` file with your Mailtrap credentials (similar to Google Calendar):
+
+```
+MAIL_MAILER=smtp
+MAIL_HOST=sandbox.smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_username
+MAIL_PASSWORD=your_mailtrap_password
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS=example@example.com
+MAIL_FROM_NAME="School61"
+```
+
+> **Note:**  
+> You can find your `MAIL_USERNAME` and `MAIL_PASSWORD` in your Mailtrap account.
+
 ### Build for Production
 When you're ready to deploy:
 ```bash
@@ -108,15 +126,15 @@ npm run build
 
 ### Default Login Credentials
 
-#### Teacher Account (Учитель)
+#### Teacher Account (Вчитель)
 - **Email:** johndoe@example.com
 - **Password:** secret
 
-#### Parent Account (Родитель)
+#### Parent Account (Батько)
 - **Email:** janedoe@example.com
 - **Password:** secret
 
-#### Student Account (Ученик)
+#### Student Account (Студент)
 - **Email:** jimmydoe@example.com
 - **Password:** secret
 
